@@ -9,7 +9,10 @@ import ru.spbu.math.ontologycomparision.zhukova.util.SetHelper;
 import ru.spbu.math.ontologycomparision.zhukova.util.IHashTable;
 import ru.spbu.math.ontologycomparision.zhukova.util.HashTable;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import edu.smu.tspell.wordnet.Synset;
 
@@ -30,10 +33,10 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
         Set<Synset> secondSynsets = this.secondSynsetHelper.getSynsets();
         int firstNotSecondSynsetCount = SetHelper.INSTANCE.setIntersection(firstSynsets, secondSynsets).size();
         int firstAndSecondSynsetCount = SetHelper.INSTANCE.setUnion(firstSynsets, secondSynsets).size();
-        int firstNoSynsetConceptCount = this.firstSynsetHelper.getConcepsWithNoSynset().size();
-        int secondNoSynsetConceptCount = this.secondSynsetHelper.getConcepsWithNoSynset().size();
-        return ((double) firstNotSecondSynsetCount + mergeNoSynsetConcepts().size())
-                / (firstAndSecondSynsetCount + secondNoSynsetConceptCount + firstNoSynsetConceptCount);
+        IHashTable<Synset, C> mergedNoSynsetConcepts = this.mergeNoSynsetConcepts();
+        return ((double) firstNotSecondSynsetCount +
+                mergedNoSynsetConcepts.allValues().size() - mergeNoSynsetConcepts().size())
+                / (firstAndSecondSynsetCount + mergedNoSynsetConcepts.size());
     }
 
     public IHashTable<Synset, C> merge() {
@@ -54,7 +57,7 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
     public IHashTable<Synset, C> mergeNoSynsetConcepts() {
         Map<C, Synset> firstConceptToSynsetMap = this.firstSynsetHelper.getConceptToSynsetMap();
         Map<C, Synset> secondConceptToSynsetMap = this.secondSynsetHelper.getConceptToSynsetMap();
-        IHashTable<String, C> allNoSynsetConcets = noSynsetConceptUnion();
+        IHashTable<String, C> allNoSynsetConcets = this.noSynsetConceptUnion();
         IHashTable<Synset, C> result = new HashTable<Synset, C>();
         for (Map.Entry<String, List<C>> entry : allNoSynsetConcets.entrySet()) {
             List<C> values = entry.getValue();

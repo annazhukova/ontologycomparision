@@ -15,11 +15,15 @@ import java.io.FileNotFoundException;
 public class TestOntologyComparator extends TestCase {
     IOntologyGraph<OntologyConcept, OntologyRelation> ontoPLGraph;
     IOntologyGraph<OntologyConcept, OntologyRelation> ontoJavaGraph;
+    IOntologyGraph<OntologyConcept, OntologyRelation> ontoPLCSharpGraph;
+    IOntologyGraph<OntologyConcept, OntologyRelation> ontoJavaCSharpGraph;
     IOntologyGraph<OntologyConcept, OntologyRelation> ontoDrinkGraph;
 
     public void setUp() throws FileNotFoundException {
         this.ontoPLGraph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
         this.ontoDrinkGraph = OntologyGraphBuilder.build(OntologyTestConstants.ONTODRINK_URL);
+        this.ontoPLCSharpGraph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPLCSHARP_URL);
+        this.ontoJavaCSharpGraph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOJAVASHARP_URL);
         this.ontoJavaGraph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOJAVA_URL);
     }
 
@@ -39,5 +43,19 @@ public class TestOntologyComparator extends TestCase {
         OntologyComparator<OntologyConcept, OntologyRelation> comparator =
                 new OntologyComparator<OntologyConcept, OntologyRelation>(ontoJavaGraph, ontoPLGraph);
         assertEquals(0.5, comparator.getSimilarity());
+    }
+
+    public void testSimilaritySimmerty() {
+        OntologyComparator<OntologyConcept, OntologyRelation> comparator1 =
+                new OntologyComparator<OntologyConcept, OntologyRelation>(ontoJavaGraph, ontoPLGraph);
+        OntologyComparator<OntologyConcept, OntologyRelation> comparator2 =
+                new OntologyComparator<OntologyConcept, OntologyRelation>(ontoPLGraph, ontoJavaGraph);
+        assertEquals(comparator2.getSimilarity(), comparator1.getSimilarity());
+    }
+
+    public void testSimilarityOfOntologiesWithEmptySynsets() {
+        OntologyComparator<OntologyConcept, OntologyRelation> comparator =
+                new OntologyComparator<OntologyConcept, OntologyRelation>(ontoJavaCSharpGraph, ontoPLCSharpGraph);
+        assertEquals(0.6, comparator.getSimilarity());
     }
 }

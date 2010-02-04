@@ -19,4 +19,6 @@ public interface IHashTable<K, V> extends Map<K, List<V>>, Cloneable, Serializab
     void insertAll(IHashTable<K, V> table);
     
     void insertAll(Map<K, V> map);
+
+    Collection<V> allValues();
 }

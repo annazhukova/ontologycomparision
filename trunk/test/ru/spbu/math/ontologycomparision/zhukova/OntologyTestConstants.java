@@ -9,6 +9,8 @@ public interface OntologyTestConstants {
     public static final String ONTODRINK_URL = "resources/test/OntoDrink.owl";
     public static final String ONTOPL_URL = "resources/test/OntoPL.owl";
     public static final String ONTOJAVA_URL = "resources/test/OntoJava.owl";
+    public static final String ONTOPLCSHARP_URL = "resources/test/OntoPLCSharp.owl";
+    public static final String ONTOJAVASHARP_URL = "resources/test/OntoJavaCSharp.owl";
     public static final String JAVA = "java";
     public static final String PROGRAMMING_LANGUAGES = "programming languages";
     int ONTO_PL_CONCEPTS_COUNT = 3;

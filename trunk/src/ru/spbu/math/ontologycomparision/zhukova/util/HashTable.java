@@ -27,7 +27,7 @@ public class HashTable<K, V> extends HashMap<K, List<V>> implements IHashTable<K
     public void insert(K key, V value) {
         List<V> oldValue = this.get(key);
         if (oldValue == null) {
-            oldValue = new LinkedList<V>();
+            oldValue = new ArrayList<V>();
             super.put(key, oldValue);
         }
         oldValue.add(value);
@@ -52,5 +52,13 @@ public class HashTable<K, V> extends HashMap<K, List<V>> implements IHashTable<K
         for (Map.Entry<K, V> entry : map.entrySet()) {
             this.insert(entry.getKey(), entry.getValue());
         }
+    }
+
+    public Collection<V> allValues() {
+        Collection<V> result = new ArrayList<V>();
+        for (List<V> valueList : this.values()) {
+            result.addAll(valueList);
+        }
+        return result;
     }
 }
