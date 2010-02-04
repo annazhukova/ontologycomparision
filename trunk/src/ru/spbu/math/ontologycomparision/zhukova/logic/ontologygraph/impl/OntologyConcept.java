@@ -84,6 +84,14 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
                 new OntologyRelation(WordNetRelation.HYPONYM.getRelatedOntologyConcept(), child, this));
     }
 
+    public List<OntologyConcept> getAllParents() {
+        List<OntologyConcept> result = new ArrayList<OntologyConcept>(getParents());
+        for (OntologyConcept parent : getParents()) {
+            result.addAll(parent.getAllParents());
+        }
+        return result;
+    }
+
     public List<OntologyConcept> getParents() {
         return this.parents;
     }

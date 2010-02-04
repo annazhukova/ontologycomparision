@@ -55,14 +55,17 @@ public class Open extends AbstractAction {
     }
 
     private static void buildGraph(File firstOwl, File secondOwl) throws IOException {
-        IOntologyGraph<OntologyConcept,OntologyRelation> firstOntologyGraph = OntologyGraphBuilder.build(firstOwl);
-        IOntologyGraph<OntologyConcept, OntologyRelation> secondOntologyGraph = OntologyGraphBuilder.build(secondOwl);
+        IOntologyGraph<OntologyConcept,OntologyRelation> firstOntologyGraph =
+                OntologyGraphBuilder.build(firstOwl);
+        IOntologyGraph<OntologyConcept, OntologyRelation> secondOntologyGraph =
+                OntologyGraphBuilder.build(secondOwl);
         IGraphModelBuilder myGraphModelBuilder =
-                new GraphModelBuilder(firstOntologyGraph,
-                        secondOntologyGraph);
+                new GraphModelBuilder(firstOntologyGraph, secondOntologyGraph);
         GraphModel myGraphModel = myGraphModelBuilder.buildGraphModel(main.getGraphPane());
         Open.main.setGraphModel(myGraphModel);
-        int similarityCount = (int)((new OntologyComparator<OntologyConcept, OntologyRelation>()).similar(firstOntologyGraph, secondOntologyGraph) * 100);
+        int similarityCount = (int)(
+                (new OntologyComparator<OntologyConcept, OntologyRelation>(
+                        firstOntologyGraph, secondOntologyGraph)).getSimilarity() * 100);
         Open.main.updateDescriptionPanel(String.format(
                 "Comparing ontology %s (blue) to %s (green). (Absolutly equal concepts are colored orange) The similarity is %d %%.",
                 firstOwl.getName(), secondOwl.getName(), similarityCount)

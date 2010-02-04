@@ -8,6 +8,4 @@ public interface IPair<F, S> {
     F getFirst();
 
     S getSecond();
-
-    void setSecond(S second);
 }

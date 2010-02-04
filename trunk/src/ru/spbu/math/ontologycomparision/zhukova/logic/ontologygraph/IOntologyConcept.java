@@ -32,6 +32,8 @@ public interface IOntologyConcept<C extends IOntologyConcept, R extends IOntolog
      */
     List<C> getParents();
 
+    List<C> getAllParents();
+
     void addParent(C parent);
 
     /**

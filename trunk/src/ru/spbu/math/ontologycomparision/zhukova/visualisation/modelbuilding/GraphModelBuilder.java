@@ -5,13 +5,14 @@ import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.*;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl.*;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.graphpane.GraphPane;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyGraph;
-import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.merged.MergedOntologyConcept;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyRelation;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyConcept;
 import ru.spbu.math.ontologycomparision.zhukova.logic.similarity.OntologyComparator;
 import ru.spbu.math.ontologycomparision.zhukova.logic.wordnet.WordNetRelation;
+import ru.spbu.math.ontologycomparision.zhukova.util.IHashTable;
 
 import java.util.*;
+import java.util.List;
 import java.awt.*;
 
 import edu.smu.tspell.wordnet.Synset;
@@ -20,7 +21,7 @@ import edu.smu.tspell.wordnet.Synset;
 public class GraphModelBuilder implements IGraphModelBuilder {
     private final IOntologyGraph<OntologyConcept, OntologyRelation> firstOntologyGraph;
     private final IOntologyGraph<OntologyConcept, OntologyRelation> secondOntologyGraph;
-    private final Map<Synset, MergedOntologyConcept<OntologyConcept, OntologyRelation>> mergedMap;
+    private final IHashTable<Synset, OntologyConcept> merged;
     private static final Color firstOntologyColor = Color.BLUE;
     private static final Color secondOntologyColor = Color.GREEN;
     private static final Color bothOntologyColor = Color.ORANGE;
@@ -29,9 +30,8 @@ public class GraphModelBuilder implements IGraphModelBuilder {
                              IOntologyGraph<OntologyConcept, OntologyRelation> secondOntologyGraph) {
         this.firstOntologyGraph = firstOntologyGraph;
         this.secondOntologyGraph = secondOntologyGraph;
-        this.mergedMap =
-                (new OntologyComparator<OntologyConcept, OntologyRelation>()).merge(
-                        this.firstOntologyGraph, this.secondOntologyGraph);
+        this.merged = (new OntologyComparator<OntologyConcept, OntologyRelation>(
+                this.firstOntologyGraph, this.secondOntologyGraph)).merge();
     }
 
     public GraphModel buildGraphModel(GraphPane graphPane) {
@@ -48,8 +48,6 @@ public class GraphModelBuilder implements IGraphModelBuilder {
     private void buildVertices(GraphPane graphPane, IGraphModel graphModel,
                                Map<String, SuperVertex> synsetNameToVertex,
                                Map<String, SimpleVertex> conceptNameToVertices) {
-        Collection<MergedOntologyConcept<OntologyConcept, OntologyRelation>> mergedConcepts =
-                this.mergedMap.values();
         Graphics g = graphPane.getGraphics();
         Font font = new Font(Font.MONOSPACED, Font.ITALIC, 15);
         g.setFont(font);
@@ -59,15 +57,15 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         int y = 10;
         int conceptVertexHeight = letterHeight + 4;
         int maxHeight = 10;
-        for (MergedOntologyConcept<OntologyConcept, OntologyRelation> mergedConcept : mergedConcepts) {
+        for (Map.Entry<Synset, List<OntologyConcept>> mergedEntry : this.merged.entrySet()) {
             int maxConceptVertexWidth = 0;
-            for (OntologyConcept concept : mergedConcept.getConcepts()) {
+            for (OntologyConcept concept : mergedEntry.getValue()) {
                 String conceptName = concept.getLabel();
                 maxConceptVertexWidth =
                         Math.max(letterWidth * conceptName.length() + 10, maxConceptVertexWidth);
             }
-            String definition = mergedConcept.getSynset().getDefinition();
-            int number = mergedConcept.getConcepts().size();
+            String definition = mergedEntry.getKey().getDefinition();
+            int number = mergedEntry.getValue().size();
             int width = 10 + Math.min(maxConceptVertexWidth * number,
                     definition.length() * letterWidth) + 10;
             if (x > 800 - width) {
@@ -86,7 +84,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
             synsetNameToVertex.put(definition, synsetVertex);
             int conceptX = 10 + x;
             int conceptY = letterHeight + y;
-            for (OntologyConcept concept : mergedConcept.getConcepts()) {
+            for (OntologyConcept concept : mergedEntry.getValue()) {
                 if (conceptNameToVertices.containsKey(concept.getUri().toString())) {
                     continue;
                 }

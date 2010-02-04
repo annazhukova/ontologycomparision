@@ -2,7 +2,7 @@ package ru.spbu.math.ontologycomparision.zhukova.util;
 
 public class Pair<F,S> implements IPair<F, S> {
     private final F first;
-    private S second;
+    private final S second;
 
     public Pair(F first, S second) {
         this.first = first;
@@ -18,10 +18,6 @@ public class Pair<F,S> implements IPair<F, S> {
     }
 
     public String toString() {
-        return this.first + ", " + this.second;
-    }
-
-    public void setSecond(S second) {
-        this.second = second;
+        return String.format("(%s, %s)", this.getFirst(), this.getSecond());
     }
 }

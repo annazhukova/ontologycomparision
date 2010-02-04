@@ -18,12 +18,13 @@ public class WordNetHelper {
 
     static {
         System.setProperty(WORDNET_DATABASE_DIR_PROPERTY,
-                (new File("./resources/dict/")).getAbsolutePath());
+                (new File("resources/dict/")).getAbsolutePath());
     }
 
     public static Collection<Synset> getSynsetsForWord(String word) {
         WordNetDatabase database = WordNetDatabase.getFileInstance();
-        return Arrays.asList(database.getSynsets(word));
+        Synset[] synsets = database.getSynsets(word);         
+        return synsets == null ? Collections.EMPTY_LIST : Arrays.asList(synsets);
     }
 
     public static Collection<? extends Synset> getHypernymsForSynset(Synset synset) {

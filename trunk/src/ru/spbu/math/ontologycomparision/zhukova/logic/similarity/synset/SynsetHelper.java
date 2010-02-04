@@ -5,54 +5,68 @@ import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyRel
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparision.zhukova.logic.wordnet.WordNetHelper;
 import ru.spbu.math.ontologycomparision.zhukova.logic.wordnet.WordNetRelation;
-import ru.spbu.math.ontologycomparision.zhukova.logic.builder.OntologyGraphBuilder;
-import ru.spbu.math.ontologycomparision.zhukova.logic.similarity.synset.EmptySynset;
-import ru.spbu.math.ontologycomparision.zhukova.logic.similarity.synset.OntologyConceptSynset;
+import ru.spbu.math.ontologycomparision.zhukova.util.HashTable;
+import ru.spbu.math.ontologycomparision.zhukova.util.IHashTable;
 
 import java.util.*;
-import java.io.FileNotFoundException;
 
 import edu.smu.tspell.wordnet.Synset;
 
 /**
  * @author Anna Zhukova
  */
-public class SynsetHelper {
+public class SynsetHelper<C extends IOntologyConcept<C, R>, R extends IOntologyRelation<C>> {
 
-    public static final SynsetHelper INSTANCE = new SynsetHelper();
+    private IHashTable<String, C> concepsWithNoSynset = new HashTable<String, C>();
+    private IHashTable<Synset, C> synsetToConceptTable = new HashTable<Synset, C>();
+    private Map<C, Synset> conceptToSynsetMap = new HashMap<C, Synset>();
 
-    private SynsetHelper() {};
-
-    public <C extends IOntologyConcept<C, R>, R extends IOntologyRelation<C>>
-    Set<OntologyConceptSynset<C, R>> getSynsetsForOntologyGraph(IOntologyGraph<C, R> graph) {
-        Set<OntologyConceptSynset<C, R>> result = new HashSet<OntologyConceptSynset<C, R>>();
-        for (C concept : graph.getConcepts()) {
-            Collection<? extends Synset> sp =
-                    WordNetHelper.getSynsetsForWord(concept.getLabel().toLowerCase());
-            boolean pFlag = true;
-            boolean cFlag = false;
-            for (R relation : concept.getSubjectRelations(WordNetRelation.HYPERNYM.getRelatedOntologyConcept())) {
-                Collection<? extends Synset> sc =
-                        WordNetHelper.getSynsetsForWord(relation.getObject().getLabel().toLowerCase());
-                cFlag = true;
-                for (Synset o : sc) {
-                    for (Synset s : sp) {
-                        if (WordNetHelper.getHypernymsForSynset(o).contains(s)) {
-                            cFlag = false;
-                            pFlag = false;
-                            result.add(new OntologyConceptSynset<C, R>(concept, s));
-                            result.add(new OntologyConceptSynset<C, R>(relation.getObject(), o));
+    public SynsetHelper (IOntologyGraph<C, R> graph) {
+        for (C parentConcept : graph.getConcepts()) {
+            Collection<? extends Synset> parentSynsetCollection =
+                    WordNetHelper.getSynsetsForWord(parentConcept.getLabel().toLowerCase());
+            boolean noCorrectParentSynsetsFound = true;
+            boolean noCorrectChildSynsetsFound = false;
+            for (R superClassRelation : parentConcept.getSubjectRelations(WordNetRelation.HYPERNYM.getRelatedOntologyConcept())) {
+                C childConcept = superClassRelation.getObject();
+                Collection<? extends Synset> childSynsetCollection =
+                        WordNetHelper.getSynsetsForWord(childConcept.getLabel().toLowerCase());
+                noCorrectChildSynsetsFound = true;
+                for (Synset childSynset : childSynsetCollection) {
+                    for (Synset parentSynset : parentSynsetCollection) {
+                        if (WordNetHelper.getHypernymsForSynset(childSynset).contains(parentSynset)) {
+                            noCorrectChildSynsetsFound = false;
+                            noCorrectParentSynsetsFound = false;
+                            this.getConceptToSynsetMap().put(parentConcept, parentSynset);
+                            this.getConceptToSynsetMap().put(childConcept, childSynset);
+                            this.getSynsetToConceptTable().insert(parentSynset, parentConcept);
+                            this.getSynsetToConceptTable().insert(childSynset, childConcept);
                         }
                     }
                 }
-                if (cFlag) {
-                    result.add(new OntologyConceptSynset<C, R>(relation.getObject(), new EmptySynset()));
+                if (noCorrectChildSynsetsFound) {
+                    this.getConcepsWithNoSynset().insert(childConcept.getLabel(), childConcept);
                 }
             }
-            if (pFlag && cFlag) {
-                result.add(new OntologyConceptSynset<C, R>(concept, new EmptySynset()));
+            if (noCorrectParentSynsetsFound && noCorrectChildSynsetsFound) {
+                this.getConcepsWithNoSynset().insert(parentConcept.getLabel(), parentConcept);
             }
         }
-        return result;
+    }
+
+    public IHashTable<String, C> getConcepsWithNoSynset() {
+        return concepsWithNoSynset;
+    }
+
+    public IHashTable<Synset, C> getSynsetToConceptTable() {
+        return synsetToConceptTable;
+    }
+
+    public Map<C, Synset> getConceptToSynsetMap() {
+        return conceptToSynsetMap;
+    }
+
+    public Set<Synset> getSynsets() {
+        return synsetToConceptTable.keySet();
     }
 }

@@ -25,19 +25,19 @@ public class TestOntologyComparator extends TestCase {
 
     public void testSimilarityOfTotallyDifferentOntologies() {
         OntologyComparator<OntologyConcept, OntologyRelation> comparator =
-                new OntologyComparator<OntologyConcept, OntologyRelation>();
-        assertEquals(0.0, comparator.similar(ontoDrinkGraph, ontoPLGraph));
+                new OntologyComparator<OntologyConcept, OntologyRelation>(ontoDrinkGraph, ontoPLGraph);
+        assertEquals(0.0, comparator.getSimilarity());
     }
 
     public void testSimilarityOfSameOntologies() {
         OntologyComparator<OntologyConcept, OntologyRelation> comparator =
-                new OntologyComparator<OntologyConcept, OntologyRelation>();
-        assertEquals(1.0, comparator.similar(ontoDrinkGraph, ontoDrinkGraph));
+                new OntologyComparator<OntologyConcept, OntologyRelation>(ontoDrinkGraph, ontoDrinkGraph);
+        assertEquals(1.0, comparator.getSimilarity());
     }
 
     public void testSimilarityOfOntologies() {
         OntologyComparator<OntologyConcept, OntologyRelation> comparator =
-                new OntologyComparator<OntologyConcept, OntologyRelation>();
-        assertEquals(0.5, comparator.similar(ontoPLGraph, ontoJavaGraph));
+                new OntologyComparator<OntologyConcept, OntologyRelation>(ontoJavaGraph, ontoPLGraph);
+        assertEquals(0.5, comparator.getSimilarity());
     }
 }
