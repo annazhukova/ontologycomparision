@@ -1,39 +1,31 @@
 <?xml version="1.0"?>
 <rdf:RDF
-    xmlns="http://www.owl-ontologies.com/OntoPL.owl#"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns="http://www.owl-ontologies.com/OntologyPL.owl#"
     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
     xmlns:owl="http://www.w3.org/2002/07/owl#"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-  xml:base="http://www.owl-ontologies.com/OntoPL.owl">
+  xml:base="http://www.owl-ontologies.com/OntologyPL.owl">
   <owl:Ontology rdf:about=""/>
-  <owl:Class rdf:ID="Programming_Languages">
-    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Programming Languages</rdfs:comment>
+  <owl:Class rdf:ID="Class_3">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Programming Languages</rdfs:label>
+    >java</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Class_2"/>
+    </rdfs:subClassOf>
   </owl:Class>
-  <owl:Class rdf:ID="Java">
-    <rdfs:subClassOf rdf:resource="#Programming_Languages"/>
-    <owl:disjointWith>
-      <owl:Class rdf:ID="FORTRAN"/>
-    </owl:disjointWith>
-    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Java</rdfs:comment>
+  <owl:Class rdf:ID="Class_1">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Java</rdfs:label>
+    >programming languages</rdfs:label>
   </owl:Class>
-  <owl:Class rdf:about="#FORTRAN">
+  <owl:Class rdf:about="#Class_2">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >FORTRAN</rdfs:label>
-    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >FORTRAN</rdfs:comment>
-    <owl:disjointWith rdf:resource="#Java"/>
-    <rdfs:subClassOf rdf:resource="#Programming_Languages"/>
+    >object-oriented programming languages</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#Class_1"/>
   </owl:Class>
 </rdf:RDF>
 

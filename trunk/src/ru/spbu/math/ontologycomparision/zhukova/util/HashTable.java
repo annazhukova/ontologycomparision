@@ -5,11 +5,11 @@ import java.util.*;
 /**
  * @author Anna Zhukova
  */
-public class HashTable<K, V> extends HashMap<K, List<V>> implements IHashTable<K,V> {
+public class HashTable<K, V> extends HashMap<K, Set<V>> implements IHashTable<K,V> {
 
     public HashTable() {};
 
-    public HashTable(Map<K, List<V>> map) {
+    public HashTable(Map<K, Set<V>> map) {
         super(map);
     }
 
@@ -25,25 +25,25 @@ public class HashTable<K, V> extends HashMap<K, List<V>> implements IHashTable<K
     }
 
     public void insert(K key, V value) {
-        List<V> oldValue = this.get(key);
+        Set<V> oldValue = this.get(key);
         if (oldValue == null) {
-            oldValue = new ArrayList<V>();
+            oldValue = new HashSet<V>();
             super.put(key, oldValue);
         }
         oldValue.add(value);
     }
 
     public void insertAll(K key, Collection<V> values) {
-        List<V> oldValue = this.get(key);
+        Set<V> oldValue = this.get(key);
         if (oldValue == null) {
-            oldValue = new LinkedList<V>();
+            oldValue = new HashSet<V>();
             super.put(key, oldValue);
         }
         oldValue.addAll(values);
     }
 
     public void insertAll(IHashTable<K, V> table) {
-        for (Map.Entry<K, List<V>> entry : table.entrySet()) {
+        for (Map.Entry<K, Set<V>> entry : table.entrySet()) {
             this.insertAll(entry.getKey(), entry.getValue());
         }
     }
@@ -54,9 +54,21 @@ public class HashTable<K, V> extends HashMap<K, List<V>> implements IHashTable<K
         }
     }
 
+    public boolean deleteValue(K key, V value) {
+        Set<V> valueList = get(key);
+        if (valueList == null) {
+            return false;
+        }
+        boolean  result = valueList.remove(value);
+        if (valueList.size() == 0) {
+            super.remove(key);
+        }
+        return result;
+    }
+
     public Collection<V> allValues() {
         Collection<V> result = new ArrayList<V>();
-        for (List<V> valueList : this.values()) {
+        for (Set<V> valueList : this.values()) {
             result.addAll(valueList);
         }
         return result;

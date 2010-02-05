@@ -25,6 +25,10 @@ public class GraphModelBuilder implements IGraphModelBuilder {
     private static final Color firstOntologyColor = Color.BLUE;
     private static final Color secondOntologyColor = Color.GREEN;
     private static final Color bothOntologyColor = Color.ORANGE;
+    private static final int X_GAP = 6;
+    private static final int Y_GAP = 6;
+    private static final int FRAME_WIDTH = 800;
+    private static final int LABEL_GAP = 2;
 
     public GraphModelBuilder(IOntologyGraph<OntologyConcept, OntologyRelation> firstOntologyGraph,
                              IOntologyGraph<OntologyConcept, OntologyRelation> secondOntologyGraph) {
@@ -53,71 +57,81 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         g.setFont(font);
         int letterWidth = g.getFontMetrics().getWidths()['w'];
         int letterHeight = g.getFontMetrics().getHeight();
-        int x = 10;
-        int y = 10;
-        int conceptVertexHeight = letterHeight + 4;
-        int maxHeight = 10;
-        for (Map.Entry<Synset, List<OntologyConcept>> mergedEntry : this.merged.entrySet()) {
-            int maxConceptVertexWidth = 0;
+        int currentX= X_GAP;
+        int currentY = Y_GAP;
+        int maxHeight = letterHeight + LABEL_GAP + 2 * Y_GAP;
+        int simpleVertexHeight = letterHeight + 2 * LABEL_GAP;
+        for (Map.Entry<Synset, Set<OntologyConcept>> mergedEntry : this.merged.entrySet()) {
+            int maxSimpleVertexWidth = 0;
             for (OntologyConcept concept : mergedEntry.getValue()) {
-                String conceptName = concept.getLabel();
-                maxConceptVertexWidth =
-                        Math.max(letterWidth * conceptName.length() + 10, maxConceptVertexWidth);
+                String simpleLabel = concept.getLabel();
+                maxSimpleVertexWidth =
+                        Math.max(letterWidth * simpleLabel.length() + 2 * LABEL_GAP, maxSimpleVertexWidth);
             }
-            String definition = mergedEntry.getKey().getDefinition();
-            int number = mergedEntry.getValue().size();
-            int width = 10 + Math.min(maxConceptVertexWidth * number,
-                    definition.length() * letterWidth) + 10;
-            if (x > 800 - width) {
-                x = 10;
-                y += maxHeight + 10;
-                maxHeight = 10;
+            String superLabel = mergedEntry.getKey().getDefinition();
+            int simpleVertexNumber = mergedEntry.getValue().size();
+            int superVertexWidth = (X_GAP + maxSimpleVertexWidth) * simpleVertexNumber + X_GAP;
+            int superVertexHeight = (Y_GAP + simpleVertexHeight) * simpleVertexNumber + letterHeight + LABEL_GAP + Y_GAP;
+
+            if (currentX > FRAME_WIDTH - superVertexWidth) {
+                currentX = X_GAP;
+                currentY += maxHeight + Y_GAP;
             }
-            int height = (conceptVertexHeight + 10) * number + letterHeight + 4;
-            SuperVertex synsetVertex = new SuperVertex(new Point(x, y), definition);
-            synsetVertex.setLetterWidth(letterWidth);
-            synsetVertex.setLetterHeight(letterHeight);
-            synsetVertex.setFont(font);
-            synsetVertex.setHeight(height);
-            synsetVertex.setWidth(width);
-            graphModel.addVertex(synsetVertex);
-            synsetNameToVertex.put(definition, synsetVertex);
-            int conceptX = 10 + x;
-            int conceptY = letterHeight + y;
+
+            SuperVertex superVertex = createSuperVertex(graphModel, font, letterWidth, letterHeight, currentX,
+                    currentY, superLabel, superVertexWidth, superVertexHeight);
+            synsetNameToVertex.put(superLabel, superVertex);
+
+            int conceptX = X_GAP + currentX;
+            int conceptY = LABEL_GAP + letterHeight + currentY;
+
             for (OntologyConcept concept : mergedEntry.getValue()) {
                 if (conceptNameToVertices.containsKey(concept.getUri().toString())) {
                     continue;
                 }
-                String conceptName = concept.getLabel();
-                int conceptWidth = letterWidth * conceptName.length() + 10;
-                if (conceptX > x + width - conceptWidth) {
-                    conceptX = x + 10;
-                    conceptY += conceptVertexHeight + 10;
+                String simpleLabel = concept.getLabel();
+                int simpleVertexWidth = letterWidth * simpleLabel.length() + 2 * LABEL_GAP;
+                if (conceptX  + simpleVertexWidth > currentX + superVertexWidth) {
+                    conceptX = currentX + X_GAP;
+                    conceptY += simpleVertexHeight + Y_GAP;
                 }
-                SimpleVertex conceptVertex =
-                        new SimpleVertex(new Point(conceptX, conceptY), conceptName, synsetVertex,
-                                getColorForConcept(concept));
-                conceptVertex.setLetterWidth(letterWidth);
-                conceptVertex.setLetterHeight(letterHeight);
-                conceptVertex.setFont(font);
-
-                conceptNameToVertices.put(concept.getUri().toString(), conceptVertex);
-                graphModel.addVertex(conceptVertex);
-                synsetVertex.addSimpleVertex(conceptVertex);
-                conceptX += conceptWidth + 10;
-
-                conceptVertex.setWidth(conceptWidth);
-                conceptVertex.setHeight(conceptVertexHeight);
-
+                SimpleVertex simpleVertex = createSimpleVertex(graphModel, font, letterWidth, letterHeight, simpleVertexHeight, superVertex, conceptX, conceptY, concept, simpleLabel, simpleVertexWidth);
+                conceptNameToVertices.put(concept.getUri().toString(), simpleVertex);
+                superVertex.addSimpleVertex(simpleVertex);
+                conceptX += simpleVertexWidth + X_GAP;
             }
-            if (conceptY + conceptVertexHeight + 10 - y < height) {
-                int newHeight = conceptY + conceptVertexHeight + 10 - conceptY;
-                synsetVertex.setHeight(newHeight);
-                height = newHeight;
+            if (conceptY + simpleVertexHeight + Y_GAP < currentY + superVertexHeight) {
+                int newHeight = conceptY - currentY + simpleVertexHeight + Y_GAP;
+                superVertex.setHeight(newHeight);
+                superVertexHeight = newHeight;
             }
-            maxHeight = Math.max(maxHeight, height);
-            x += width + 10;
+            maxHeight = Math.max(maxHeight, superVertexHeight);
+            currentX += superVertexWidth + X_GAP;
         }
+    }
+
+    private SimpleVertex createSimpleVertex(IGraphModel graphModel, Font font, int letterWidth, int letterHeight, int simpleVertexHeight, SuperVertex superVertex, int conceptX, int conceptY, OntologyConcept concept, String simpleLabel, int simpleVertexWidth) {
+        SimpleVertex simpleVertex =
+                new SimpleVertex(new Point(conceptX, conceptY), simpleLabel, superVertex,
+                        getColorForConcept(concept));
+        initVertex(graphModel, font, letterWidth, letterHeight, simpleVertexHeight, simpleVertexWidth, simpleVertex);
+        return simpleVertex;
+    }
+
+    private void initVertex(IGraphModel graphModel, Font font, int letterWidth, int letterHeight,
+                            int vertexHeight, int vertexWidth, Vertex vertex) {
+        vertex.setLetterWidth(letterWidth);
+        vertex.setLetterHeight(letterHeight);
+        vertex.setFont(font);
+        vertex.setWidth(vertexWidth);
+        vertex.setHeight(vertexHeight);
+        graphModel.addVertex(vertex);
+    }
+
+    private SuperVertex createSuperVertex(IGraphModel graphModel, Font font, int letterWidth, int letterHeight, int currentX, int currentY, String superLabel, int superVertexWidth, int superVertexHeight) {
+        SuperVertex superVertex = new SuperVertex(new Point(currentX, currentY), superLabel);
+        initVertex(graphModel, font, letterWidth, letterHeight, superVertexHeight, superVertexWidth, superVertex);
+        return superVertex;
     }
 
     private void buildArcs(Map<String, SimpleVertex> nameToVertex, IGraphModel graphModel) {

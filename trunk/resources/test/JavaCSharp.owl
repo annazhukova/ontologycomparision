@@ -4,33 +4,26 @@
     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
     xmlns:owl="http://www.w3.org/2002/07/owl#"
-    xmlns="http://www.owl-ontologies.com/OntoJava.owl#"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns="http://www.owl-ontologies.com/Ontology1265394254.owl#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-  xml:base="http://www.owl-ontologies.com/OntoJava.owl">
+  xml:base="http://www.owl-ontologies.com/Ontology1265394254.owl">
   <owl:Ontology rdf:about=""/>
-  <owl:Class rdf:ID="Object-oriented_programming_languages">
-    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Object-oriented programming languages</rdfs:label>
-    <rdfs:subClassOf>
-      <owl:Class rdf:ID="Programming_Languages"/>
-    </rdfs:subClassOf>
-  </owl:Class>
-  <owl:Class rdf:about="#Programming_Languages">
-    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >programming languages</rdfs:label>
-  </owl:Class>
-  <owl:Class rdf:ID="Java">
-    <rdfs:subClassOf rdf:resource="#Object-oriented_programming_languages"/>
-    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Java</rdfs:label>
-  </owl:Class>
   <owl:Class rdf:ID="Class_1">
-    <rdfs:subClassOf rdf:resource="#Object-oriented_programming_languages"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >programming language</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Class_2">
+    <rdfs:subClassOf rdf:resource="#Class_1"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >java</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Class_3">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >C#</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#Class_1"/>
   </owl:Class>
 </rdf:RDF>
 

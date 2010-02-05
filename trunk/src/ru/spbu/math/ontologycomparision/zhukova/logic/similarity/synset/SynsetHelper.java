@@ -21,36 +21,55 @@ public class SynsetHelper<C extends IOntologyConcept<C, R>, R extends IOntologyR
     private IHashTable<Synset, C> synsetToConceptTable = new HashTable<Synset, C>();
     private Map<C, Synset> conceptToSynsetMap = new HashMap<C, Synset>();
 
-    public SynsetHelper (IOntologyGraph<C, R> graph) {
+    public SynsetHelper(IOntologyGraph<C, R> graph) {
+        System.out.println("Graph: " + graph);
         for (C parentConcept : graph.getConcepts()) {
+            System.out.println("\tparent concept: " + parentConcept);
             Collection<? extends Synset> parentSynsetCollection =
                     WordNetHelper.getSynsetsForWord(parentConcept.getLabel().toLowerCase());
-            boolean noCorrectParentSynsetsFound = true;
-            boolean noCorrectChildSynsetsFound = false;
+            System.out.println("\t\tsynsets: " + parentSynsetCollection);
+            boolean noParentToSynsetBinding = true;
+            boolean noChildToSynsetBinding = false;
             for (R superClassRelation : parentConcept.getSubjectRelations(WordNetRelation.HYPERNYM.getRelatedOntologyConcept())) {
                 C childConcept = superClassRelation.getObject();
+                System.out.println("\t\tchild concept: " + childConcept);
                 Collection<? extends Synset> childSynsetCollection =
                         WordNetHelper.getSynsetsForWord(childConcept.getLabel().toLowerCase());
-                noCorrectChildSynsetsFound = true;
+                noChildToSynsetBinding = true;
                 for (Synset childSynset : childSynsetCollection) {
                     for (Synset parentSynset : parentSynsetCollection) {
                         if (WordNetHelper.getHypernymsForSynset(childSynset).contains(parentSynset)) {
-                            noCorrectChildSynsetsFound = false;
-                            noCorrectParentSynsetsFound = false;
-                            this.getConceptToSynsetMap().put(parentConcept, parentSynset);
-                            this.getConceptToSynsetMap().put(childConcept, childSynset);
-                            this.getSynsetToConceptTable().insert(parentSynset, parentConcept);
-                            this.getSynsetToConceptTable().insert(childSynset, childConcept);
+                            bindConceptToSynset(parentConcept, parentSynset);
+                            bindConceptToSynset(childConcept, childSynset);
+                            noChildToSynsetBinding = false;
+                            noParentToSynsetBinding = false;
                         }
                     }
                 }
-                if (noCorrectChildSynsetsFound) {
+                if (noChildToSynsetBinding) {
                     this.getConcepsWithNoSynset().insert(childConcept.getLabel(), childConcept);
+                    System.out.println("\t\t\tno child");
                 }
             }
-            if (noCorrectParentSynsetsFound && noCorrectChildSynsetsFound) {
+            /* if (noParentToSynsetBinding == true && noChildToSynsetBinding == false)
+               it means parent has no children at all.
+               We don't mark it as no synset concept as
+               synsets for it can be found when regarding it as a child.
+            */
+            if (noParentToSynsetBinding && noChildToSynsetBinding) {
+                System.out.println("\t\t\tno parent");
                 this.getConcepsWithNoSynset().insert(parentConcept.getLabel(), parentConcept);
             }
+        }
+    }
+
+    private void bindConceptToSynset(C concept, Synset synset) {
+        if (!this.getConceptToSynsetMap().containsKey(concept)) {
+            this.getConceptToSynsetMap().put(concept, synset);
+            this.getSynsetToConceptTable().insert(synset, concept);
+        }
+        if (this.getConcepsWithNoSynset().containsKey(concept.getLabel())) {
+            getConcepsWithNoSynset().deleteValue(concept.getLabel(), concept);
         }
     }
 

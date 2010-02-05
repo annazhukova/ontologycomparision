@@ -4,11 +4,12 @@ import java.util.Map;
 import java.util.Collection;
 import java.util.List;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * @author Anna Zhukova
  */
-public interface IHashTable<K, V> extends Map<K, List<V>>, Cloneable, Serializable {
+public interface IHashTable<K, V> extends Map<K, Set<V>>, Cloneable, Serializable {
 
     boolean has(Object value);
 
@@ -19,6 +20,8 @@ public interface IHashTable<K, V> extends Map<K, List<V>>, Cloneable, Serializab
     void insertAll(IHashTable<K, V> table);
     
     void insertAll(Map<K, V> map);
+
+    boolean deleteValue(K key, V value);
 
     Collection<V> allValues();
 }

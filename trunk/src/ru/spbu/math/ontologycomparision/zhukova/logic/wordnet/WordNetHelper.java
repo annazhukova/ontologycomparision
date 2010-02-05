@@ -24,7 +24,8 @@ public class WordNetHelper {
     public static Collection<Synset> getSynsetsForWord(String word) {
         WordNetDatabase database = WordNetDatabase.getFileInstance();
         Synset[] synsets = database.getSynsets(word);         
-        return synsets == null ? Collections.EMPTY_LIST : Arrays.asList(synsets);
+        return Collections.unmodifiableCollection(
+                synsets == null ? Collections.EMPTY_LIST : Arrays.asList(synsets));
     }
 
     public static Collection<? extends Synset> getHypernymsForSynset(Synset synset) {
@@ -42,14 +43,14 @@ public class WordNetHelper {
             List<NounSynset> result = new ArrayList<NounSynset>();
             result.addAll(Arrays.asList(nounSynset.getHypernyms()));
             for (NounSynset hypernym : nounSynset.getHypernyms()) {
-                result.addAll((List<NounSynset>)getHypernymsForSynset(hypernym));
+                result.addAll((Collection<NounSynset>)getHypernymsForSynset(hypernym));
             }
-            return result;
+            return Collections.unmodifiableCollection(result);
         }
         if (synset instanceof VerbSynset) {
-            return Arrays.asList(((VerbSynset) synset).getHypernyms());
+            return Collections.unmodifiableCollection(Arrays.asList(((VerbSynset) synset).getHypernyms()));
         }
-        return Collections.EMPTY_LIST;
+        return Collections.unmodifiableCollection(Collections.EMPTY_LIST);
     }
 
     public static Collection<? extends Synset> getHyponymsForSynset(Synset synset) {
@@ -62,8 +63,8 @@ public class WordNetHelper {
             System.arraycopy(hyponyms, 0, result, 0, hyponyms.length);
             System.arraycopy(instanceHyponyms, 0, result, hyponyms.length,
                     instanceHyponyms.length);
-            return Arrays.asList(result);
+            return Collections.unmodifiableCollection(Arrays.asList(result));
         }
-        return Collections.EMPTY_LIST;
+        return Collections.unmodifiableCollection(Collections.EMPTY_LIST);
     }
 }

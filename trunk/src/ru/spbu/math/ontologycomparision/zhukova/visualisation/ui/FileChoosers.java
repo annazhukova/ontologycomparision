@@ -14,7 +14,7 @@ import java.io.File;
 public class FileChoosers {
     private static Main main;
 
-    private static final JFileChooser fileChooser = new JFileChooser();
+    private static final JFileChooser fileChooser = new JFileChooser("./resources/test/");
 
     private static final FileFilter filter = new FileFilter() {
         public boolean accept(File f) {

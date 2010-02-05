@@ -9,10 +9,7 @@ import ru.spbu.math.ontologycomparision.zhukova.util.SetHelper;
 import ru.spbu.math.ontologycomparision.zhukova.util.IHashTable;
 import ru.spbu.math.ontologycomparision.zhukova.util.HashTable;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import edu.smu.tspell.wordnet.Synset;
 
@@ -35,7 +32,7 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
         int firstAndSecondSynsetCount = SetHelper.INSTANCE.setUnion(firstSynsets, secondSynsets).size();
         IHashTable<Synset, C> mergedNoSynsetConcepts = this.mergeNoSynsetConcepts();
         return ((double) firstNotSecondSynsetCount +
-                mergedNoSynsetConcepts.allValues().size() - mergeNoSynsetConcepts().size())
+                mergedNoSynsetConcepts.allValues().size() - mergedNoSynsetConcepts.size())
                 / (firstAndSecondSynsetCount + mergedNoSynsetConcepts.size());
     }
 
@@ -59,13 +56,14 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
         Map<C, Synset> secondConceptToSynsetMap = this.secondSynsetHelper.getConceptToSynsetMap();
         IHashTable<String, C> allNoSynsetConcets = this.noSynsetConceptUnion();
         IHashTable<Synset, C> result = new HashTable<Synset, C>();
-        for (Map.Entry<String, List<C>> entry : allNoSynsetConcets.entrySet()) {
-            List<C> values = entry.getValue();
+        for (Map.Entry<String, Set<C>> entry : allNoSynsetConcets.entrySet()) {
+            Set<C> values = entry.getValue();
             if (values.size() == 1) {
-                result.insert(new EmptySynset(), values.get(0));
+                result.insert(new EmptySynset(), values.iterator().next());
             } else {
-                C first = values.get(0);
-                C second = values.get(1);
+                Iterator<C> it = values.iterator();
+                C first = it.next();
+                C second = it.next();
                 Set<Synset> firstParentSynsets = new HashSet<Synset>();
                 for (C parent : first.getAllParents()) {
                     Synset synset = firstConceptToSynsetMap.get(parent);
