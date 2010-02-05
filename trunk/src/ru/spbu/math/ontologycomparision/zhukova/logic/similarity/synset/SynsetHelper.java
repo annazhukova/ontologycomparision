@@ -23,7 +23,6 @@ public class SynsetHelper<C extends IOntologyConcept<C, R>, R extends IOntologyR
     private Map<C, Synset> conceptToSynsetMap = new HashMap<C, Synset>();
 
     public SynsetHelper(IOntologyGraph<C, R> graph) {
-        System.out.println("Graph: " + graph);
         for (C parentConcept : graph.getConcepts()) {
             Collection<? extends Synset> parentSynsetCollection =
                     WordNetHelper.getSynsetsForWord(parentConcept.getLabel().toLowerCase());
@@ -46,7 +45,6 @@ public class SynsetHelper<C extends IOntologyConcept<C, R>, R extends IOntologyR
                 }
                 if (noChildToSynsetBinding) {
                     this.concepsWithNoSynset.insert(childConcept.getLabel(), childConcept);
-                    System.out.println("\t\t\tno child");
                 }
             }
             /* if (noParentToSynsetBinding == true && noChildToSynsetBinding == false)
@@ -55,7 +53,6 @@ public class SynsetHelper<C extends IOntologyConcept<C, R>, R extends IOntologyR
                synsets for it can be found when regarding it as a child.
             */
             if (noParentToSynsetBinding && noChildToSynsetBinding) {
-                System.out.println("\t\t\tno parent");
                 this.concepsWithNoSynset.insert(parentConcept.getLabel(), parentConcept);
             }
         }

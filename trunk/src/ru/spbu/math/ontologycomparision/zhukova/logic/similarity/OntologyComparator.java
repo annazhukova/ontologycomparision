@@ -64,12 +64,8 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
                 Iterator<C> it = values.iterator();
                 C first = it.next();
                 C second = it.next();
-                System.out.println(first);
-                System.out.println(second);
                 Set<Synset> firstParentSynsets = getParentSynsets(firstConceptToSynsetMap, first);
-                System.out.println(firstParentSynsets);
                 Set<Synset> secondParentSynsets = getParentSynsets(secondConceptToSynsetMap, second);
-                System.out.println(secondParentSynsets);
                 if (SetHelper.INSTANCE.setIntersection(firstParentSynsets, secondParentSynsets).size() > 0) {
                     Synset empty = new EmptySynset();
                     result.insert(empty, first);

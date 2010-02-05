@@ -62,7 +62,10 @@ public class SuperVertex extends Vertex {
             g.drawString(getName(), location.x + 5, location.y + 5);
         } else {
             int lettersNumber = width / g.getFontMetrics().getWidths()['w'];
-            String title = (getName().length() <= lettersNumber) ? getName() : getName().substring(0, lettersNumber - 3) + "...";
+            if (getName() == null) {
+                 return;
+            }
+            String title = (getName().length() <= lettersNumber) || lettersNumber < 3 ? getName() : getName().substring(0, lettersNumber - 3) + "...";
             g.drawString(title, location.x + 5, location.y + 10);
         }
     }

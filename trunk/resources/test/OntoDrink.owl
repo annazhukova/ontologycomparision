@@ -16,7 +16,7 @@
       <owl:Class rdf:ID="Class_1"/>
     </rdfs:subClassOf>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    ></rdfs:label>
+    >Cola</rdfs:label>
   </owl:Class>
   <owl:Class rdf:about="#Class_1">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"

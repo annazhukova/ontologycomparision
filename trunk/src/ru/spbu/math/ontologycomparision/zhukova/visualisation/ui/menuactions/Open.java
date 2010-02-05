@@ -63,13 +63,13 @@ public class Open extends AbstractAction {
                 new GraphModelBuilder(firstOntologyGraph, secondOntologyGraph);
         GraphModel myGraphModel = myGraphModelBuilder.buildGraphModel(main.getGraphPane());
         Open.main.setGraphModel(myGraphModel);
-        /*int similarityCount = (int)(
+        int similarityCount = (int)(
                 (new OntologyComparator<OntologyConcept, OntologyRelation>(
                         firstOntologyGraph, secondOntologyGraph)).getSimilarity() * 100);
         Open.main.updateDescriptionPanel(String.format(
                 "Comparing ontology %s (blue) to %s (green). (Absolutly equal concepts are colored orange) The similarity is %d %%.",
                 firstOwl.getName(), secondOwl.getName(), similarityCount)
-        );*/
+        );
     }
 
     public static void setMain(Main main) {
