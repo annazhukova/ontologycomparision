@@ -64,20 +64,12 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
                 Iterator<C> it = values.iterator();
                 C first = it.next();
                 C second = it.next();
-                Set<Synset> firstParentSynsets = new HashSet<Synset>();
-                for (C parent : first.getAllParents()) {
-                    Synset synset = firstConceptToSynsetMap.get(parent);
-                    if (synset != null) {
-                        firstParentSynsets.add(synset);
-                    }
-                }
-                Set<Synset> secondParentSynsets = new HashSet<Synset>();
-                for (C parent : second.getAllParents()) {
-                    Synset synset = secondConceptToSynsetMap.get(parent);
-                    if (synset != null) {
-                        secondParentSynsets.add(synset);
-                    }
-                }
+                System.out.println(first);
+                System.out.println(second);
+                Set<Synset> firstParentSynsets = getParentSynsets(firstConceptToSynsetMap, first);
+                System.out.println(firstParentSynsets);
+                Set<Synset> secondParentSynsets = getParentSynsets(secondConceptToSynsetMap, second);
+                System.out.println(secondParentSynsets);
                 if (SetHelper.INSTANCE.setIntersection(firstParentSynsets, secondParentSynsets).size() > 0) {
                     Synset empty = new EmptySynset();
                     result.insert(empty, first);
@@ -86,6 +78,17 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
                     result.insert(new EmptySynset(), first);
                     result.insert(new EmptySynset(), second);
                 }
+            }
+        }
+        return result;
+    }
+
+    private Set<Synset> getParentSynsets(Map<C, Synset> conceptToSynsetMap, C concept) {
+        Set<Synset> result = new HashSet<Synset>();
+        for (C parent : concept.getAllParents()) {
+            Synset synset = conceptToSynsetMap.get(parent);
+            if (synset != null) {
+                result.add(synset);
             }
         }
         return result;

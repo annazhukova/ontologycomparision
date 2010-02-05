@@ -11,6 +11,7 @@ import ru.spbu.math.ontologycomparision.zhukova.util.IHashTable;
 import java.util.*;
 
 import edu.smu.tspell.wordnet.Synset;
+import ru.spbu.math.ontologycomparision.zhukova.util.UnmodifiableHashTable;
 
 /**
  * @author Anna Zhukova
@@ -24,15 +25,12 @@ public class SynsetHelper<C extends IOntologyConcept<C, R>, R extends IOntologyR
     public SynsetHelper(IOntologyGraph<C, R> graph) {
         System.out.println("Graph: " + graph);
         for (C parentConcept : graph.getConcepts()) {
-            System.out.println("\tparent concept: " + parentConcept);
             Collection<? extends Synset> parentSynsetCollection =
                     WordNetHelper.getSynsetsForWord(parentConcept.getLabel().toLowerCase());
-            System.out.println("\t\tsynsets: " + parentSynsetCollection);
             boolean noParentToSynsetBinding = true;
             boolean noChildToSynsetBinding = false;
             for (R superClassRelation : parentConcept.getSubjectRelations(WordNetRelation.HYPERNYM.getRelatedOntologyConcept())) {
                 C childConcept = superClassRelation.getObject();
-                System.out.println("\t\tchild concept: " + childConcept);
                 Collection<? extends Synset> childSynsetCollection =
                         WordNetHelper.getSynsetsForWord(childConcept.getLabel().toLowerCase());
                 noChildToSynsetBinding = true;
@@ -47,7 +45,7 @@ public class SynsetHelper<C extends IOntologyConcept<C, R>, R extends IOntologyR
                     }
                 }
                 if (noChildToSynsetBinding) {
-                    this.getConcepsWithNoSynset().insert(childConcept.getLabel(), childConcept);
+                    this.concepsWithNoSynset.insert(childConcept.getLabel(), childConcept);
                     System.out.println("\t\t\tno child");
                 }
             }
@@ -58,34 +56,32 @@ public class SynsetHelper<C extends IOntologyConcept<C, R>, R extends IOntologyR
             */
             if (noParentToSynsetBinding && noChildToSynsetBinding) {
                 System.out.println("\t\t\tno parent");
-                this.getConcepsWithNoSynset().insert(parentConcept.getLabel(), parentConcept);
+                this.concepsWithNoSynset.insert(parentConcept.getLabel(), parentConcept);
             }
         }
     }
 
     private void bindConceptToSynset(C concept, Synset synset) {
-        if (!this.getConceptToSynsetMap().containsKey(concept)) {
-            this.getConceptToSynsetMap().put(concept, synset);
-            this.getSynsetToConceptTable().insert(synset, concept);
+        if (!this.conceptToSynsetMap.containsKey(concept)) {
+            this.conceptToSynsetMap.put(concept, synset);
+            this.synsetToConceptTable.insert(synset, concept);
         }
-        if (this.getConcepsWithNoSynset().containsKey(concept.getLabel())) {
-            getConcepsWithNoSynset().deleteValue(concept.getLabel(), concept);
-        }
+        concepsWithNoSynset.deleteValue(concept.getLabel(), concept);
     }
 
     public IHashTable<String, C> getConcepsWithNoSynset() {
-        return concepsWithNoSynset;
+        return new UnmodifiableHashTable<String, C>(concepsWithNoSynset);
     }
 
     public IHashTable<Synset, C> getSynsetToConceptTable() {
-        return synsetToConceptTable;
+        return new UnmodifiableHashTable<Synset, C>(synsetToConceptTable);
     }
 
     public Map<C, Synset> getConceptToSynsetMap() {
-        return conceptToSynsetMap;
+        return Collections.unmodifiableMap(conceptToSynsetMap);
     }
 
     public Set<Synset> getSynsets() {
-        return synsetToConceptTable.keySet();
+        return Collections.unmodifiableSet(synsetToConceptTable.keySet());
     }
 }
