@@ -15,14 +15,14 @@ import java.io.FileNotFoundException;
 public class TestOntologyComparator extends TestCase {
     IOntologyGraph<OntologyConcept, OntologyRelation> ontoPLGraph;
     IOntologyGraph<OntologyConcept, OntologyRelation> ontoJavaGraph;
-    IOntologyGraph<OntologyConcept, OntologyRelation> ontoPLCSharpGraph;
+    IOntologyGraph<OntologyConcept, OntologyRelation> ontoPLFull;
     IOntologyGraph<OntologyConcept, OntologyRelation> ontoJavaCSharpGraph;
     IOntologyGraph<OntologyConcept, OntologyRelation> ontoDrinkGraph;
 
     public void setUp() throws FileNotFoundException {
         this.ontoPLGraph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
         this.ontoDrinkGraph = OntologyGraphBuilder.build(OntologyTestConstants.ONTODRINK_URL);
-        this.ontoPLCSharpGraph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPLCSHARP_URL);
+        this.ontoPLFull = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPLFULL_URL);
         this.ontoJavaCSharpGraph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOJAVASHARP_URL);
         this.ontoJavaGraph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOJAVA_URL);
     }
@@ -55,7 +55,7 @@ public class TestOntologyComparator extends TestCase {
 
     public void testSimilarityOfOntologiesWithEmptySynsets() {
         OntologyComparator<OntologyConcept, OntologyRelation> comparator =
-                new OntologyComparator<OntologyConcept, OntologyRelation>(ontoJavaCSharpGraph, ontoPLCSharpGraph);
-        assertEquals(0.6, comparator.getSimilarity());
+                new OntologyComparator<OntologyConcept, OntologyRelation>(ontoJavaCSharpGraph, ontoPLFull);
+        assertEquals(0.375, comparator.getSimilarity());
     }
 }

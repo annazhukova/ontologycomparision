@@ -40,7 +40,7 @@ public class TestGraphBuilder extends TestCase {
                 OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
         for (OntologyConcept concept : graph.getConcepts()) {
             if (concept.getLabel().equalsIgnoreCase(
-                    OntologyTestConstants.PROGRAMMING_LANGUAGES)) {
+                    OntologyTestConstants.PROGRAMMING_LANGUAGE)) {
                 for (OntologyRelation relation :
                         concept.getSubjectRelations(
                                 WordNetRelation.HYPERNYM.getRelatedOntologyConcept())) {
