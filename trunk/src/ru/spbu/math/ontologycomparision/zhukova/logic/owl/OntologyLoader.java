@@ -11,6 +11,7 @@ import org.semanticweb.owl.model.*;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyRelation;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.HashMap;
@@ -43,6 +44,16 @@ public class OntologyLoader<C extends IOntologyConcept, R extends IOntologyRelat
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         try {
             this.ontology = manager.loadOntology(ontologyInput);
+        } catch (OWLOntologyCreationException e) {
+            throw new RuntimeException("Can't load ontology", e);
+        }
+
+    }
+
+    public OntologyLoader(File ontologyFile) {
+        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+        try {
+            this.ontology = manager.loadOntologyFromPhysicalURI(ontologyFile.toURI());
         } catch (OWLOntologyCreationException e) {
             throw new RuntimeException("Can't load ontology", e);
         }

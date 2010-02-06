@@ -13,6 +13,7 @@ import java.io.File;
  */
 public class FileChoosers {
     private static Main main;
+    private static final String[] ACCEPTED_FORMATS = new String[]{".owl", ".rdf", ".rdfs", ".obo", ".n3"};
 
     private static final JFileChooser fileChooser = new JFileChooser("./resources/test/");
 
@@ -22,7 +23,12 @@ public class FileChoosers {
                 return true;
             }
             String path = f.getAbsolutePath();
-            return path.endsWith(".owl") || path.endsWith(".rdf");
+            for (String format : ACCEPTED_FORMATS) {
+                if (path.endsWith(format)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public String getDescription() {

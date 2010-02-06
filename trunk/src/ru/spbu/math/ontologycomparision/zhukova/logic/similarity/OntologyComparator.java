@@ -33,7 +33,7 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
         IPair<IHashTable<Synset, C>, Integer> mergedNoSynsetConcepts = this.mergeNoSynsetConcepts();
         return ((double) firstNotSecondSynsetCount + mergedNoSynsetConcepts.getSecond())
                 / (firstAndSecondSynsetCount + this.firstSynsetHelper.getConcepsWithNoSynset().size() +
-        this.secondSynsetHelper.getConcepsWithNoSynset().size());
+                this.secondSynsetHelper.getConcepsWithNoSynset().size());
     }
 
     public IHashTable<Synset, C> merge() {
@@ -68,17 +68,44 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
                 Set<Synset> firstParentSynsets = getParentSynsets(firstConceptToSynsetMap, first);
                 Set<Synset> secondParentSynsets = getParentSynsets(secondConceptToSynsetMap, second);
                 if (SetHelper.INSTANCE.setIntersection(firstParentSynsets, secondParentSynsets).size() > 0) {
-                    Synset empty = new EmptySynset();
-                    result.insert(empty, first);
-                    result.insert(empty, second);
+                    mergeConcepts(result, first, second);
                     merged++;
                 } else {
-                    result.insert(new EmptySynset(), first);
-                    result.insert(new EmptySynset(), second);
+                    Set<C> firstParents = first.getAllParents();
+                    Set<C> secondParents = second.getAllParents();
+                    allParentCycleLabel:
+                    for (C firstParent : firstParents) {
+                        // already checked this synsets
+                        if (firstConceptToSynsetMap.containsKey(firstParent)) {
+                            continue;
+                        }
+                        for (C secondParent : secondParents) {
+                            if (secondConceptToSynsetMap.containsKey(secondParent)) {
+                                continue;
+                            }
+                            if (secondParent.getLabel().equalsIgnoreCase(firstParent.getLabel())) {
+                                mergeConcepts(result, first, second);
+                                merged++;
+                                break allParentCycleLabel;
+                            }
+                        }
+                    }
+                    doNotMergeConcepts(result, first, second);
                 }
             }
         }
-        return new Pair<IHashTable<Synset,C>, Integer>(result, merged);
+        return new Pair<IHashTable<Synset, C>, Integer>(result, merged);
+    }
+
+    private void doNotMergeConcepts(IHashTable<Synset, C> result, C first, C second) {
+        result.insert(new EmptySynset(), first);
+        result.insert(new EmptySynset(), second);
+    }
+
+    private void mergeConcepts(IHashTable<Synset, C> result, C first, C second) {
+        Synset empty = new EmptySynset();
+        result.insert(empty, first);
+        result.insert(empty, second);
     }
 
     private Set<Synset> getParentSynsets(Map<C, Synset> conceptToSynsetMap, C concept) {

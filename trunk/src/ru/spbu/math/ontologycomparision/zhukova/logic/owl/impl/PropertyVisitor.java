@@ -9,7 +9,9 @@ import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.Ontolog
  */
 public class PropertyVisitor implements IPropertyVisitor<OntologyConcept> {
 
-    public void inRelationship(OntologyConcept node, OntologyConcept friend, String relationName) { 
+    public void inRelationship(OntologyConcept node, OntologyConcept friend, String relationName) {
+        if (node != null) {
           node.addSubjectRelation(new OntologyRelation(relationName, node, friend));
+        }
     }
 }

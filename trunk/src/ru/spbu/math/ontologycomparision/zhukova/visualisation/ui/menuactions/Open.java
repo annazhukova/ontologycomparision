@@ -41,14 +41,17 @@ public class Open extends AbstractAction {
         File firstOwl = FileChoosers.getOpenFileChooser("Select First Ontology");
         File secondOwl = FileChoosers.getOpenFileChooser("Select Second Ontology");
         if (firstOwl != null && secondOwl != null) {
+            Open.main.showProgressBar();
             try {
                 buildGraph(firstOwl, secondOwl);
                 Open.main.setIsChanged(true);
             } catch (IOException e1) {
+                Open.main.hideProgressBar();
                 JOptionPane.showMessageDialog(Open.main.getFrame(), "Cannot open file",
                         "Cannot open file", JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             } catch (Exception e1) {
+                Open.main.hideProgressBar();
                 JOptionPane.showMessageDialog(Open.main.getFrame(), e1.getMessage(),
                         "Cannot load ontology", JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
@@ -57,17 +60,16 @@ public class Open extends AbstractAction {
     }
 
     private static void buildGraph(File firstOwl, File secondOwl) throws IOException {
-        Open.main.showProgressBar();
         try {
-            LOG.info(String.format("Loading %s", firstOwl.getName()));
+            System.out.printf("Loading %s\n", firstOwl.getName());
             Open.main.updateDescriptionPanel(String.format("Loading %s", firstOwl.getName()));
             IOntologyGraph<OntologyConcept, OntologyRelation> firstOntologyGraph =
                     OntologyGraphBuilder.build(firstOwl);
-            LOG.info(String.format("Loading %s", secondOwl.getName()));
+            System.out.printf("Loading %s\n", secondOwl.getName());
             Open.main.updateDescriptionPanel(String.format("Loading %s", secondOwl.getName()));
             IOntologyGraph<OntologyConcept, OntologyRelation> secondOntologyGraph =
                     OntologyGraphBuilder.build(secondOwl);
-            LOG.info("Merging");
+            System.out.printf("Merging\n");
             Open.main.updateDescriptionPanel("Merging ontologies");
             IGraphModelBuilder myGraphModelBuilder =
                     new GraphModelBuilder(firstOntologyGraph, secondOntologyGraph);

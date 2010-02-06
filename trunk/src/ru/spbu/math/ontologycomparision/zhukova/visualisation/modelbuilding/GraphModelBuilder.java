@@ -6,6 +6,7 @@ import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyGra
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyConcept;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyRelation;
 import ru.spbu.math.ontologycomparision.zhukova.logic.similarity.OntologyComparator;
+import ru.spbu.math.ontologycomparision.zhukova.logic.similarity.synset.EmptySynset;
 import ru.spbu.math.ontologycomparision.zhukova.logic.wordnet.WordNetRelation;
 import ru.spbu.math.ontologycomparision.zhukova.util.IHashTable;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IArcFilter;
@@ -41,7 +42,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         GraphModel graphModel = new GraphModel(graphPane);
         Map<String, SuperVertex> synsetNameToVertex = new HashMap<String, SuperVertex>();
         Map<String, SimpleVertex> conceptNameToVertex = new HashMap<String, SimpleVertex>();
-        buildVertices(graphPane, graphModel, synsetNameToVertex, conceptNameToVertex);
+        buildVertices(graphPane, graphModel, synsetNameToVertex, conceptNameToVertex, true);
         buildArcs(conceptNameToVertex, graphModel);
         graphModel.setIntToSuperVertexMap(synsetNameToVertex);
         graphModel.setIntToSimpleVertexMap(conceptNameToVertex);
@@ -50,7 +51,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
 
     private void buildVertices(GraphPane graphPane, IGraphModel graphModel,
                                Map<String, SuperVertex> synsetNameToVertex,
-                               Map<String, SimpleVertex> conceptNameToVertices) {
+                               Map<String, SimpleVertex> conceptNameToVertices, boolean showUnmappedUnmergedOnes) {
         Graphics g = graphPane.getGraphics();
         Font font = new Font(Font.MONOSPACED, Font.ITALIC, 15);
         g.setFont(font);
@@ -61,6 +62,9 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         int maxHeight = letterHeight + LABEL_GAP + 2 * Y_GAP;
         int simpleVertexHeight = letterHeight + 2 * LABEL_GAP;
         for (Map.Entry<Synset, Set<OntologyConcept>> mergedEntry : this.merged.entrySet()) {
+            if (!showUnmappedUnmergedOnes && mergedEntry.getKey() instanceof EmptySynset && mergedEntry.getValue().size() <=1) {
+                continue;
+            }
             int maxSimpleVertexWidth = 0;
             for (OntologyConcept concept : mergedEntry.getValue()) {
                 String simpleLabel = concept.getLabel();

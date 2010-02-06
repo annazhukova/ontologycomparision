@@ -31,7 +31,7 @@ public class OntologyGraphBuilder {
     public static IOntologyGraph<OntologyConcept, OntologyRelation> build(File ontologyFile)
             throws FileNotFoundException {
         OntologyLoader<OntologyConcept, OntologyRelation> ontologyLoader =
-                new OntologyLoader<OntologyConcept, OntologyRelation>(new FileInputStream(ontologyFile));
+                new OntologyLoader<OntologyConcept, OntologyRelation>(ontologyFile);
         Map<URI, OntologyConcept> result = ontologyLoader.load(new ClassAnnotationVisitor(),
                 new PropertyVisitor());
         return new OntologyGraph(result);

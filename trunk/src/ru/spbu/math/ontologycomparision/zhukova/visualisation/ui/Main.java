@@ -88,14 +88,14 @@ public class Main {
             progressFrame.setUndecorated(true);
             progressFrame.getContentPane().setLayout(new BorderLayout());
             JProgressBar progressBar = new JProgressBar();
-            Dimension d = new Dimension(200, 60);
+            Dimension d = new Dimension(200, 20);
             progressBar.setPreferredSize(d);
             progressBar.setSize(d);
             progressBar.setBorderPainted(true);
             progressBar.setMinimum(0);
             progressBar.setMaximum(100);
             progressBar.setValue(0);
-            progressBar.setIndeterminate(true);
+
             progressBar.setStringPainted(true);
             progressBar.setString("Loading Ontologies...");
             progressFrame.getContentPane().add(progressBar, BorderLayout.CENTER);
@@ -105,7 +105,9 @@ public class Main {
             progressFrame.setLocation((int)getFrame().getLocation().getX() + getFrame().getWidth() / 2,
                     (int)getFrame().getLocation().getY() + getFrame().getHeight() / 2);
             //progressFrame.setLocationRelativeTo(this.getFrame());
-            //progressFrame.setAlwaysOnTop(true);
+            progressFrame.setAlwaysOnTop(true);
+            progressFrame.setVisible(true);
+            progressBar.setIndeterminate(true);
         }
         progressFrame.setVisible(true);
         progressFrame.requestFocus();
