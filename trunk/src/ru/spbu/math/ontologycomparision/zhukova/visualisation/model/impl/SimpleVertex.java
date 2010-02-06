@@ -103,4 +103,8 @@ public class SimpleVertex extends Vertex {
     public SuperVertex getSuperVertex() {
         return this.superVertex;
     }
+
+    public String toString() {
+        return this.getName();
+    }
 }

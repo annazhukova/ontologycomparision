@@ -1,14 +1,12 @@
 package ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl;
 
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyGraph;
-import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyConcept;
-import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyRelation;
 
-import java.util.Map;
-import java.util.Collection;
-import java.util.Set;
-import java.util.HashSet;
 import java.net.URI;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Anna Zhukova
@@ -31,7 +29,7 @@ public class OntologyGraph implements IOntologyGraph<OntologyConcept, OntologyRe
     public Collection<OntologyRelation> getRelations(String relationName) {
         Set<OntologyRelation> result = new HashSet<OntologyRelation>();
         for (OntologyConcept concept : getConcepts()) {
-            result.addAll(concept.getRelations(relationName));
+            result.addAll(concept.getSubjectRelations(relationName));
         }
         return result;
     }
@@ -39,7 +37,7 @@ public class OntologyGraph implements IOntologyGraph<OntologyConcept, OntologyRe
     public Collection<OntologyRelation> getRelations() {
         Set<OntologyRelation> result = new HashSet<OntologyRelation>();
         for (OntologyConcept concept : getConcepts()) {
-            result.addAll(concept.getRelations());
+            result.addAll(concept.getSubjectRelations());
         }
         return result;
     }
@@ -50,10 +48,10 @@ public class OntologyGraph implements IOntologyGraph<OntologyConcept, OntologyRe
 
     public String toString() {
         StringBuilder result = new StringBuilder(super.toString());
-        result.append(":\n");
+        result.append(": [");
         for (OntologyConcept concept : getConcepts()) {
-            result.append(concept);
+            result.append(concept).append(", ");
         }
-        return result.toString();
+        return result.append("]").toString();
     }
 }

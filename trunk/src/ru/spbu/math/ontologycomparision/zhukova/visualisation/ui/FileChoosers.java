@@ -22,7 +22,7 @@ public class FileChoosers {
                 return true;
             }
             String path = f.getAbsolutePath();
-            return path.endsWith(".owl");
+            return path.endsWith(".owl") || path.endsWith(".rdf");
         }
 
         public String getDescription() {

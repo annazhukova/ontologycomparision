@@ -1,20 +1,21 @@
 package ru.spbu.math.ontologycomparision.zhukova.logic.owl;
 
-import org.semanticweb.owl.model.*;
+import net.sourceforge.fluxion.utils.OWLTransformationException;
+import net.sourceforge.fluxion.utils.OWLUtils;
+import net.sourceforge.fluxion.utils.ReasonerSession;
+import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.io.StreamInputSource;
-import org.semanticweb.owl.apibinding.OWLManager;
-
-import java.io.InputStream;
-import java.util.*;
-import java.net.URI;
-
-import net.sourceforge.fluxion.utils.ReasonerSession;
-import net.sourceforge.fluxion.utils.OWLUtils;
-import net.sourceforge.fluxion.utils.OWLTransformationException;
+import org.semanticweb.owl.model.*;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyRelation;
+
+import java.io.InputStream;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Anna Zhukova
@@ -142,7 +143,7 @@ public class OntologyLoader<C extends IOntologyConcept, R extends IOntologyRelat
                         if (!child.equals(clazz)) {
                             C childConcept = loadClass(child, annotationVisitor, concepts);
                             if (childConcept != null) {
-                                concept.addChild(childConcept);
+                                /*concept.addChild(childConcept);*/
                                 childConcept.addParent(concept);
                             }
                         }

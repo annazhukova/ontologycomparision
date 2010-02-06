@@ -1,17 +1,15 @@
 package ru.spbu.math.ontologycomparision.zhukova.logic.similarity.synset;
 
+import edu.smu.tspell.wordnet.Synset;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyConcept;
-import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyRelation;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyGraph;
+import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyRelation;
 import ru.spbu.math.ontologycomparision.zhukova.logic.wordnet.WordNetHelper;
-import ru.spbu.math.ontologycomparision.zhukova.logic.wordnet.WordNetRelation;
 import ru.spbu.math.ontologycomparision.zhukova.util.HashTable;
 import ru.spbu.math.ontologycomparision.zhukova.util.IHashTable;
+import ru.spbu.math.ontologycomparision.zhukova.util.UnmodifiableHashTable;
 
 import java.util.*;
-
-import edu.smu.tspell.wordnet.Synset;
-import ru.spbu.math.ontologycomparision.zhukova.util.UnmodifiableHashTable;
 
 /**
  * @author Anna Zhukova
@@ -23,47 +21,53 @@ public class SynsetHelper<C extends IOntologyConcept<C, R>, R extends IOntologyR
     private Map<C, Synset> conceptToSynsetMap = new HashMap<C, Synset>();
 
     public SynsetHelper(IOntologyGraph<C, R> graph) {
-        for (C parentConcept : graph.getConcepts()) {
-            Collection<? extends Synset> parentSynsetCollection =
-                    WordNetHelper.getSynsetsForWord(parentConcept.getLabel().toLowerCase());
-            boolean noParentToSynsetBinding = true;
-            boolean noChildToSynsetBinding = false;
-            for (R superClassRelation : parentConcept.getSubjectRelations(WordNetRelation.HYPERNYM.getRelatedOntologyConcept())) {
-                C childConcept = superClassRelation.getObject();
-                Collection<? extends Synset> childSynsetCollection =
-                        WordNetHelper.getSynsetsForWord(childConcept.getLabel().toLowerCase());
-                noChildToSynsetBinding = true;
+        System.out.printf("SYNSET HELPER FOR GRAPH: %s\n", graph);
+        markAllConceptsAsHavingNoSynsets(graph);
+        for (C childConcept : graph.getConcepts()) {
+            Collection<? extends Synset> childSynsetCollection =
+                    WordNetHelper.getSynsetsForWord(childConcept.getLabel().toLowerCase());
+            System.out.printf("\tCHILD: %s %s\n", childConcept, childSynsetCollection);
+            if (childSynsetCollection.isEmpty()) {
+                continue;
+            }
+            for (C parentConcept : childConcept.getAllParents()) {
+                Collection<? extends Synset> parentSynsetCollection =
+                        WordNetHelper.getSynsetsForWord(parentConcept.getLabel().toLowerCase());
+                System.out.printf("\tPARENT: %s %s\n", parentConcept, parentSynsetCollection);
+                if (parentSynsetCollection.isEmpty()) {
+                    continue;
+                }
                 for (Synset childSynset : childSynsetCollection) {
+                    Collection<? extends Synset> childHypernyms =
+                            WordNetHelper.getHypernymsForSynset(childSynset);
+                    System.out.printf("\tCHILD SYNSET: %s  HYPERNYMS: %s\n", childSynset, childHypernyms);
                     for (Synset parentSynset : parentSynsetCollection) {
-                        if (WordNetHelper.getHypernymsForSynset(childSynset).contains(parentSynset)) {
-                            bindConceptToSynset(parentConcept, parentSynset);
+                        if (childHypernyms.contains(parentSynset)) {
                             bindConceptToSynset(childConcept, childSynset);
-                            noChildToSynsetBinding = false;
-                            noParentToSynsetBinding = false;
+                            bindConceptToSynset(parentConcept, parentSynset);
+                            break;
                         }
                     }
                 }
-                if (noChildToSynsetBinding) {
-                    this.concepsWithNoSynset.insert(childConcept.getLabel(), childConcept);
-                }
             }
-            /* if (noParentToSynsetBinding == true && noChildToSynsetBinding == false)
-               it means parent has no children at all.
-               We don't mark it as no synset concept as
-               synsets for it can be found when regarding it as a child.
-            */
-            if (noParentToSynsetBinding && noChildToSynsetBinding) {
-                this.concepsWithNoSynset.insert(parentConcept.getLabel(), parentConcept);
-            }
+        }
+    }
+
+    private void markAllConceptsAsHavingNoSynsets(IOntologyGraph<C, R> graph) {
+        for (C childConcept : graph.getConcepts()) {
+            this.concepsWithNoSynset.insert(childConcept.getLabel(), childConcept);
         }
     }
 
     private void bindConceptToSynset(C concept, Synset synset) {
         if (!this.conceptToSynsetMap.containsKey(concept)) {
+            System.out.printf("\tBINDED %s <-> %s\n", concept, synset);
             this.conceptToSynsetMap.put(concept, synset);
             this.synsetToConceptTable.insert(synset, concept);
         }
-        concepsWithNoSynset.deleteValue(concept.getLabel(), concept);
+        if (concepsWithNoSynset.deleteValue(concept.getLabel(), concept)) {
+            System.out.printf("\t\tFOUND SYNSETS FOR %s\n", concept);
+        }
     }
 
     public IHashTable<String, C> getConcepsWithNoSynset() {

@@ -28,6 +28,7 @@ public class Main {
     private final JScrollPane graphScrollPane = new JScrollPane(this.graphPane, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     private final JPanel descriptionPanel = new JPanel();
     private final JLabel descriptionLabel = new JLabel();
+    private JFrame progressFrame;
 
     public Main() {
         FileChoosers.setMain(this);
@@ -49,7 +50,7 @@ public class Main {
                     /*if (isChanged) {
                         Exit.confirmExit();
                     } else {*/
-                        System.exit(0);
+                    System.exit(0);
                     /*}*/
                 }
             });
@@ -74,10 +75,46 @@ public class Main {
     }
 
     public void setGraphModel(GraphModel graphModel) {
+        this.progressFrame.setVisible(false);
         IUndoManager undoManager = new UndoManager();
         Undo.setUndoManager(undoManager);
         Redo.setUndoManager(undoManager);
         this.graphPane.setGraphModel(graphModel, undoManager);
+    }
+
+    public void showProgressBar() {
+        if (progressFrame == null) {
+            progressFrame = new JFrame();
+            progressFrame.setUndecorated(true);
+            progressFrame.getContentPane().setLayout(new BorderLayout());
+            JProgressBar progressBar = new JProgressBar();
+            Dimension d = new Dimension(200, 60);
+            progressBar.setPreferredSize(d);
+            progressBar.setSize(d);
+            progressBar.setBorderPainted(true);
+            progressBar.setMinimum(0);
+            progressBar.setMaximum(100);
+            progressBar.setValue(0);
+            progressBar.setIndeterminate(true);
+            progressBar.setStringPainted(true);
+            progressBar.setString("Loading Ontologies...");
+            progressFrame.getContentPane().add(progressBar, BorderLayout.CENTER);
+            progressBar.setVisible(true);
+            progressFrame.pack();
+            progressFrame.setResizable(false);
+            progressFrame.setLocation((int)getFrame().getLocation().getX() + getFrame().getWidth() / 2,
+                    (int)getFrame().getLocation().getY() + getFrame().getHeight() / 2);
+            //progressFrame.setLocationRelativeTo(this.getFrame());
+            //progressFrame.setAlwaysOnTop(true);
+        }
+        progressFrame.setVisible(true);
+        progressFrame.requestFocus();
+    }
+
+    public void hideProgressBar() {
+        if (this.progressFrame != null) {
+            this.progressFrame.setVisible(false);
+        }
     }
 
     public void updateDescriptionPanel(String descrintion) {

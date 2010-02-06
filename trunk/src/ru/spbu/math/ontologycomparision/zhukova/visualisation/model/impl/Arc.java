@@ -4,8 +4,9 @@ import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IArc;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IArcFilter;
 
 import java.awt.*;
-import static java.lang.Math.*;
 import java.util.List;
+
+import static java.lang.Math.*;
 
 /**
  * @author Anna R. Zhukova
@@ -26,6 +27,9 @@ public class Arc implements IArc {
     private final List<String> labels;
 
     public Arc(SimpleVertex from, SimpleVertex to, List<String> labels) {
+        if (from == null || to == null) {
+            System.out.println(from + " " + to + labels);
+        }
         this.fromVertex = from;
         this.toVertex = to;
         this.labels = labels;

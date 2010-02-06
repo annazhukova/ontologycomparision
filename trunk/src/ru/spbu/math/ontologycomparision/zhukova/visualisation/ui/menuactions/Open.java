@@ -3,6 +3,7 @@
  */
 package ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.menuactions;
 
+import org.apache.log4j.Logger;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.FileChoosers;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.Main;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.modelbuilding.GraphModelBuilder;
@@ -23,6 +24,7 @@ import java.io.IOException;
 
 public class Open extends AbstractAction {
     private static final Open INSTANCE = new Open();
+    private static final Logger LOG = Logger.getLogger(Open.class);
     private static Main main;
 
     public static Open getInstance() {
@@ -55,21 +57,35 @@ public class Open extends AbstractAction {
     }
 
     private static void buildGraph(File firstOwl, File secondOwl) throws IOException {
-        IOntologyGraph<OntologyConcept,OntologyRelation> firstOntologyGraph =
-                OntologyGraphBuilder.build(firstOwl);
-        IOntologyGraph<OntologyConcept, OntologyRelation> secondOntologyGraph =
-                OntologyGraphBuilder.build(secondOwl);
-        IGraphModelBuilder myGraphModelBuilder =
-                new GraphModelBuilder(firstOntologyGraph, secondOntologyGraph);
-        GraphModel myGraphModel = myGraphModelBuilder.buildGraphModel(main.getGraphPane());
-        Open.main.setGraphModel(myGraphModel);
-        int similarityCount = (int)(
-                (new OntologyComparator<OntologyConcept, OntologyRelation>(
-                        firstOntologyGraph, secondOntologyGraph)).getSimilarity() * 100);
-        Open.main.updateDescriptionPanel(String.format(
-                "Comparing ontology %s (blue) to %s (green). (Absolutly equal concepts are colored orange) The similarity is %d %%.",
-                firstOwl.getName(), secondOwl.getName(), similarityCount)
-        );
+        Open.main.showProgressBar();
+        try {
+            LOG.info(String.format("Loading %s", firstOwl.getName()));
+            Open.main.updateDescriptionPanel(String.format("Loading %s", firstOwl.getName()));
+            IOntologyGraph<OntologyConcept, OntologyRelation> firstOntologyGraph =
+                    OntologyGraphBuilder.build(firstOwl);
+            LOG.info(String.format("Loading %s", secondOwl.getName()));
+            Open.main.updateDescriptionPanel(String.format("Loading %s", secondOwl.getName()));
+            IOntologyGraph<OntologyConcept, OntologyRelation> secondOntologyGraph =
+                    OntologyGraphBuilder.build(secondOwl);
+            LOG.info("Merging");
+            Open.main.updateDescriptionPanel("Merging ontologies");
+            IGraphModelBuilder myGraphModelBuilder =
+                    new GraphModelBuilder(firstOntologyGraph, secondOntologyGraph);
+            GraphModel myGraphModel = myGraphModelBuilder.buildGraphModel(main.getGraphPane());
+            Open.main.setGraphModel(myGraphModel);
+            int similarityCount = (int) (
+                    (new OntologyComparator<OntologyConcept, OntologyRelation>(
+                            firstOntologyGraph, secondOntologyGraph)).getSimilarity() * 100);
+            Open.main.updateDescriptionPanel(String.format(
+                    "Comparing ontology %s (blue) to %s (green). (Absolutly equal concepts are colored orange) The similarity is %d %%.",
+                    firstOwl.getName(), secondOwl.getName(), similarityCount)
+            );
+            Open.main.hideProgressBar();
+        } catch (Exception e) {
+            Open.main.hideProgressBar();
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(Open.main.getFrame(), e.getMessage(), "Cannot load ontologies", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public static void setMain(Main main) {

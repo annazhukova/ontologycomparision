@@ -56,6 +56,6 @@ public class TestOntologyComparator extends TestCase {
     public void testSimilarityOfOntologiesWithEmptySynsets() {
         OntologyComparator<OntologyConcept, OntologyRelation> comparator =
                 new OntologyComparator<OntologyConcept, OntologyRelation>(ontoJavaCSharpGraph, ontoPLFull);
-        assertEquals(0.375, comparator.getSimilarity());
+        assertEquals(33, (int)(comparator.getSimilarity() * 100));
     }
 }

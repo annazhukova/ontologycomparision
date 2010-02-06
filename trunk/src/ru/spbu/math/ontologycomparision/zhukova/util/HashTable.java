@@ -55,13 +55,17 @@ public class HashTable<K, V> extends HashMap<K, Set<V>> implements IHashTable<K,
     }
 
     public boolean deleteValue(K key, V value) {
-        Set<V> valueList = get(key);
-        if (valueList == null) {
+        /*System.out.printf("DELETIND VALUE %s FOR KEY %s\n", value, key);*/
+        Set<V> valueSet = get(key);
+        /*System.out.printf("VALUE SET %s\n", valueSet);*/
+        if (valueSet == null) {
             return false;
         }
-        boolean  result = valueList.remove(value);
-        if (valueList.size() == 0) {
+        boolean  result = valueSet.remove(value);
+        /*System.out.printf("REMOVED: %s\n", result);*/
+        if (valueSet.size() == 0) {
             super.remove(key);
+            /*System.out.printf("REMOVED TOTALLY\n");*/
         }
         return result;
     }

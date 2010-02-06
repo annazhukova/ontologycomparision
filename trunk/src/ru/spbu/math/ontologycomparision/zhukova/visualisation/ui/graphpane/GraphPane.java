@@ -50,7 +50,6 @@ public class GraphPane extends JPanel implements IGraphPane {
         addMouseMotionListener(this.currentTool);
     }
 
-
     public void checkPoint(Point p) {
         int width = getWidth();
         int height = getHeight();

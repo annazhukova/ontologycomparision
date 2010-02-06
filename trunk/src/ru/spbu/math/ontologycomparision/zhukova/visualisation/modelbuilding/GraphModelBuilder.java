@@ -1,21 +1,20 @@
 package ru.spbu.math.ontologycomparision.zhukova.visualisation.modelbuilding;
 
 
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.*;
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl.*;
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.graphpane.GraphPane;
+import edu.smu.tspell.wordnet.Synset;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyGraph;
-import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyRelation;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyConcept;
+import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyRelation;
 import ru.spbu.math.ontologycomparision.zhukova.logic.similarity.OntologyComparator;
 import ru.spbu.math.ontologycomparision.zhukova.logic.wordnet.WordNetRelation;
 import ru.spbu.math.ontologycomparision.zhukova.util.IHashTable;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IArcFilter;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IGraphModel;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl.*;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.graphpane.GraphPane;
 
-import java.util.*;
-import java.util.List;
 import java.awt.*;
-
-import edu.smu.tspell.wordnet.Synset;
+import java.util.*;
 
 
 public class GraphModelBuilder implements IGraphModelBuilder {
@@ -143,16 +142,22 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         Collection<OntologyConcept> secondConcepts = this.secondOntologyGraph.getConcepts();
         Collection<OntologyConcept> allConcepts = new ArrayList<OntologyConcept>(firstConcepts);
         allConcepts.addAll(secondConcepts);
-        for (OntologyConcept concept : allConcepts) {
-            String name = concept.getUri().toString();
-            SimpleVertex subjectVertex = nameToVertex.get(name);
-            for (OntologyRelation relation :
-                    concept.getSubjectRelations(WordNetRelation.HYPERNYM.getRelatedOntologyConcept())) {
-                String objectName = relation.getObject().getUri().toString();
-                if (nameToVertex.containsKey(objectName)) {
-                    SimpleVertex objectVertex = nameToVertex.get(objectName);
-                    graphModel.addArc(new Arc(subjectVertex, objectVertex,
-                            Arrays.asList(relation.getRelationName())));
+        for (OntologyConcept child : allConcepts) {
+            String childName = child.getUri().toString();
+            SimpleVertex childVertex = nameToVertex.get(childName);
+            if (childVertex  == null) {
+                continue;
+            }
+            /*for (OntologyRelation relation :
+                    child.getSubjectRelations(WordNetRelation.HYPERNYM.getRelatedOntologyConcept())) {
+               */
+            for (OntologyConcept parent : child.getParents()) {
+                /*String parentName = relation.getObject().getUri().toString();*/
+                String parentName = parent.getUri().toString();
+                if (nameToVertex.containsKey(parentName)) {
+                    SimpleVertex parentVertex = nameToVertex.get(parentName);
+                    graphModel.addArc(new Arc(childVertex, parentVertex,
+                            Arrays.asList(WordNetRelation.HYPONYM.getRelatedOntologyConcept())));
                 }
 
             }

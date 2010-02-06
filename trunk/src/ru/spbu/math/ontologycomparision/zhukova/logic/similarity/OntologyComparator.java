@@ -1,17 +1,17 @@
 package ru.spbu.math.ontologycomparision.zhukova.logic.similarity;
 
-import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyGraph;
-import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyConcept;
-import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyRelation;
-import ru.spbu.math.ontologycomparision.zhukova.logic.similarity.synset.SynsetHelper;
-import ru.spbu.math.ontologycomparision.zhukova.logic.similarity.synset.EmptySynset;
-import ru.spbu.math.ontologycomparision.zhukova.util.SetHelper;
-import ru.spbu.math.ontologycomparision.zhukova.util.IHashTable;
-import ru.spbu.math.ontologycomparision.zhukova.util.HashTable;
-
-import java.util.*;
-
 import edu.smu.tspell.wordnet.Synset;
+import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyConcept;
+import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyGraph;
+import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyRelation;
+import ru.spbu.math.ontologycomparision.zhukova.logic.similarity.synset.EmptySynset;
+import ru.spbu.math.ontologycomparision.zhukova.logic.similarity.synset.SynsetHelper;
+import ru.spbu.math.ontologycomparision.zhukova.util.*;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Anna Zhukova
@@ -30,10 +30,10 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
         Set<Synset> secondSynsets = this.secondSynsetHelper.getSynsets();
         int firstNotSecondSynsetCount = SetHelper.INSTANCE.setIntersection(firstSynsets, secondSynsets).size();
         int firstAndSecondSynsetCount = SetHelper.INSTANCE.setUnion(firstSynsets, secondSynsets).size();
-        IHashTable<Synset, C> mergedNoSynsetConcepts = this.mergeNoSynsetConcepts();
-        return ((double) firstNotSecondSynsetCount +
-                mergedNoSynsetConcepts.allValues().size() - mergedNoSynsetConcepts.size())
-                / (firstAndSecondSynsetCount + mergedNoSynsetConcepts.size());
+        IPair<IHashTable<Synset, C>, Integer> mergedNoSynsetConcepts = this.mergeNoSynsetConcepts();
+        return ((double) firstNotSecondSynsetCount + mergedNoSynsetConcepts.getSecond())
+                / (firstAndSecondSynsetCount + this.firstSynsetHelper.getConcepsWithNoSynset().size() +
+        this.secondSynsetHelper.getConcepsWithNoSynset().size());
     }
 
     public IHashTable<Synset, C> merge() {
@@ -41,7 +41,7 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
         IHashTable<Synset, C> secondSynsetToConcept = this.secondSynsetHelper.getSynsetToConceptTable();
         IHashTable<Synset, C> result = new HashTable<Synset, C>(firstSynsetToConcept);
         result.insertAll(secondSynsetToConcept);
-        result.insertAll(mergeNoSynsetConcepts());
+        result.insertAll(mergeNoSynsetConcepts().getFirst());
         return result;
     }
 
@@ -51,7 +51,8 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
         return result;
     }
 
-    public IHashTable<Synset, C> mergeNoSynsetConcepts() {
+    public IPair<IHashTable<Synset, C>, Integer> mergeNoSynsetConcepts() {
+        int merged = 0;
         Map<C, Synset> firstConceptToSynsetMap = this.firstSynsetHelper.getConceptToSynsetMap();
         Map<C, Synset> secondConceptToSynsetMap = this.secondSynsetHelper.getConceptToSynsetMap();
         IHashTable<String, C> allNoSynsetConcets = this.noSynsetConceptUnion();
@@ -70,13 +71,14 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
                     Synset empty = new EmptySynset();
                     result.insert(empty, first);
                     result.insert(empty, second);
+                    merged++;
                 } else {
                     result.insert(new EmptySynset(), first);
                     result.insert(new EmptySynset(), second);
                 }
             }
         }
-        return result;
+        return new Pair<IHashTable<Synset,C>, Integer>(result, merged);
     }
 
     private Set<Synset> getParentSynsets(Map<C, Synset> conceptToSynsetMap, C concept) {

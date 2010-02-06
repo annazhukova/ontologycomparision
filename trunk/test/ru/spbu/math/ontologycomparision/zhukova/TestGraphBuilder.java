@@ -1,13 +1,12 @@
 package ru.spbu.math.ontologycomparision.zhukova;
 
-import java.io.FileNotFoundException;
-
+import junit.framework.TestCase;
 import ru.spbu.math.ontologycomparision.zhukova.logic.builder.OntologyGraphBuilder;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyConcept;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyRelation;
-import ru.spbu.math.ontologycomparision.zhukova.logic.wordnet.WordNetRelation;
-import junit.framework.TestCase;
+
+import java.io.FileNotFoundException;
 
 /**
  * @author Anna Zhukova
@@ -35,17 +34,13 @@ public class TestGraphBuilder extends TestCase {
         fail();
     }
 
-    public void testHyponymRelation() throws FileNotFoundException {
+    public void testChildParentRelation() throws FileNotFoundException {
         IOntologyGraph<OntologyConcept, OntologyRelation> graph =
                 OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
         for (OntologyConcept concept : graph.getConcepts()) {
-            if (concept.getLabel().equalsIgnoreCase(
-                    OntologyTestConstants.PROGRAMMING_LANGUAGE)) {
-                for (OntologyRelation relation :
-                        concept.getSubjectRelations(
-                                WordNetRelation.HYPERNYM.getRelatedOntologyConcept())) {
-                    if (relation.getObject().getLabel().equalsIgnoreCase(
-                            OntologyTestConstants.JAVA)) {
+            if (concept.getLabel().equalsIgnoreCase(OntologyTestConstants.JAVA)) {
+                for (OntologyConcept parent : concept.getParents()) {
+                    if (parent.getLabel().equalsIgnoreCase(OntologyTestConstants.PROGRAMMING_LANGUAGE)) {
                         return;
                     }
                 }

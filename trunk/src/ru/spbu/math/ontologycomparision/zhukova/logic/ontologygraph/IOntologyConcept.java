@@ -2,8 +2,8 @@ package ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph;
 
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyRelation;
 
-import java.util.List;
 import java.net.URI;
+import java.util.Set;
 
 /**
  * @author Anna Zhukova
@@ -22,17 +22,17 @@ public interface IOntologyConcept<C extends IOntologyConcept, R extends IOntolog
      * Returns all direct hyponyms of this concept.
      * @return Hyponym list.
      */
-    List<C> getChildren();
+    /*List<C> getChildren();
 
-    void addChild(C child);
+    void addChild(C child);*/
 
     /**
      * Returns all direct hypernyms of this concept.
      * @return Hypernym list.
      */
-    List<C> getParents();
+    Set<C> getParents();
 
-    List<C> getAllParents();
+    Set<C> getAllParents();
 
     void addParent(C parent);
 
@@ -40,35 +40,35 @@ public interface IOntologyConcept<C extends IOntologyConcept, R extends IOntolog
      * Returns relations where this concept acts as an object.
      * @return List of relations.
      */
-    List<R> getObjectRelations();
+   /* List<R> getObjectRelations();*/
 
     /**
      * Returns relations where this concept acts as a subject.
      * @return List of relations.
      */
-    List<R> getSubjectRelations();
+    Set<R> getSubjectRelations();
 
     /**
      * Returns all relations for this concept.
      * @return List of relations.
      */
-    List<R> getRelations();
+   /* List<R> getRelations();*/
 
     /**
      * Returns relations with the given name where this concept acts as an object.
      * @param relationName  Relation name.
      * @return List of relations.
      */
-    List<R> getObjectRelations(String relationName);
+    /*List<R> getObjectRelations(String relationName);
 
-    void addObjectRelation(OntologyRelation relation);
+    void addObjectRelation(OntologyRelation relation);*/
 
     /**
      * Returns relations with the given name where this concept acts as a subject.
      * @param relationName  Relation name.
      * @return List of relations.
      */
-    List<R> getSubjectRelations(String relationName);
+    Set<R> getSubjectRelations(String relationName);
 
     void addSubjectRelation(OntologyRelation relation);
 
@@ -77,5 +77,5 @@ public interface IOntologyConcept<C extends IOntologyConcept, R extends IOntolog
      * @param relationName  Relation name.
      * @return List of relations.
      */
-    List<R> getRelations(String relationName);
+    /*List<R> getRelations(String relationName);*/
 }
