@@ -26,10 +26,7 @@ public class Arc implements IArc {
     private final SimpleVertex toVertex;
     private final List<String> labels;
 
-    public Arc(SimpleVertex from, SimpleVertex to, List<String> labels) {
-        if (from == null || to == null) {
-            System.out.println(from + " " + to + labels);
-        }
+    public Arc(SimpleVertex from, SimpleVertex to, List<String> labels) {             
         this.fromVertex = from;
         this.toVertex = to;
         this.labels = labels;

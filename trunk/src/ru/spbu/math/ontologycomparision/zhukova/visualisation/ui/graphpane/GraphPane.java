@@ -1,15 +1,15 @@
 package ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.graphpane;
 
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.*;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IArc;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IGraphModel;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IVertex;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl.GraphModel;
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl.SuperVertex;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl.SimpleVertex;
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.undo.UndoManager;
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.undo.IUndoManager;
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.graphpane.tools.ToolTipMouseMotionListener;
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.graphpane.tools.Tool;
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.graphpane.tools.SelectingTool;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl.SuperVertex;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.graphpane.tools.ITool;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.graphpane.tools.SelectingTool;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.graphpane.tools.Tool;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.graphpane.tools.ToolTipMouseMotionListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,7 +45,7 @@ public class GraphPane extends JPanel implements IGraphPane {
         setBackground(Color.WHITE);
         setFocusable(true);
         addMouseMotionListener(new ToolTipMouseMotionListener(this));
-        Tool.setGraphModel(this, new UndoManager());
+        Tool.setGraphModel(this);
         addMouseListener(this.currentTool);
         addMouseMotionListener(this.currentTool);
     }
@@ -72,11 +72,11 @@ public class GraphPane extends JPanel implements IGraphPane {
         this.selectedVertices.add(v);
     }
 
-    public void setGraphModel(GraphModel gr, IUndoManager undoManager) {
+    public void setGraphModel(GraphModel gr) {
         deselectVertices();
         this.graphModel = gr;
         this.graphModel.addObserver(new MyObserver());
-        Tool.setGraphModel(this, undoManager);
+        Tool.setGraphModel(this);
         revalidate();
         repaint();
     }

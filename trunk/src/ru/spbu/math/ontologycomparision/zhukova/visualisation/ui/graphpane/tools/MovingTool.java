@@ -52,7 +52,6 @@ public class MovingTool extends Tool {
         for (IVertex v : vertices) {
             c.addCommand(new MoveVertexCommand(graphPane.getGraphModel(), v, dx, dy));
         }
-        Tool.getUndoManager().execute(c, true, false);
         graphPane.setTool(SelectingTool.getInstance());
     }
 

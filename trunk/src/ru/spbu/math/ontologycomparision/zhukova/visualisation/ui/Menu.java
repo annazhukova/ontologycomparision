@@ -18,7 +18,6 @@ import javax.swing.*;
         if (Menu.menuBar == null) {
             Menu.menuBar = new JMenuBar();
             Menu.menuBar.add(getMenuFile());
-            /*Menu.menuBar.add(getMenuEdit());*/
         }
         return Menu.menuBar;
     }
@@ -28,10 +27,6 @@ import javax.swing.*;
             Menu.menuFile = new JMenu("File");
             Menu.menuFile.setMnemonic('f');
             Menu.menuFile.add(Open.getInstance());
-            /*Menu.menuFile.add(OpenSavedFile.getInstance());
-            Menu.menuFile.add(SaveAs.getInstance());
-            Menu.menuFile.add(new JSeparator());*/
-            Menu.menuFile.add(Exit.getInstance());
         }
         return Menu.menuFile;
     }
@@ -48,8 +43,6 @@ import javax.swing.*;
         if (Menu.menuEdit == null) {
             Menu.menuEdit = new JMenu("Edit");
             Menu.menuEdit.setMnemonic('d');
-            Menu.menuEdit.add(Undo.getInstance());
-            Menu.menuEdit.add(Redo.getInstance());
         }
         return Menu.menuEdit;
     }

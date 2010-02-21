@@ -3,7 +3,6 @@ package ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.graphpane;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IVertex;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl.GraphModel;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IGraphModel;
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.undo.IUndoManager;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.graphpane.tools.Tool;
 
 import java.awt.*;
@@ -20,7 +19,7 @@ public interface IGraphPane {
 
     void selectVertex(IVertex v);
 
-    void setGraphModel(GraphModel gr, IUndoManager undoManager);
+    void setGraphModel(GraphModel gr);
 
     IGraphModel getGraphModel();
 

@@ -37,7 +37,6 @@ public class SelectingTool extends Tool {
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
             IGraphPane graphPane = Tool.getGraphPane();
-            Tool.getUndoManager().update();
             Point mouseLocation = e.getPoint();
             Set<IVertex> vertices = graphPane.getSelectedVertices();
             for (IVertex v : vertices) {

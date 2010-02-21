@@ -15,10 +15,6 @@ import javax.swing.*;
         if (ToolBar.toolBar == null) {
             ToolBar.toolBar = new JToolBar();
             ToolBar.toolBar.add(Open.getInstance());
-            /*ToolBar.toolBar.add(OpenSavedFile.getInstance());
-            ToolBar.toolBar.add(SaveAs.getInstance());*/
-            //ToolBar.toolBar.add(Undo.getInstance());
-            //ToolBar.toolBar.add(Redo.getInstance());
         }
         return ToolBar.toolBar;
     }

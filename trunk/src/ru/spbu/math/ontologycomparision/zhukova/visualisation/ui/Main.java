@@ -1,18 +1,14 @@
 package ru.spbu.math.ontologycomparision.zhukova.visualisation.ui;
 
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl.GraphModel;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IGraphModel;
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.undo.UndoManager;
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.undo.IUndoManager;
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.menuactions.Exit;
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.menuactions.Undo;
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.menuactions.Redo;
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.menuactions.Open;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl.GraphModel;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.graphpane.GraphPane;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.menuactions.Open;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
 
 /**
@@ -41,17 +37,12 @@ public class Main {
     public JFrame getFrame() {
         if (this.frame == null) {
             this.frame = new JFrame("Ontology Comparision");
-            Exit.setFrame(this.frame);
             Open.setMain(this);
             this.frame.setSize(1200, 750);
             this.frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
             this.frame.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
-                    /*if (isChanged) {
-                        Exit.confirmExit();
-                    } else {*/
                     System.exit(0);
-                    /*}*/
                 }
             });
             this.frame.setJMenuBar(Menu.getMenuBar());
@@ -76,10 +67,7 @@ public class Main {
 
     public void setGraphModel(GraphModel graphModel) {
         this.progressFrame.setVisible(false);
-        IUndoManager undoManager = new UndoManager();
-        Undo.setUndoManager(undoManager);
-        Redo.setUndoManager(undoManager);
-        this.graphPane.setGraphModel(graphModel, undoManager);
+        this.graphPane.setGraphModel(graphModel);
     }
 
     public void showProgressBar() {
