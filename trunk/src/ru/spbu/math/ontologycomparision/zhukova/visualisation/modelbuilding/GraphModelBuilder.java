@@ -1,14 +1,12 @@
 package ru.spbu.math.ontologycomparision.zhukova.visualisation.modelbuilding;
 
 
-import edu.smu.tspell.wordnet.Synset;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyConcept;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyRelation;
+import ru.spbu.math.ontologycomparision.zhukova.logic.similarity.ISimilarConcepts;
 import ru.spbu.math.ontologycomparision.zhukova.logic.similarity.OntologyComparator;
-import ru.spbu.math.ontologycomparision.zhukova.logic.similarity.synset.EmptySynset;
 import ru.spbu.math.ontologycomparision.zhukova.logic.wordnet.WordNetRelation;
-import ru.spbu.math.ontologycomparision.zhukova.util.IHashTable;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IArcFilter;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IGraphModel;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl.*;
@@ -21,7 +19,8 @@ import java.util.*;
 public class GraphModelBuilder implements IGraphModelBuilder {
     private final IOntologyGraph<OntologyConcept, OntologyRelation> firstOntologyGraph;
     private final IOntologyGraph<OntologyConcept, OntologyRelation> secondOntologyGraph;
-    private final IHashTable<Synset, OntologyConcept> merged;
+    /*private final IHashTable<Synset, OntologyConcept> merged;*/
+    private final Set<ISimilarConcepts<OntologyConcept, OntologyRelation>> mergedOntologies;
     private static final Color firstOntologyColor = Color.BLUE;
     private static final Color secondOntologyColor = Color.GREEN;
     private static final Color bothOntologyColor = Color.ORANGE;
@@ -34,8 +33,10 @@ public class GraphModelBuilder implements IGraphModelBuilder {
                              IOntologyGraph<OntologyConcept, OntologyRelation> secondOntologyGraph) {
         this.firstOntologyGraph = firstOntologyGraph;
         this.secondOntologyGraph = secondOntologyGraph;
-        this.merged = (new OntologyComparator<OntologyConcept, OntologyRelation>(
-                this.firstOntologyGraph, this.secondOntologyGraph)).merge();
+        /*this.merged = (new OntologyComparator<OntologyConcept, OntologyRelation>(
+                this.firstOntologyGraph, this.secondOntologyGraph)).merge();*/
+        this.mergedOntologies = (new OntologyComparator<OntologyConcept, OntologyRelation>(
+                this.firstOntologyGraph, this.secondOntologyGraph)).mergeOntologies();
     }
 
     public GraphModel buildGraphModel(GraphPane graphPane) {
@@ -61,18 +62,22 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         int currentY = Y_GAP;
         int maxHeight = letterHeight + LABEL_GAP + 2 * Y_GAP;
         int simpleVertexHeight = letterHeight + 2 * LABEL_GAP;
-        for (Map.Entry<Synset, Set<OntologyConcept>> mergedEntry : this.merged.entrySet()) {
-            if (!showUnmappedUnmergedOnes && mergedEntry.getKey() instanceof EmptySynset && mergedEntry.getValue().size() <=1) {
+        /*for (Map.Entry<Synset, Set<OntologyConcept>> mergedEntry : this.merged.entrySet()) {*/
+        for (ISimilarConcepts<OntologyConcept, OntologyRelation> mergedEntry : this.mergedOntologies) {
+            /*if (!showUnmappedUnmergedOnes && mergedEntry.getKey() instanceof EmptySynset && mergedEntry.getValue().size() <=1) {
                 continue;
-            }
+            }*/
             int maxSimpleVertexWidth = 0;
-            for (OntologyConcept concept : mergedEntry.getValue()) {
+            /*for (OntologyConcept concept : mergedEntry.getValue()) {*/
+            for (OntologyConcept concept : mergedEntry.getConcepts()) {
                 String simpleLabel = concept.getLabel();
                 maxSimpleVertexWidth =
                         Math.max(letterWidth * simpleLabel.length() + 2 * LABEL_GAP, maxSimpleVertexWidth);
             }
-            String superLabel = mergedEntry.getKey().getDefinition();
-            int simpleVertexNumber = mergedEntry.getValue().size();
+            /*String superLabel = mergedEntry.getKey().getDefinition();*/
+            String superLabel = String.format("%s (%d%%)", mergedEntry.getSimilarityReasons(), mergedEntry.getSimilarity());
+            /*int simpleVertexNumber = mergedEntry.getValue().size();*/
+            int simpleVertexNumber = mergedEntry.getConcepts().size();
             int superVertexWidth = (X_GAP + maxSimpleVertexWidth) * simpleVertexNumber + X_GAP;
             int superVertexHeight = (Y_GAP + simpleVertexHeight) * simpleVertexNumber + letterHeight + LABEL_GAP + Y_GAP;
 
@@ -88,7 +93,8 @@ public class GraphModelBuilder implements IGraphModelBuilder {
             int conceptX = X_GAP + currentX;
             int conceptY = LABEL_GAP + letterHeight + currentY;
 
-            for (OntologyConcept concept : mergedEntry.getValue()) {
+            /*for (OntologyConcept concept : mergedEntry.getValue()) {*/
+            for (OntologyConcept concept : mergedEntry.getConcepts()) {
                 if (conceptNameToVertices.containsKey(concept.getUri().toString())) {
                     continue;
                 }

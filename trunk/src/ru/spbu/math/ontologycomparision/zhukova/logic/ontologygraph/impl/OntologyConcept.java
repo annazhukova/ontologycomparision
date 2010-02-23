@@ -140,7 +140,7 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
         return getLabel();
     }
 
-    public int hashCode() {
+    /*public int hashCode() {
         return getUri().hashCode();
     }
 
@@ -152,5 +152,5 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
             return false;
         }
         return this.getUri().equals(((OntologyConcept) o).getUri());
-    }
+    }*/
 }

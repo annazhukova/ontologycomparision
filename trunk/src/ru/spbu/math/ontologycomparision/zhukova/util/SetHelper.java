@@ -12,20 +12,20 @@ public class SetHelper {
 
     private SetHelper(){};
 
-    public <T> Set<T> setSubtraction(Set<T> fisrt, Set<T> second) {
-        Set<T> result = new HashSet<T>(fisrt);
+    public <T> Set<T> setSubtraction(Set<T> first, Set<T> second) {
+        Set<T> result = new HashSet<T>(first);
         result.removeAll(second);
         return result;
     }
 
-    public <T> Set<T> setUnion(Set<T> fisrt, Set<T> second) {
-        Set<T> result = new HashSet<T>(fisrt);
+    public <T> Set<T> setUnion(Set<T> first, Set<T> second) {
+        Set<T> result = new HashSet<T>(first);
         result.addAll(second);
         return result;
     }
 
-    public <T> Set<T> setIntersection(Set<T> fisrt, Set<T> second) {
-        Set<T> result = new HashSet<T>(fisrt);
+    public <T> Set<T> setIntersection(Set<T> first, Set<T> second) {
+        Set<T> result = new HashSet<T>(first);
         result.retainAll(second);
         return result;
     }

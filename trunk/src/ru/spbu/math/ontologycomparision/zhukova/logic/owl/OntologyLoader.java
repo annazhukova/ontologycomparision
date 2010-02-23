@@ -101,9 +101,10 @@ public class OntologyLoader<C extends IOntologyConcept, R extends IOntologyRelat
             try {
                 owlRestrictions = OWLUtils.keep(this.ontology, clazz);
                 for (OWLRestriction restriction : owlRestrictions) {
+                    OWLPropertyExpression property = restriction.getProperty();
                     for (OWLClass friend : restriction.getClassesInSignature()) {
                         URI friendId = friend.getURI();
-                        visitor.inRelationship(concept, concepts.get(friendId), restriction.getProperty().toString());
+                        visitor.inRelationship(concept, concepts.get(friendId), property);
                     }
                 }
             } catch (OWLTransformationException e1) {

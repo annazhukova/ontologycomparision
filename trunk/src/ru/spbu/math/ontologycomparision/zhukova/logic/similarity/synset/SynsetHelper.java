@@ -21,26 +21,26 @@ public class SynsetHelper<C extends IOntologyConcept<C, R>, R extends IOntologyR
     private Map<C, Synset> conceptToSynsetMap = new HashMap<C, Synset>();
 
     public SynsetHelper(IOntologyGraph<C, R> graph) {
-        System.out.printf("SYNSET HELPER FOR GRAPH: %s\n", graph);
+        /*System.out.printf("SYNSET HELPER FOR GRAPH: %s\n", graph);*/
         markAllConceptsAsHavingNoSynsets(graph);
         for (C childConcept : graph.getConcepts()) {
             Collection<? extends Synset> childSynsetCollection =
                     WordNetHelper.getSynsetsForWord(childConcept.getLabel().toLowerCase());
-            System.out.printf("\tCHILD: %s %s\n", childConcept, childSynsetCollection);
+            /*System.out.printf("\tCHILD: %s %s\n", childConcept, childSynsetCollection);*/
             if (childSynsetCollection.isEmpty()) {
                 continue;
             }
             for (C parentConcept : childConcept.getAllParents()) {
                 Collection<? extends Synset> parentSynsetCollection =
                         WordNetHelper.getSynsetsForWord(parentConcept.getLabel().toLowerCase());
-                System.out.printf("\tPARENT: %s %s\n", parentConcept, parentSynsetCollection);
+                /*System.out.printf("\tPARENT: %s %s\n", parentConcept, parentSynsetCollection);*/
                 if (parentSynsetCollection.isEmpty()) {
                     continue;
                 }
                 for (Synset childSynset : childSynsetCollection) {
                     Collection<? extends Synset> childHypernyms =
                             WordNetHelper.getHypernymsForSynset(childSynset);
-                    System.out.printf("\tCHILD SYNSET: %s  HYPERNYMS: %s\n", childSynset, childHypernyms);
+                    /*System.out.printf("\tCHILD SYNSET: %s  HYPERNYMS: %s\n", childSynset, childHypernyms);*/
                     for (Synset parentSynset : parentSynsetCollection) {
                         if (childHypernyms.contains(parentSynset)) {
                             bindConceptToSynset(childConcept, childSynset);
@@ -61,12 +61,12 @@ public class SynsetHelper<C extends IOntologyConcept<C, R>, R extends IOntologyR
 
     private void bindConceptToSynset(C concept, Synset synset) {
         if (!this.conceptToSynsetMap.containsKey(concept)) {
-            System.out.printf("\tBINDED %s <-> %s\n", concept, synset);
+            /*System.out.printf("\tBINDED %s <-> %s\n", concept, synset);*/
             this.conceptToSynsetMap.put(concept, synset);
             this.synsetToConceptTable.insert(synset, concept);
         }
         if (concepsWithNoSynset.deleteValue(concept.getLabel(), concept)) {
-            System.out.printf("\t\tFOUND SYNSETS FOR %s\n", concept);
+            /*System.out.printf("\t\tFOUND SYNSETS FOR %s\n", concept);*/
         }
     }
 

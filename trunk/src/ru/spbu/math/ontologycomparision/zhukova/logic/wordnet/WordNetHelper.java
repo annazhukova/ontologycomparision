@@ -67,4 +67,12 @@ public class WordNetHelper {
         }
         return Collections.unmodifiableCollection(Collections.EMPTY_LIST);
     }
+
+    public static Collection<? extends Synset> getPartHolonymsForSynset(Synset synset) {
+        if (synset instanceof NounSynset) {
+            NounSynset nounSynset = (NounSynset) synset;
+            return Collections.unmodifiableCollection(Arrays.asList(nounSynset.getPartHolonyms()));
+        }
+        return Collections.unmodifiableCollection(Collections.EMPTY_LIST);
+    }
 }
