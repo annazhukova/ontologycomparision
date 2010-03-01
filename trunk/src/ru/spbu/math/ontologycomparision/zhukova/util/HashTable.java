@@ -7,7 +7,7 @@ import java.util.*;
  */
 public class HashTable<K, V> extends HashMap<K, Set<V>> implements IHashTable<K,V> {
 
-    public HashTable() {};
+    public HashTable() {}
 
     public HashTable(Map<K, Set<V>> map) {
         super(map);

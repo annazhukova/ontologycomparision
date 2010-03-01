@@ -1,15 +1,15 @@
 package ru.spbu.math.ontologycomparision.zhukova;
 
+import junit.framework.TestCase;
+import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyConcept;
+import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyRelation;
+import ru.spbu.math.ontologycomparision.zhukova.logic.owl.OntologyLoader;
+import ru.spbu.math.ontologycomparision.zhukova.logic.owl.impl.ClassAnnotationVisitor;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.Map;
-
-import ru.spbu.math.ontologycomparision.zhukova.logic.owl.OntologyLoader;
-import ru.spbu.math.ontologycomparision.zhukova.logic.owl.impl.ClassAnnotationVisitor;
-import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyRelation;
-import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyConcept;
-import junit.framework.TestCase;
 
 /**
  * @author Anna Zhukova
@@ -35,7 +35,7 @@ public class TestOwl extends TestCase {
     public void testLoadedContent() {
         Map<URI, OntologyConcept> result = loader.load(new ClassAnnotationVisitor());
         for (OntologyConcept concept : result.values()) {
-            if (concept.getLabel().equalsIgnoreCase(OntologyTestConstants.JAVA)) {
+            if (concept.getLabelCollection().contains(OntologyTestConstants.JAVA)) {
                 return;
             }
         }

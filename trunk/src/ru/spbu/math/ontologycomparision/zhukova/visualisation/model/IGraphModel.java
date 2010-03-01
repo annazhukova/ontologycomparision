@@ -3,10 +3,9 @@ package ru.spbu.math.ontologycomparision.zhukova.visualisation.model;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl.SimpleVertex;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl.SuperVertex;
 
-import javax.swing.*;
 import java.util.LinkedList;
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Anna R. Zhukova
@@ -33,11 +32,13 @@ public interface IGraphModel {
 
     void clear();
 
-    void setIntToSuperVertexMap(Map<String, SuperVertex> nameToVertex);
+    void setKeyToSuperVertexMap(Map<String, SuperVertex> nameToVertex);
 
-    Map<String, SuperVertex> getNameToSuperVertexMap();
+    Map<String, SuperVertex> getKeyToSuperVertexMap();
 
     void setIntToSimpleVertexMap(Map<String, SimpleVertex> nameToVertex);
 
     Map<String, SimpleVertex> getNameToSimpleVertexMap();
+
+    void update();
 }

@@ -13,7 +13,7 @@ public enum WordNetRelation {
         public WordNetRelation inversed() {
             return HYPERNYM;
         }},
-    MERONYM("partOf", true) {
+    MERONYM("part_of", true) {
         public WordNetRelation inversed() {
             return HOLONYM;
         }},

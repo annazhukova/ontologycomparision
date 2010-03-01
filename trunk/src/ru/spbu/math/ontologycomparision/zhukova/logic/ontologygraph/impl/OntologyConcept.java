@@ -1,33 +1,46 @@
 package ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl;
 
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyConcept;
+import ru.spbu.math.ontologycomparision.zhukova.logic.wordnet.WordNetRelation;
 
 import java.net.URI;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Anna Zhukova
  */
 public class OntologyConcept implements IOntologyConcept<OntologyConcept, OntologyRelation> {
     private final URI uri;
-    private final String label;/*
+    private final String[] labels;
+    /*
     private final List<OntologyConcept> children = new ArrayList<OntologyConcept>();*/
-    private final Set<OntologyConcept> parents = new LinkedHashSet<OntologyConcept>();/*
-    private final List<OntologyRelation> objectRelations = new ArrayList<OntologyRelation>();*/
+    //private final Set<OntologyConcept> parents = new LinkedHashSet<OntologyConcept>();/*
+    //private final List<OntologyRelation> objectRelations = new ArrayList<OntologyRelation>();*/
     private final Set<OntologyRelation> subjectRelations = new LinkedHashSet<OntologyRelation>();
 
-    public OntologyConcept(URI uri, String label) {
+    public OntologyConcept(URI uri, String label, String comment) {
         this.uri = uri;
-        this.label = (label == null || label.length() == 0) ? this.uri.getFragment().replace("_", " ") : label;
+        Set<String> labels = new LinkedHashSet<String>();
+        if (label != null && !label.isEmpty()) {
+            labels.add(label);
+        }
+        labels.add(this.uri.getFragment().replace("_", " "));
+        if (comment != null && !comment.isEmpty()) {
+            labels.add(comment);
+        }
+        this.labels = labels.toArray(new String[labels.size()]);
     }
 
     public URI getUri() {
         return this.uri;
     }
 
-    public String getLabel() {
-        return this.label;
+    public String[] getLabels() {
+        return this.labels;
+    }
+
+    public Collection<String> getLabelCollection() {
+        return Arrays.asList(this.labels);
     }
 
     /*public List<OntologyRelation> getObjectRelations() {
@@ -102,11 +115,17 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
     }
 
     public Set<OntologyConcept> getParents() {
-        return this.parents;
+        Set<OntologyConcept> result = new LinkedHashSet<OntologyConcept>();
+        for (OntologyRelation relation : getSubjectRelations(WordNetRelation.HYPONYM.getRelatedOntologyConcept())) {
+             result.add(relation.getObject());
+        }
+        return result;
+        //return this.parents;
     }
 
     public void addParent(OntologyConcept parent) {
-        getParents().add(parent);
+        //getParents().add(parent);
+        this.subjectRelations.add(new OntologyRelation(WordNetRelation.HYPONYM.getRelatedOntologyConcept(), this, parent));
         /*addObjectRelation(
                 new OntologyRelation(WordNetRelation.HYPERNYM.getRelatedOntologyConcept(), parent, this));
         *//*addSubjectRelation(
@@ -122,13 +141,13 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
     }
 
     public String toString() {
-        /*StringBuilder builder = new StringBuilder(getLabel());
+        /*StringBuilder builder = new StringBuilder(getLabels());
         builder.append("\t children [");
         for (OntologyConcept child : getChildren()) {
-            builder.append(child.getLabel()).append(", ");
+            builder.append(child.getLabels()).append(", ");
         }
         builder.append("]\n");
-        for (int i = 0; i < getLabel().length(); i++) {
+        for (int i = 0; i < getLabels().length(); i++) {
             builder.append(" ");
         }
         builder.append("\t relations [");
@@ -137,10 +156,10 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
         }
         builder.append("]\n");
         return builder.toString();*/
-        return getLabel();
+        return labels.toString();
     }
 
-    /*public int hashCode() {
+    public int hashCode() {
         return getUri().hashCode();
     }
 
@@ -152,5 +171,5 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
             return false;
         }
         return this.getUri().equals(((OntologyConcept) o).getUri());
-    }*/
+    }
 }

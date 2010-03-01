@@ -3,6 +3,7 @@ package ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph;
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyRelation;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -16,7 +17,9 @@ public interface IOntologyConcept<C extends IOntologyConcept, R extends IOntolog
      */
     URI getUri();
 
-    String getLabel();
+    String[] getLabels();
+
+    Collection<String> getLabelCollection();
 
     /**
      * Returns all direct hyponyms of this concept.

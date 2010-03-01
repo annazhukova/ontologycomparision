@@ -18,7 +18,7 @@ import java.util.*;
 public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOntologyRelation<C>> {
     private SynsetHelper<C, R> firstSynsetHelper;
     private SynsetHelper<C, R> secondSynsetHelper;
-    public static final int LEXICAL_DIFFERENCE_THRESHOLD = 10;
+    public static final int LEXICAL_DIFFERENCE_THRESHOLD = 0;
     private Map<C, SimilarConcepts<C, R>> conceptToSimilarConcepts;
     private final int conceptsCount;
     private static final String UNMAPPED_REASON = "Unmapped";
@@ -53,6 +53,8 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
         this.addUnmappedConceptsToResult(result, unmapped);
         return result;
     }
+
+    
 
     private void addUnmappedConceptsToResult(Set<ISimilarConcepts<C, R>> result, Set<C> unmapped) {
         for (C concept : unmapped) {
@@ -97,10 +99,10 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
     }
 
 
-    private IHashTable<String, C> mergeUnmappedAndNoSynsetConcepts(Set<C> unmapped) {
-        IHashTable<String, C> allNoSynsetConcepts = this.noSynsetConceptUnion();
-        List<String> noSynsetConceptLabels = new ArrayList<String>(allNoSynsetConcepts.keySet());
-        IHashTable<String, C> mergedNoSynsetConcepts = new HashTable<String, C>();
+    private IHashTable<String[], C> mergeUnmappedAndNoSynsetConcepts(Set<C> unmapped) {
+        IHashTable<String[], C> allNoSynsetConcepts = this.noSynsetConceptUnion();
+        List<String[]> noSynsetConceptLabels = new ArrayList<String[]>(allNoSynsetConcepts.keySet());
+        IHashTable<String[], C> mergedNoSynsetConcepts = new HashTable<String[], C>();
         lexicallyMergeUnmappedAndNoSynsetConcepts(unmapped, allNoSynsetConcepts, noSynsetConceptLabels, mergedNoSynsetConcepts);
         lexicallyMergeNoSynsetConcepts(allNoSynsetConcepts, noSynsetConceptLabels, mergedNoSynsetConcepts);
         /*System.out.printf("\tPREMERGED: %s\n", mergedNoSynsetConcepts);*/
@@ -109,10 +111,10 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
 
     private void mergeNoSynsetConcepts(Set<ISimilarConcepts<C, R>> result, Set<C> unmapped,
                                        Map<C, SimilarConcepts<C, R>> conceptToSimilarConcepts) {
-        IHashTable<String, C> mergedNoSynsetConcepts = this.mergeUnmappedAndNoSynsetConcepts(unmapped);
+        IHashTable<String[], C> mergedNoSynsetConcepts = this.mergeUnmappedAndNoSynsetConcepts(unmapped);
         unmapped.clear();
         unmapped.addAll(mergedNoSynsetConcepts.allValues());
-        for (Map.Entry<String, Set<C>> entry : mergedNoSynsetConcepts.entrySet()) {
+        for (Map.Entry<String[], Set<C>> entry : mergedNoSynsetConcepts.entrySet()) {
             List<C> values = new ArrayList<C>(entry.getValue());
             if (values.size() == 1) {
                 C concept = values.get(0);
@@ -135,7 +137,7 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
                                 conceptsAreSimilar(result, first, second, unmapped, conceptToSimilarConcepts);
                             } else {
                                 for (C secondParent : secondParents) {
-                                    if (!areLabelsReallyDifferent(firstParent.getLabel(), secondParent.getLabel())) {
+                                    if (!areLabelsReallyDifferent(firstParent.getLabels(), secondParent.getLabels())) {
                                         conceptsAreSimilar(result, first, second, unmapped, conceptToSimilarConcepts);
                                         conceptsAreSimilar(result, firstParent, secondParent, unmapped, conceptToSimilarConcepts);
                                         break allParentCycleLabel;
@@ -149,14 +151,14 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
         }
     }
 
-    private void lexicallyMergeNoSynsetConcepts(IHashTable<String, C> noSynsetConcepts, List<String> noSynsetConceptLabels, IHashTable<String, C> mergedNoSynsetConcepts) {
-        List<String> labelsToRemove = new ArrayList<String>();
+    private void lexicallyMergeNoSynsetConcepts(IHashTable<String[], C> noSynsetConcepts, List<String[]> noSynsetConceptLabels, IHashTable<String[], C> mergedNoSynsetConcepts) {
+        List<String[]> labelsToRemove = new ArrayList<String[]>();
         int i = 0;
-        for (String firstLabel : noSynsetConceptLabels) {
+        for (String[] firstLabel : noSynsetConceptLabels) {
             i++;
             if (i < noSynsetConceptLabels.size()) {
-                for (Iterator<String> iterator = noSynsetConceptLabels.listIterator(i); iterator.hasNext();) {
-                    String secondLabel = iterator.next();
+                for (Iterator<String[]> iterator = noSynsetConceptLabels.listIterator(i); iterator.hasNext();) {
+                    String[] secondLabel = iterator.next();
                     if (!areLabelsReallyDifferent(firstLabel, secondLabel)) {
                         mergedNoSynsetConcepts.insertAll(firstLabel, noSynsetConcepts.get(firstLabel));
                         mergedNoSynsetConcepts.insertAll(firstLabel, noSynsetConcepts.get(secondLabel));
@@ -168,20 +170,20 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
             }
         }
         noSynsetConceptLabels.removeAll(labelsToRemove);
-        for (String label : noSynsetConceptLabels) {
+        for (String[] label : noSynsetConceptLabels) {
             mergedNoSynsetConcepts.insertAll(label, noSynsetConcepts.get(label));
         }
     }
 
-    private void lexicallyMergeUnmappedAndNoSynsetConcepts(Set<C> unmappedConcepts, IHashTable<String, C> noSynsetConcepts,
-                                                           List<String> noSynsetConceptLabels, IHashTable<String, C> mergedNoSynsetConcepts) {
+    private void lexicallyMergeUnmappedAndNoSynsetConcepts(Set<C> unmappedConcepts, IHashTable<String[], C> noSynsetConcepts,
+                                                           List<String[]> noSynsetConceptLabels, IHashTable<String[], C> mergedNoSynsetConcepts) {
         // lexically merging unmapped concepts with no synset concepts
         for (C concept : unmappedConcepts) {
             // unmapped concepts have synsets so their labels are better ones
-            String label = concept.getLabel();
+            String[] label = concept.getLabels();
             mergedNoSynsetConcepts.insert(label, concept);
-            for (Iterator<String> it = noSynsetConceptLabels.iterator(); it.hasNext();) {
-                String noSynsetConceptLabel = it.next();
+            for (Iterator<String[]> it = noSynsetConceptLabels.iterator(); it.hasNext();) {
+                String[] noSynsetConceptLabel = it.next();
                 if (!areLabelsReallyDifferent(label, noSynsetConceptLabel)) {
                     mergedNoSynsetConcepts.insertAll(label, noSynsetConcepts.get(noSynsetConceptLabel));
                     it.remove();
@@ -190,9 +192,19 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
         }
     }
 
-    private boolean areLabelsReallyDifferent(String label1, String label2) {
-        return OntologyComparator.differencePerCent(this.getNormalizedString(label1), this.getNormalizedString(label2))
-                > OntologyComparator.LEXICAL_DIFFERENCE_THRESHOLD;
+    private boolean areLabelsReallyDifferent(String[] label1, String[] label2) {
+        for (String firstLabel : label1) {
+            for (String secondLabel : label2) {
+                 /*if (OntologyComparator.differencePerCent(this.getNormalizedString(firstLabel),
+                         this.getNormalizedString(secondLabel)) <= OntologyComparator.LEXICAL_DIFFERENCE_THRESHOLD) {
+                     return false;
+                 }*/
+                if (this.getNormalizedString(firstLabel).equals(this.getNormalizedString(secondLabel))) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private void conceptsAreSimilar(Set<ISimilarConcepts<C, R>> result, C first, C second, Set<C> unmapped,
@@ -227,31 +239,37 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
 
     private Synset getSynsetForConcept(C... concept) {
         /*System.out.println(first + " " + second);
-        System.out.println(" " + this.firstSynsetHelper.getConceptToSynsetMap());
-        System.out.println(" " + this.secondSynsetHelper.getConceptToSynsetMap());*/
+        System.out.println(" " + this.firstSynsetHelper.getConceptToSynsetTable());
+        System.out.println(" " + this.secondSynsetHelper.getConceptToSynsetTable());*/
         for (C aConcept : concept) {
-            Synset synset = this.firstSynsetHelper.getConceptToSynsetMap().get(aConcept);
-            if (synset == null) {
-                synset = this.secondSynsetHelper.getConceptToSynsetMap().get(aConcept);
+            Set<Synset> firstSynsets = this.firstSynsetHelper.getConceptToSynsetTable().get(aConcept);
+            Set<Synset> secondSynsets = this.secondSynsetHelper.getConceptToSynsetTable().get(aConcept);
+            Set<Synset> setIntersection = SetHelper.INSTANCE.setIntersection(firstSynsets, secondSynsets);
+            if (!setIntersection.isEmpty()) {
+                return setIntersection.iterator().next();
             }
-            if (synset != null) {
-                return synset;
+            if (firstSynsets != null && !firstSynsets.isEmpty()) {
+                return firstSynsets.iterator().next();
+            }
+            if (secondSynsets != null && !secondSynsets.isEmpty()) {
+                return secondSynsets.iterator().next();
             }
         }
         return null;
     }
 
-    private String getNormalizedLabel(C concept) {
-        return getNormalizedString(concept.getLabel());
-    }
-
     private String getNormalizedString(String s) {
-        return s.toLowerCase().replaceAll("[\\-_]", " ");
+        return s.toLowerCase().replaceAll("[\\-_]", " ").trim();
     }
 
     public static int differencePerCent(@NotNull String s1, @NotNull String s2) {
         int[][] a = new int[s1.length()][s2.length()];
-
+        if (s1.length() == 0) {
+            return s2.length() * 100;
+        }
+        if (s2.length() == 0) {
+            return s1.length() * 100;
+        }
         for (int i = 0; i < s1.length(); i++) {
             a[i][0] = i;
         }
@@ -262,7 +280,6 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
 
         for (int i = 1; i < s1.length(); i++) {
             for (int j = 1; j < s2.length(); j++) {
-
                 a[i][j] = Math.min(Math.min(a[i - 1][j - 1] + (s1.charAt(i) == s2.charAt(j) ? 0 : 1), a[i - 1][j] + 1), a[i][j - 1] + 1);
             }
         }
@@ -274,8 +291,8 @@ public class OntologyComparator<C extends IOntologyConcept<C, R>, R extends IOnt
         return (int) ((a[s1.length() - 1][s2.length() - 1] / minLength) * 100);
     }
 
-    public IHashTable<String, C> noSynsetConceptUnion() {
-        IHashTable<String, C> result = new HashTable<String, C>(this.firstSynsetHelper.getConcepsWithNoSynset());
+    public IHashTable<String[], C> noSynsetConceptUnion() {
+        IHashTable<String[], C> result = new HashTable<String[], C>(this.firstSynsetHelper.getConcepsWithNoSynset());
         result.insertAll(this.secondSynsetHelper.getConcepsWithNoSynset());
         return result;
     }

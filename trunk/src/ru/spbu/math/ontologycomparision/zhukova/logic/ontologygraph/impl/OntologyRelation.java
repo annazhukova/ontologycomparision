@@ -1,7 +1,6 @@
 package ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl;
 
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.IOntologyRelation;
-import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyConcept;
 
 /**
  * @author Anna Zhukova
@@ -10,6 +9,7 @@ public class OntologyRelation implements IOntologyRelation<OntologyConcept> {
     private final String name;
     private final OntologyConcept subject;
     private final OntologyConcept object;
+    private boolean inWordNet;
 
     public OntologyRelation(String name, OntologyConcept subject, OntologyConcept object) {
         this.name = name;
@@ -31,7 +31,7 @@ public class OntologyRelation implements IOntologyRelation<OntologyConcept> {
     }
 
     public String toString() {
-        return String.format("%s :%s: %s", getSubject().getLabel(), getRelationName(), getObject().getLabel());
+        return String.format("%s :%s: %s", getSubject().getLabels(), getRelationName(), getObject().getLabels());
     }
 
     public boolean equals(Object o) {
@@ -56,5 +56,13 @@ public class OntologyRelation implements IOntologyRelation<OntologyConcept> {
         result += 13 * this.getSubject().hashCode();
         result += 13 * this.getObject().hashCode();
         return result;
+    }
+
+    public boolean isInWordNet() {
+        return inWordNet;
+    }
+
+    public void setInWordNet(boolean inWordNet) {
+        this.inWordNet = inWordNet;
     }
 }

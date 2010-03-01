@@ -50,11 +50,11 @@ public class SimpleVertex extends Vertex {
             return false;
         }
         SimpleVertex v = (SimpleVertex) obj;
-        return this == v || getLabel().equals(v.getLabel()) && getSurname().equals(v.getSurname());
+        return this == v || getLabels().equals(v.getLabels()) && getSurname().equals(v.getSurname());
     }
 
     public int hashCode() {
-        return getLabel().hashCode() + 7 * getSurname().hashCode();
+        return getLabels().hashCode() + 7 * getSurname().hashCode();
     }  */
 
     public String getSurname() {

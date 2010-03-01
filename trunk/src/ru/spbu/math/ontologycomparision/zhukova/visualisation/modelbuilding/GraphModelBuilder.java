@@ -6,7 +6,6 @@ import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.Ontolog
 import ru.spbu.math.ontologycomparision.zhukova.logic.ontologygraph.impl.OntologyRelation;
 import ru.spbu.math.ontologycomparision.zhukova.logic.similarity.ISimilarConcepts;
 import ru.spbu.math.ontologycomparision.zhukova.logic.similarity.OntologyComparator;
-import ru.spbu.math.ontologycomparision.zhukova.logic.wordnet.WordNetRelation;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IArcFilter;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IGraphModel;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl.*;
@@ -41,24 +40,24 @@ public class GraphModelBuilder implements IGraphModelBuilder {
 
     public GraphModel buildGraphModel(GraphPane graphPane) {
         GraphModel graphModel = new GraphModel(graphPane);
-        Map<String, SuperVertex> synsetNameToVertex = new HashMap<String, SuperVertex>();
+        Map<String, SuperVertex> keyToSyperVertex = new HashMap<String, SuperVertex>();
         Map<String, SimpleVertex> conceptNameToVertex = new HashMap<String, SimpleVertex>();
-        buildVertices(graphPane, graphModel, synsetNameToVertex, conceptNameToVertex, true);
+        buildVertices(graphPane, graphModel, keyToSyperVertex, conceptNameToVertex, true);
         buildArcs(conceptNameToVertex, graphModel);
-        graphModel.setIntToSuperVertexMap(synsetNameToVertex);
+        graphModel.setKeyToSuperVertexMap(keyToSyperVertex);
         graphModel.setIntToSimpleVertexMap(conceptNameToVertex);
         return graphModel;
     }
 
     private void buildVertices(GraphPane graphPane, IGraphModel graphModel,
-                               Map<String, SuperVertex> synsetNameToVertex,
+                               Map<String, SuperVertex> keyToSuperVertex,
                                Map<String, SimpleVertex> conceptNameToVertices, boolean showUnmappedUnmergedOnes) {
         Graphics g = graphPane.getGraphics();
         Font font = new Font(Font.MONOSPACED, Font.ITALIC, 15);
         g.setFont(font);
         int letterWidth = g.getFontMetrics().getWidths()['w'];
         int letterHeight = g.getFontMetrics().getHeight();
-        int currentX= X_GAP;
+        int currentX = X_GAP;
         int currentY = Y_GAP;
         int maxHeight = letterHeight + LABEL_GAP + 2 * Y_GAP;
         int simpleVertexHeight = letterHeight + 2 * LABEL_GAP;
@@ -69,15 +68,19 @@ public class GraphModelBuilder implements IGraphModelBuilder {
             }*/
             int maxSimpleVertexWidth = 0;
             /*for (OntologyConcept concept : mergedEntry.getValue()) {*/
-            for (OntologyConcept concept : mergedEntry.getConcepts()) {
-                String simpleLabel = concept.getLabel();
+            Set<OntologyConcept> conceptSet = mergedEntry.getConcepts();
+            if (conceptSet.isEmpty()) {
+                continue;
+            }
+            for (OntologyConcept concept : conceptSet) {
+                String simpleLabel = concept.getLabelCollection().toString();
                 maxSimpleVertexWidth =
                         Math.max(letterWidth * simpleLabel.length() + 2 * LABEL_GAP, maxSimpleVertexWidth);
             }
             /*String superLabel = mergedEntry.getKey().getDefinition();*/
             String superLabel = String.format("%s (%d%%)", mergedEntry.getSimilarityReasons(), mergedEntry.getSimilarity());
             /*int simpleVertexNumber = mergedEntry.getValue().size();*/
-            int simpleVertexNumber = mergedEntry.getConcepts().size();
+            int simpleVertexNumber = conceptSet.size();
             int superVertexWidth = (X_GAP + maxSimpleVertexWidth) * simpleVertexNumber + X_GAP;
             int superVertexHeight = (Y_GAP + simpleVertexHeight) * simpleVertexNumber + letterHeight + LABEL_GAP + Y_GAP;
 
@@ -86,28 +89,36 @@ public class GraphModelBuilder implements IGraphModelBuilder {
                 currentY += maxHeight + Y_GAP;
             }
 
-            SuperVertex superVertex = createSuperVertex(graphModel, font, letterWidth, letterHeight, currentX,
-                    currentY, superLabel, superVertexWidth, superVertexHeight);
-            synsetNameToVertex.put(superLabel, superVertex);
+            SuperVertex superVertex = keyToSuperVertex.get(superLabel + conceptSet);
+            if (superVertex != null) {continue; }
+                superVertex = createSuperVertex(graphModel, font, letterWidth, letterHeight, currentX,
+                        currentY, superLabel, superVertexWidth, superVertexHeight);
+
+
 
             int conceptX = X_GAP + currentX;
             int conceptY = LABEL_GAP + letterHeight + currentY;
 
             /*for (OntologyConcept concept : mergedEntry.getValue()) {*/
-            for (OntologyConcept concept : mergedEntry.getConcepts()) {
-                if (conceptNameToVertices.containsKey(concept.getUri().toString())) {
-                    continue;
+            int newChildren = 0;
+            for (OntologyConcept concept : conceptSet) {
+                SimpleVertex simpleVertex = conceptNameToVertices.get(concept.getUri().toString());
+                if (simpleVertex == null) {
+                    String simpleLabel = concept.getLabelCollection().toString();
+                    int simpleVertexWidth = letterWidth * simpleLabel.length() + 2 * LABEL_GAP;
+                    if (conceptX + simpleVertexWidth > currentX + superVertexWidth) {
+                        conceptX = currentX + X_GAP;
+                        conceptY += simpleVertexHeight + Y_GAP;
+                    }
+                    simpleVertex = createSimpleVertex(graphModel, font, letterWidth, letterHeight, simpleVertexHeight, superVertex, conceptX, conceptY, concept, simpleLabel, simpleVertexWidth);
+                    conceptNameToVertices.put(concept.getUri().toString(), simpleVertex);
+                    conceptX += simpleVertex.getWidth() + X_GAP;
+                    newChildren++;
+                    superVertex.addSimpleVertex(simpleVertex);
                 }
-                String simpleLabel = concept.getLabel();
-                int simpleVertexWidth = letterWidth * simpleLabel.length() + 2 * LABEL_GAP;
-                if (conceptX  + simpleVertexWidth > currentX + superVertexWidth) {
-                    conceptX = currentX + X_GAP;
-                    conceptY += simpleVertexHeight + Y_GAP;
-                }
-                SimpleVertex simpleVertex = createSimpleVertex(graphModel, font, letterWidth, letterHeight, simpleVertexHeight, superVertex, conceptX, conceptY, concept, simpleLabel, simpleVertexWidth);
-                conceptNameToVertices.put(concept.getUri().toString(), simpleVertex);
-                superVertex.addSimpleVertex(simpleVertex);
-                conceptX += simpleVertexWidth + X_GAP;
+            }
+            if (newChildren == 0) {
+                continue;
             }
             if (conceptY + simpleVertexHeight + Y_GAP < currentY + superVertexHeight) {
                 int newHeight = conceptY - currentY + simpleVertexHeight + Y_GAP;
@@ -116,6 +127,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
             }
             maxHeight = Math.max(maxHeight, superVertexHeight);
             currentX += superVertexWidth + X_GAP;
+            keyToSuperVertex.put(superLabel + conceptSet, superVertex);
         }
     }
 
@@ -155,21 +167,33 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         for (OntologyConcept child : allConcepts) {
             String childName = child.getUri().toString();
             SimpleVertex childVertex = nameToVertex.get(childName);
-            if (childVertex  == null) {
+            if (childVertex == null) {
                 continue;
             }
             /*for (OntologyRelation relation :
                     child.getSubjectRelations(WordNetRelation.HYPERNYM.getRelatedOntologyConcept())) {
                */
-            for (OntologyConcept parent : child.getParents()) {
-                /*String parentName = relation.getObject().getUri().toString();*/
+            /*for (OntologyConcept parent : child.getParents()) {
+                *//*String parentName = relation.getObject().getUri().toString();*//*
                 String parentName = parent.getUri().toString();
-                if (nameToVertex.containsKey(parentName)) {
-                    SimpleVertex parentVertex = nameToVertex.get(parentName);
+                SimpleVertex parentVertex = nameToVertex.get(parentName);
+                if (parentVertex != null) {
                     graphModel.addArc(new Arc(childVertex, parentVertex,
                             Arrays.asList(WordNetRelation.HYPONYM.getRelatedOntologyConcept())));
                 }
 
+            }*/
+
+            for (OntologyRelation relation : child.getSubjectRelations()) {
+                OntologyConcept objectConcept = relation.getObject();
+                if (objectConcept != null) {
+                    String objectName = objectConcept.getUri().toString();
+                    SimpleVertex objectVertex = nameToVertex.get(objectName);
+                    if (objectVertex != null) {
+                        graphModel.addArc(new Arc(childVertex, objectVertex,
+                                Arrays.asList(relation.getRelationName())));
+                    }
+                }
             }
         }
     }

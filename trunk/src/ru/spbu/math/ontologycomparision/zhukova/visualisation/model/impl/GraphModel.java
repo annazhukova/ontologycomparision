@@ -1,12 +1,11 @@
 package ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl;
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.graphpane.IGraphPane;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IArc;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IGraphModel;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IVertex;
-import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IArc;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.graphpane.IGraphPane;
 
-import javax.swing.*;
-import java.util.*;
 import java.awt.*;
+import java.util.*;
 
 public class GraphModel extends Observable implements IGraphModel {
     private final Set<IVertex> vertices = new HashSet<IVertex>();
@@ -30,8 +29,7 @@ public class GraphModel extends Observable implements IGraphModel {
             this.superVertices.add((SuperVertex) v);
         }
         this.graphPane.checkPoint(v.getMaxPoint());
-        setChanged();
-        notifyObservers();
+        update();
     }
 
     public LinkedList<IArc> removeVertex(IVertex vertex) {
@@ -57,20 +55,22 @@ public class GraphModel extends Observable implements IGraphModel {
         Point location = vertex.getAbsoluteLocation();
         vertex.setLocation(new Point(location.x + dx, location.y + dy));
         this.graphPane.checkPoint(vertex.getMaxPoint());
+        update();
+    }
+
+    public void update() {
         setChanged();
         notifyObservers();
     }
 
     public void addArc(IArc arc) {
         this.arcs.add(arc);
-        setChanged();
-        notifyObservers();
+        update();
     }
 
     public void removeArc(IArc arc) {
         this.arcs.remove(arc);
-        setChanged();
-        notifyObservers();
+        update();
     }
 
     public Set<IVertex> getVertices() {
@@ -96,11 +96,11 @@ public class GraphModel extends Observable implements IGraphModel {
         this.arcs.clear();
     }
 
-    public void setIntToSuperVertexMap(Map<String, SuperVertex> nameToVertex) {
+    public void setKeyToSuperVertexMap(Map<String, SuperVertex> nameToVertex) {
         this.nameToSuperVertex = nameToVertex;
     }
 
-    public Map<String, SuperVertex> getNameToSuperVertexMap() {
+    public Map<String, SuperVertex> getKeyToSuperVertexMap() {
         return Collections.unmodifiableMap(this.nameToSuperVertex);
     }
 

@@ -27,7 +27,7 @@ public class TestGraphBuilder extends TestCase {
         IOntologyGraph<OntologyConcept, OntologyRelation> graph =
                 OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
         for (OntologyConcept concept : graph.getConcepts()) {
-            if (concept.getLabel().equalsIgnoreCase(OntologyTestConstants.JAVA)) {
+            if (concept.getLabelCollection().contains(OntologyTestConstants.JAVA)) {
                 return;
             }
         }
@@ -38,9 +38,9 @@ public class TestGraphBuilder extends TestCase {
         IOntologyGraph<OntologyConcept, OntologyRelation> graph =
                 OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
         for (OntologyConcept concept : graph.getConcepts()) {
-            if (concept.getLabel().equalsIgnoreCase(OntologyTestConstants.JAVA)) {
+            if (concept.getLabelCollection().contains(OntologyTestConstants.JAVA)) {
                 for (OntologyConcept parent : concept.getParents()) {
-                    if (parent.getLabel().equalsIgnoreCase(OntologyTestConstants.PROGRAMMING_LANGUAGE)) {
+                    if (parent.getLabelCollection().contains(OntologyTestConstants.PROGRAMMING_LANGUAGE)) {
                         return;
                     }
                 }

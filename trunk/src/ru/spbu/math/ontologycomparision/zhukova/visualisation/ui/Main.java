@@ -1,15 +1,21 @@
 package ru.spbu.math.ontologycomparision.zhukova.visualisation.ui;
 
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IGraphModel;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.IVertex;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl.GraphModel;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl.SimpleVertex;
+import ru.spbu.math.ontologycomparision.zhukova.visualisation.model.impl.SuperVertex;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.graphpane.GraphPane;
 import ru.spbu.math.ontologycomparision.zhukova.visualisation.ui.menuactions.Open;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
+import java.util.Set;
 
 /**
  * @author Anna R. Zhukova
@@ -21,7 +27,8 @@ public class Main {
     //panels
     //graph panel
     private final GraphPane graphPane = new GraphPane();
-    private final JScrollPane graphScrollPane = new JScrollPane(this.graphPane, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    private final JScrollPane graphScrollPane = new JScrollPane(this.graphPane,
+            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     private final JPanel descriptionPanel = new JPanel();
     private final JLabel descriptionLabel = new JLabel();
     private JFrame progressFrame;
@@ -49,7 +56,7 @@ public class Main {
             this.frame.getContentPane().setLayout(new BorderLayout());
             this.frame.getContentPane().add(ToolBar.getToolBar(), BorderLayout.NORTH);
             this.frame.getContentPane().add(this.graphScrollPane, BorderLayout.CENTER);
-
+            this.frame.getContentPane().add(this.getCheckBoxPanel(), BorderLayout.EAST);
             this.descriptionPanel.add(this.descriptionLabel);
             this.frame.getContentPane().add(this.descriptionPanel, BorderLayout.SOUTH);
             initSizes();
@@ -66,7 +73,7 @@ public class Main {
     }
 
     public void setGraphModel(GraphModel graphModel) {
-        this.progressFrame.setVisible(false);
+        //this.progressFrame.setVisible(false);
         this.graphPane.setGraphModel(graphModel);
     }
 
@@ -90,8 +97,8 @@ public class Main {
             progressBar.setVisible(true);
             progressFrame.pack();
             progressFrame.setResizable(false);
-            progressFrame.setLocation((int)getFrame().getLocation().getX() + getFrame().getWidth() / 2,
-                    (int)getFrame().getLocation().getY() + getFrame().getHeight() / 2);
+            progressFrame.setLocation((int) getFrame().getLocation().getX() + getFrame().getWidth() / 2,
+                    (int) getFrame().getLocation().getY() + getFrame().getHeight() / 2);
             //progressFrame.setLocationRelativeTo(this.getFrame());
             progressFrame.setAlwaysOnTop(true);
             progressFrame.setVisible(true);
@@ -122,5 +129,54 @@ public class Main {
 
     public void setIsChanged(boolean isChanged) {
         this.isChanged = isChanged;
+    }
+
+    private JPanel getCheckBoxPanel() {
+        JPanel result = new JPanel(new GridLayout(2, 1));
+        final JCheckBox showUnmappedConceptsCheckBox = new JCheckBox("Show unmapped concepts with no synsets");
+        showUnmappedConceptsCheckBox.setSelected(true);
+        showUnmappedConceptsCheckBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                final boolean showUnmapped = showUnmappedConceptsCheckBox.isSelected();
+                IGraphModel graphModel = Main.this.getGraphModel();
+                if (graphModel != null) {
+                    for (SuperVertex vertex : graphModel.getSuperVertices()) {
+                        if (vertex.getName().toLowerCase().contains("unmapped")) {
+                            vertex.setHidden(!showUnmapped);
+                            for (IVertex subVertex : vertex.getSimpleVertices()) {
+                                subVertex.setHidden(!showUnmapped);
+                            }
+                        }
+                    }
+                    graphModel.update();
+                }
+            }
+        });
+        result.add(showUnmappedConceptsCheckBox);
+
+        final JCheckBox showSingleSynsetVertexCheckBox = new JCheckBox("Show unmapped concepts with synsets");
+        showSingleSynsetVertexCheckBox.setSelected(true);
+        showSingleSynsetVertexCheckBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                final boolean showSingleSynsetVertex = showSingleSynsetVertexCheckBox.isSelected();
+                IGraphModel graphModel = Main.this.getGraphModel();
+                if (graphModel != null) {
+                    for (SuperVertex vertex : graphModel.getSuperVertices()) {
+                        if (vertex.getName().toLowerCase().contains("noun@")) {
+                            Set<SimpleVertex> vertexSet = vertex.getSimpleVertices();  
+                            if (vertexSet != null && vertexSet.size() <= 1) {
+                                vertex.setHidden(!showSingleSynsetVertex);
+                                for (IVertex subVertex : vertexSet) {
+                                    subVertex.setHidden(!showSingleSynsetVertex);
+                                }
+                            }
+                        }
+                    }
+                    graphModel.update();
+                }
+            }
+        });
+        result.add(showSingleSynsetVertexCheckBox);
+        return result;
     }
 }

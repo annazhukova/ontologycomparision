@@ -41,7 +41,7 @@ public class Open extends AbstractAction {
         File firstOwl = FileChoosers.getOpenFileChooser("Select First Ontology");
         File secondOwl = FileChoosers.getOpenFileChooser("Select Second Ontology");
         if (firstOwl != null && secondOwl != null) {
-            Open.main.showProgressBar();
+            //Open.main.showProgressBar();
             try {
                 buildGraph(firstOwl, secondOwl);
                 Open.main.setIsChanged(true);
@@ -82,9 +82,9 @@ public class Open extends AbstractAction {
                     "Comparing ontology %s (blue) to %s (green). (Absolutly equal concepts are colored orange) The similarity is %d %%.",
                     firstOwl.getName(), secondOwl.getName(), similarityCount)
             );
-            Open.main.hideProgressBar();
+            //Open.main.hideProgressBar();
         } catch (Exception e) {
-            Open.main.hideProgressBar();
+            //Open.main.hideProgressBar();
             e.printStackTrace();
             JOptionPane.showMessageDialog(Open.main.getFrame(), e.getMessage(), "Cannot load ontologies", JOptionPane.ERROR_MESSAGE);
         }

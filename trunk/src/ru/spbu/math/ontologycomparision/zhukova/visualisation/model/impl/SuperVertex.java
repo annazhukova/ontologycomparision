@@ -70,6 +70,11 @@ public class SuperVertex extends Vertex {
         }
     }
 
+    public boolean isHidden() {
+        return super.isHidden() && this.simpleVertices != null && !this.simpleVertices.isEmpty();
+    }
+
+
     public String getToolTipText() {
         return getName();
     }
@@ -79,11 +84,11 @@ public class SuperVertex extends Vertex {
             return false;
         }
         SuperVertex v = (SuperVertex) obj;
-        return this == v || getLabel().equals(v.getLabel());
+        return this == v || getLabels().equals(v.getLabels());
     }
 
     public int hashCode() {
-        return getLabel().hashCode();
+        return getLabels().hashCode();
     }*/
 
     public boolean leftBorderTest(Point p) {
