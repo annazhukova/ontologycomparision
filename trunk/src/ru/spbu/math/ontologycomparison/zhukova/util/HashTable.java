@@ -5,11 +5,11 @@ import java.util.*;
 /**
  * @author Anna Zhukova
  */
-public class HashTable<K, V> extends HashMap<K, Set<V>> implements IHashTable<K,V> {
+public class HashTable<K, V> extends HashMap<K, List<V>> implements IHashTable<K,V> {
 
     public HashTable() {}
 
-    public HashTable(Map<K, Set<V>> map) {
+    public HashTable(Map<K, List<V>> map) {
         super(map);
     }
 
@@ -25,25 +25,25 @@ public class HashTable<K, V> extends HashMap<K, Set<V>> implements IHashTable<K,
     }
 
     public void insert(K key, V value) {
-        Set<V> oldValue = this.get(key);
+        List<V> oldValue = this.get(key);
         if (oldValue == null) {
-            oldValue = new LinkedHashSet<V>();
+            oldValue = new ArrayList<V>();
             super.put(key, oldValue);
         }
         oldValue.add(value);
     }
 
     public void insertAll(K key, Collection<V> values) {
-        Set<V> oldValue = this.get(key);
+        List<V> oldValue = this.get(key);
         if (oldValue == null) {
-            oldValue = new LinkedHashSet<V>();
+            oldValue = new ArrayList<V>();
             super.put(key, oldValue);
         }
         oldValue.addAll(values);
     }
 
     public void insertAll(IHashTable<K, V> table) {
-        for (Map.Entry<K, Set<V>> entry : table.entrySet()) {
+        for (Map.Entry<K, List<V>> entry : table.entrySet()) {
             this.insertAll(entry.getKey(), entry.getValue());
         }
     }
@@ -56,7 +56,7 @@ public class HashTable<K, V> extends HashMap<K, Set<V>> implements IHashTable<K,
 
     public boolean deleteValue(K key, V value) {
         /*System.out.printf("DELETIND VALUE %s FOR KEY %s\n", value, key);*/
-        Set<V> valueSet = get(key);
+        List<V> valueSet = get(key);
         /*System.out.printf("VALUE SET %s\n", valueSet);*/
         if (valueSet == null) {
             return false;
@@ -72,7 +72,7 @@ public class HashTable<K, V> extends HashMap<K, Set<V>> implements IHashTable<K,
 
     public Collection<V> allValues() {
         Collection<V> result = new ArrayList<V>();
-        for (Set<V> valueList : this.values()) {
+        for (List<V> valueList : this.values()) {
             result.addAll(valueList);
         }
         return result;

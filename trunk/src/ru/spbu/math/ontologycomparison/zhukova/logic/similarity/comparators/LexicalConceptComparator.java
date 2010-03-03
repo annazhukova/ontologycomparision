@@ -10,7 +10,6 @@ import java.util.Set;
  */
 public class LexicalConceptComparator extends SameClassComparator<OntologyConcept, WordNetRelation> {
 
-    @Override
     public boolean areSimilar(OntologyConcept first, OntologyConcept second) {
         return LexicalComparisonHelper.areSimilar(first, second);
     }

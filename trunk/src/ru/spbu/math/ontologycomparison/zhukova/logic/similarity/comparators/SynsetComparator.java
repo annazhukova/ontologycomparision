@@ -26,7 +26,6 @@ public class SynsetComparator extends SameClassComparator<OntologyConcept, Objec
         return Collections.emptySet();
     }
 
-    @Override
     public boolean areSimilar(OntologyConcept first, OntologyConcept second) {
         Set<Synset> firstSynset = first.getSynsetToReason().keySet();
         Set<Synset> secondSynset = second.getSynsetToReason().keySet();

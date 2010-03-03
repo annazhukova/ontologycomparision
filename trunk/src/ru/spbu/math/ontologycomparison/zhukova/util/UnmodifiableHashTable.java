@@ -1,14 +1,11 @@
 package ru.spbu.math.ontologycomparison.zhukova.util;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Anna Zhukova
  */
-public class UnmodifiableHashTable<K, V> extends HashMap<K, Set<V>> implements IHashTable<K, V> {
+public class UnmodifiableHashTable<K, V> extends HashMap<K, List<V>> implements IHashTable<K, V> {
     private final IHashTable<K, V> hashTable;
 
     public UnmodifiableHashTable(IHashTable<K, V> table) {
@@ -44,15 +41,15 @@ public class UnmodifiableHashTable<K, V> extends HashMap<K, Set<V>> implements I
         return this.hashTable.allValues();
     }
 
-    public Set<V> put(K key, Set<V> value) {
+    public List<V> put(K key, List<V> value) {
         throw new UnsupportedOperationException();
     }
 
-    public Set<V> remove(Object key) {
+    public List<V> remove(Object key) {
         throw new UnsupportedOperationException();
     }
 
-    public void putAll(Map<? extends K, ? extends Set<V>> m) {
+    public void putAll(Map<? extends K, ? extends List<V>> m) {
         throw new UnsupportedOperationException();
     }
 

@@ -13,12 +13,10 @@ import java.util.Set;
  * @author Anna Zhukova
  */
 public class ConceptToSynsetComparator extends Comparator<OntologyConcept, Synset, WordNetRelation> {
-    @Override
     public Set<OntologyConcept> getByFirstProperty(OntologyConcept concept, WordNetRelation property) {
         return LexicalComparisonHelper.getConceptSetByConceptAndProperty(concept, property);
     }
 
-    @Override
     public Set<Synset> getBySecondProperty(Synset concept, WordNetRelation property) {
         switch (property) {
             case HYPONYM:
@@ -33,7 +31,6 @@ public class ConceptToSynsetComparator extends Comparator<OntologyConcept, Synse
         return Collections.emptySet();
     }
 
-    @Override
     public boolean areSimilar(OntologyConcept first, Synset second) {
         for (String label : first.getLabels()) {
             if (WordNetHelper.getSynsetsForWord(LexicalComparisonHelper.normalizeString(label)).contains(second)) {

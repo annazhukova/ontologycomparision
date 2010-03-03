@@ -9,4 +9,6 @@ import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.GraphP
 public interface IGraphModelBuilder {
 
     GraphModel buildGraphModel(GraphPane graphPane);
+    
+    int getSimilarity();
 }

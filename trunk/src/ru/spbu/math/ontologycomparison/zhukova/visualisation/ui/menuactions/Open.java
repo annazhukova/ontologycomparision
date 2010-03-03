@@ -6,7 +6,6 @@ package ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.menuactions;
 import org.apache.log4j.Logger;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.OntologyGraphBuilder;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
-import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.OntologyMapper;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.GraphModel;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.GraphModelBuilder;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.IGraphModelBuilder;
@@ -37,8 +36,14 @@ public class Open extends AbstractAction {
 
     public void actionPerformed(ActionEvent e) {
         File firstOwl = FileChoosers.getOpenFileChooser("Select First Ontology");
+        if (firstOwl == null) {
+            return;
+        }
+        Open.main.getGraphModel().clear();
+        Open.main.getGraphModel().update();
+        Open.main.updateDescriptionPanel("");
         File secondOwl = FileChoosers.getOpenFileChooser("Select Second Ontology");
-        if (firstOwl != null && secondOwl != null) {
+        if (secondOwl != null) {
             //Open.main.showProgressBar();
             try {
                 buildGraph(firstOwl, secondOwl);
@@ -73,9 +78,7 @@ public class Open extends AbstractAction {
                     new GraphModelBuilder(firstOntologyGraph, secondOntologyGraph);
             GraphModel myGraphModel = myGraphModelBuilder.buildGraphModel(main.getGraphPane());
             Open.main.setGraphModel(myGraphModel);
-            int similarityCount = (int) (
-                    (new OntologyMapper(
-                            firstOntologyGraph, secondOntologyGraph)).getSimilarity() * 100);
+            int similarityCount = myGraphModelBuilder.getSimilarity();
             Open.main.updateDescriptionPanel(String.format(
                     "Comparing ontology %s (blue) to %s (green). (Absolutly equal concepts are colored orange) The similarity is %d %%.",
                     firstOwl.getName(), secondOwl.getName(), similarityCount)
