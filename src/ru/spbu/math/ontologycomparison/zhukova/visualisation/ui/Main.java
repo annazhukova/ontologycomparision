@@ -116,7 +116,7 @@ public class Main {
 
     public void updateDescriptionPanel(String descrintion) {
         this.descriptionLabel.setText(descrintion);
-        this.descriptionLabel.repaint();
+        this.descriptionPanel.repaint();
     }
 
     public IGraphModel getGraphModel() {
@@ -141,7 +141,7 @@ public class Main {
                 IGraphModel graphModel = Main.this.getGraphModel();
                 if (graphModel != null) {
                     for (SuperVertex vertex : graphModel.getSuperVertices()) {
-                        if (vertex.getName().toLowerCase().contains("unmapped")) {
+                        if (vertex.getName().contains("UNMAPPED")) {
                             vertex.setHidden(!showUnmapped);
                             for (IVertex subVertex : vertex.getSimpleVertices()) {
                                 subVertex.setHidden(!showUnmapped);
@@ -162,7 +162,7 @@ public class Main {
                 IGraphModel graphModel = Main.this.getGraphModel();
                 if (graphModel != null) {
                     for (SuperVertex vertex : graphModel.getSuperVertices()) {
-                        if (vertex.getName().toLowerCase().contains("noun@")) {
+                        if (vertex.getName().contains("SYNSET")) {
                             Set<SimpleVertex> vertexSet = vertex.getSimpleVertices();  
                             if (vertexSet != null && vertexSet.size() <= 1) {
                                 vertex.setHidden(!showSingleSynsetVertex);

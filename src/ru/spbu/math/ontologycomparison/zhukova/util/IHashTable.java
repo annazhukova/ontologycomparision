@@ -1,14 +1,14 @@
 package ru.spbu.math.ontologycomparison.zhukova.util;
 
-import java.util.Map;
-import java.util.Collection;
 import java.io.Serializable;
-import java.util.Set;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Anna Zhukova
  */
-public interface IHashTable<K, V> extends Map<K, Set<V>>, Cloneable, Serializable {
+public interface IHashTable<K, V> extends Map<K, List<V>>, Cloneable, Serializable {
 
     boolean has(Object value);
 

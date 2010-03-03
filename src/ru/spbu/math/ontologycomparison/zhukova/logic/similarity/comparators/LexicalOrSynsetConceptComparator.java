@@ -11,7 +11,6 @@ import java.util.Set;
  */
 public class LexicalOrSynsetConceptComparator extends LexicalConceptComparator {    
 
-    @Override
     public boolean areSimilar(OntologyConcept first, OntologyConcept second) {
         if (first.getConceptToReason().containsKey(second)) {
             return true;

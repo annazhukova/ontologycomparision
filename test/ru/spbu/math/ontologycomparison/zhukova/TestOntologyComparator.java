@@ -3,7 +3,7 @@ package ru.spbu.math.ontologycomparison.zhukova;
 import junit.framework.TestCase;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.OntologyGraphBuilder;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
-import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.OntologyMapper;
+import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.OntologyComparator;
 
 import java.io.FileNotFoundException;
 
@@ -26,34 +26,34 @@ public class TestOntologyComparator extends TestCase {
     }
 
     public void testSimilarityOfTotallyDifferentOntologies() {
-        OntologyMapper comparator =
-                new OntologyMapper(ontoDrinkGraph, ontoPLGraph);
+        OntologyComparator comparator =
+                new OntologyComparator(ontoDrinkGraph, ontoPLGraph);
         assertEquals(0.0, comparator.getSimilarity());
     }
 
     public void testSimilarityOfSameOntologies() {
-        OntologyMapper comparator =
-                new OntologyMapper(ontoDrinkGraph, ontoDrinkGraph);
+        OntologyComparator comparator =
+                new OntologyComparator(ontoDrinkGraph, ontoDrinkGraph);
         assertEquals(1.0, comparator.getSimilarity());
     }
 
     public void testSimilarityOfOntologies() {
-        OntologyMapper comparator =
-                new OntologyMapper(ontoJavaGraph, ontoPLGraph);
+        OntologyComparator comparator =
+                new OntologyComparator(ontoJavaGraph, ontoPLGraph);
         assertEquals(0.5, comparator.getSimilarity());
     }
 
     public void testSimilaritySimmerty() {
-        OntologyMapper comparator1 =
-                new OntologyMapper(ontoJavaGraph, ontoPLGraph);
-        OntologyMapper comparator2 =
-                new OntologyMapper(ontoPLGraph, ontoJavaGraph);
+        OntologyComparator comparator1 =
+                new OntologyComparator(ontoJavaGraph, ontoPLGraph);
+        OntologyComparator comparator2 =
+                new OntologyComparator(ontoPLGraph, ontoJavaGraph);
         assertEquals(comparator2.getSimilarity(), comparator1.getSimilarity());
     }
 
     public void testSimilarityOfOntologiesWithEmptySynsets() {
-        OntologyMapper comparator =
-                new OntologyMapper(ontoJavaCSharpGraph, ontoPLFull);
+        OntologyComparator comparator =
+                new OntologyComparator(ontoJavaCSharpGraph, ontoPLFull);
         assertEquals(37, (int)(comparator.getSimilarity() * 100));
     }
 }
