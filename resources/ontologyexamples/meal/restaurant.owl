@@ -1,0 +1,2080 @@
+<!-- Modified and translated to OWL by: 
+       Juan Ant. Recio-Garcia. 
+       Group for Artificial Intelligence Applications (GAIA) http://gaia.fdi.ucm.es 
+       Universidad Complutense de Madrid 
+-->
+
+<!-- \copyright Copyright ? 2002, Fujitsu Laboratories of America, Inc.; Motorola; 
+Associa??o para o Desenvolvimento das Telecomunica??es e T?cnicas de Inform?tica; AEGIS; Agentscape AG;
+Deutsches Forschungszentrum fuer Kuenstliche Intelligenz GmbH; Imperial College of Science, Technology and Medicine; 
+Telecom Italia Lab.
+ 
+All rights reserved. 
+
+Redistribution and use of this ontology structure without modification 
+are permitted provided that the following conditions are met: 
+
+* Permission of use and redistribution is granted only for research and 
+development purposes and specifically not for any commercial goal or for 
+standardization purpose. 
+* Redistributions of this ontology in any form must retain the above 
+copyright notice, this list of conditions and the following disclaimer. 
+
+* Neither the name of Fujitsu Laboratories of America, Inc.; Motorola; 
+Associa??o para o Desenvolvimento das Telecomunica??es e T?cnicas de Inform?tica; AEGIS; Agentscape AG;
+Deutsches Forschungszentrum fuer Kuenstliche Intelligenz GmbH; Imperial College of Science, Technology and Medicine; 
+Telecom Italia Lab. nor the names of its 
+contributors may be used to endorse or promote products derived from 
+this software without specific prior written permission. 
+* These terms still apply to renamings and other logically equivalent 
+reformulations of the ontology (or portions thereof) in any language. 
+
+THIS SOFTWARE/SPECIFICATION/DOCUMENTATION IS PROVIDED BY THE COPYRIGHT 
+HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF SATISFACTORY 
+QUALITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT 
+SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
+ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+POSSIBILITY OF SUCH DAMAGE. 
+-->
+
+
+<!-- Wed Feb 13 11:01:13 CET 2002 -->
+<!-- Modified in Xemacs by Gunnar on 17/10
+     Added proper utility namespaces
+     Fixed illegal rdf in instances
+     Removed second "size" class
+     These might all be fixed in v6, which is referenced from restaurant-review and finder, but not accessible anywhere.
+     This is based on http://agentcities.adetti-linha4.org/ontologies/restaurantv4.daml
+  -->
+
+ <rdf:RDF 
+   xml:base="http://gaia.fdi.ucm.es/ontologies/restaurant.owl"
+   xmlns="http://gaia.fdi.ucm.es/ontologies/restaurant.owl#"
+    xmlns:cal="http://gaia.fdi.ucm.es/ontologies/calendar.owl#"
+    xmlns:price="http://gaia.fdi.ucm.es/ontologies/price.owl#"
+    xmlns:address="http://gaia.fdi.ucm.es/ontologies/address.owl#"
+    xmlns:contact="http://gaia.fdi.ucm.es/ontologies/contact-details.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#">
+
+  <owl:Ontology rdf:about="">
+   <rdfs:comment>Restaurants Ontology</rdfs:comment>
+
+   <owl:versionInfo>1.0 -  Translated to OWL: 01/2006</owl:versionInfo>
+  </owl:Ontology>
+
+  
+  <owl:Class rdf:ID="Facility">
+   	<rdfs:label>Facility</rdfs:label>
+   	<rdfs:comment> Concept of Facility for any establishement. This class is an abstract class</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:ID="Catering">
+   	<rdfs:label>RestaurantFacility</rdfs:label>
+   	<rdfs:comment> Concept of RestaurantFacility identifies facility offer by a restaurant. This class is an abstract class</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Catering">
+	   <rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0" owl:maxCardinality="1">
+     			<owl:onProperty rdf:resource="#description"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   </owl:Class>
+
+  <owl:Class rdf:ID="TakeAwayFacility">
+   	<rdfs:label>TakeAwayFacility</rdfs:label>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Catering"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+
+  <owl:Class rdf:about="#TakeAwayFacility">
+	<rdfs:comment>
+	Facility proposed by a restaurant to take away food. For each restaurant an instance of this facility identifies the discount percentage gievn by the restaurant to take away food and also indicates the possibility of taking away food by car.  
+	</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#discountPercentage"/>
+     			<owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#driveIn"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+
+
+  <owl:Class rdf:ID="HomeDelivery">
+   	<rdfs:label>HomeDeliveryFacility</rdfs:label>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Catering"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:about="#HomeDelivery">
+	<rdfs:comment> Facility proposed by a restaurant for home delivery. Each restaurant having this facility must described a particular instance of this catering such as last hour purchase information, delivery delay of the restaurant, possibilities of on-line order and on-line payment.
+	</rdfs:comment>
+	 <rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="1">
+     			<owl:onProperty rdf:resource="#deliveryArea"/>     			
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+     	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#lastHourPurchase"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#deliveryDelay"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#onLineOrder"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#onLinePayment"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+  </owl:Class>
+  
+  <owl:Class rdf:ID="ALaCarte">
+   	<rdfs:label>HomeDeliveryFacility</rdfs:label>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Catering"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="SelfService">
+   	<rdfs:label>HomeDeliveryFacility</rdfs:label>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Catering"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+
+  <owl:Class rdf:ID="ChildrenAndBabyFacility">
+   	<rdfs:label>ChildrenAndBabyFacility</rdfs:label>
+	<rdfs:comment> A restaurant can offer some categories of Children and baby facilities.</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Facility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="ChildrenGameArea">
+   	<rdfs:label>ChildrenGameArea</rdfs:label>
+	<rdfs:comment> A restaurant can provide games for children </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#ChildrenAndBabyFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="BabyChair">
+   	<rdfs:label>BabyChair</rdfs:label>
+	<rdfs:comment> A restaurant can provide Baby chairs </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#ChildrenAndBabyFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="ChildrenMeal">
+   	<rdfs:label>ChildrenMeal</rdfs:label>
+	<rdfs:comment> A restaurant can provide Children meal </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#ChildrenAndBabyFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="BabyLaundry">
+   	<rdfs:label>BabyLaundry</rdfs:label>
+	<rdfs:comment> A restaurant can provide a baby laundry </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#ChildrenAndBabyFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="BabySitter">
+   	<rdfs:label>BabySitter</rdfs:label>
+	<rdfs:comment> A restaurant can provide a baby sitter </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#ChildrenAndBabyFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="SmokingFacility">
+   	<rdfs:label>SmokingFacility</rdfs:label>
+   	<rdfs:comment>A restaurant can offer some categories of SmokingFacilities such as smoking area, smoking room etc.  </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Facility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="SmokingArea">
+   	<rdfs:label>SmokingArea</rdfs:label>
+   	<rdfs:comment>A restaurant can offer a smoking area facility </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#SmokingFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="SmokingRoom">
+   	<rdfs:label>SmokingRoom</rdfs:label>
+   	<rdfs:comment>A restaurant can offer a smoking room facility </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#SmokingFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="NoSmoking">
+   	<rdfs:label>NoSmoking</rdfs:label>
+   	<rdfs:comment>no-smoking facility for smoking facility </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#SmokingFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+ <owl:Class rdf:ID="Smoking">
+   	<rdfs:label>Smoking</rdfs:label>
+   	<rdfs:comment>no-smoking facility for smoking facility </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#SmokingFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="ParkingFacility">
+   	<rdfs:label>ParkingFacility</rdfs:label>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Facility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+ <owl:Class rdf:ID="IndoorParking">
+   	<rdfs:label>ParkingIndoor</rdfs:label>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#ParkingFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+ <owl:Class rdf:ID="OutdoorParking">
+   	<rdfs:label>ParkingOutdoor</rdfs:label>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#ParkingFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+ <owl:Class rdf:ID="PrivateParking">
+   	<rdfs:label>PrivateParking</rdfs:label>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#ParkingFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+<owl:Class rdf:ID="PublicParking">
+   	<rdfs:label>PublicParking</rdfs:label>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#ParkingFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+ <owl:Class rdf:ID="ValetParking">
+   	<rdfs:label>ValetParking</rdfs:label>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#ParkingFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="PetFacility">
+   	<rdfs:label>PetFacility</rdfs:label>
+   	<rdfs:comment>An establishment can offer some categories of PetFacility concept such as Pet-accepted, pet-refused, only-dog-accepted. </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Facility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="OnlyDogAccepted">
+   	<rdfs:label>OnlyDogAccepted</rdfs:label>
+   	<rdfs:comment>An establishment can offer an only dog accepted pet facility</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#PetFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="PetAccepted">
+   	<rdfs:label>PetAccepted</rdfs:label>
+   	<rdfs:comment>An establishment can offer a pet accepted pet facility</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#PetFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="PetRefused">
+   	<rdfs:label>PetRefused</rdfs:label>
+   	<rdfs:comment>An establishment can refused pet as pet facility</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#PetFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="PetFood">
+   	<rdfs:label>PetFood</rdfs:label>
+   	<rdfs:comment>An establishment can have a pet food facility</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#PetFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="PetNursery">
+   	<rdfs:label>PetRefused</rdfs:label>
+   	<rdfs:comment>An establishment can have a pet nursery</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#PetFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+   <owl:Class rdf:ID="DisabledFacility">
+   	<rdfs:label>DisabledFacility</rdfs:label>
+   	<rdfs:comment>>An establishement can offer some categories of Disabled facility such as  wheel chair access, elevator</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Facility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+   <owl:Class rdf:ID="WheelChairAccess">
+   	<rdfs:label>WheelChairAccess</rdfs:label>
+   	<rdfs:comment>>An establishement can offer some generic instance of the Disabled concept such as  wheel chair access, elevator</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#DisabledFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+   <owl:Class rdf:ID="Elevator">
+   	<rdfs:label>Elevator</rdfs:label>
+   	<rdfs:comment>>An establishement can offer some generic instance of the Disabled concept such as  wheel chair access, elevator</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#DisabledFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+   <owl:Class rdf:ID="WheelChairToilet">
+   	<rdfs:label>Elevator</rdfs:label>
+   	<rdfs:comment>>An establishement can offer a wheelChairToilet facility</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#DisabledFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+   <owl:Class rdf:ID="BrailleMenu">
+   	<rdfs:label>Elevator</rdfs:label>
+   	<rdfs:comment>>An establishement can a brailleMenu facility</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#DisabledFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+   <owl:Class rdf:ID="PaymentFacility">
+   	<rdfs:label>PaymentFacility</rdfs:label>
+   	<rdfs:comment>>An establishement can offer particular payment facilities</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Facility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+   <owl:Class rdf:ID="CBAccepted">
+   	<rdfs:label>CBAccepted</rdfs:label>
+   	<rdfs:comment>>An establishement can offer CB accepted payement facility: see to introduce type of card or list of predefined instance of payment card</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#PaymentFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+ <owl:Class rdf:about="#CBAccepted">
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="1">
+     			<owl:onProperty rdf:resource="#cardType"/>
+     			<owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+  </owl:Class>
+  
+   <owl:Class rdf:ID="BusinessFacility">
+   	<rdfs:label>BusinessFacility</rdfs:label>
+   	<rdfs:comment>>A restaurant  can offer particular business restaurant facilities such as business lunch, breakfast</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Facility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+   <owl:Class rdf:ID="BusinessBreakfast">
+   	<rdfs:label>BusinessBreakfast</rdfs:label>
+   	<rdfs:comment>>A restaurant can propose business breakfast</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#BusinessFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+   <owl:Class rdf:ID="BusinessLunch">
+   	<rdfs:label>BusinessFacility</rdfs:label>
+   	<rdfs:comment>>A restaurant can propose business lunch</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#BusinessFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+<owl:Class rdf:ID="BusinessDining">
+	<rdfs:comment>A restaurant can propose business dining</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#BusinessFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+   <owl:Class rdf:ID="AccessFacility">
+   	<rdfs:label>AccessFacility</rdfs:label>
+   	<rdfs:comment>>An establishement can be closed to a metro station, taxi station or any other transport facilities</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Facility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+
+   <owl:Class rdf:ID="MetroFacility">
+   	<rdfs:label>MetroFacility</rdfs:label>
+	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#stationName"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#AccessFacility"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+  
+  <owl:DatatypeProperty rdf:ID="description">
+   	<rdfs:label>description
+   	</rdfs:label>
+   	<rdfs:comment>generic property or adding a description to any objects</rdfs:comment>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:ID="discountPercentage">
+   	<rdfs:label>discountPercentage</rdfs:label>
+   	<rdfs:comment>property for a take awayfacility indicating the discount percentage offer when people take away their food </rdfs:comment>
+   	<rdfs:domain>
+    		<owl:Class rdf:about="#TakeAwayFacility">
+    		</owl:Class>
+   	</rdfs:domain>
+   	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  </owl:DatatypeProperty>
+  
+  <owl:DatatypeProperty rdf:ID="driveIn">
+   	<rdfs:label>driveIn
+   	</rdfs:label>
+   	<rdfs:comment> property indicating if there is a driveIn for the take-away facility</rdfs:comment>
+   	<rdfs:domain>
+    		<owl:Class rdf:about="#TakeAwayFacility">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </owl:DatatypeProperty>  
+  
+    <owl:DatatypeProperty rdf:ID="deliveryArea">
+   	<rdfs:label>deliveryArea</rdfs:label>
+   	<rdfs:comment> property indicating the area for the delivery in the case of a home delivery facility</rdfs:comment>
+	<rdfs:domain>
+    		<owl:Class rdf:about="#HomeDelivery">
+    		</owl:Class>
+   	</rdfs:domain>
+   	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  
+  
+  
+  <owl:DatatypeProperty rdf:ID="lastHourPurchase">
+   	<rdfs:label>lastHourPurchase
+   	</rdfs:label>
+   	<rdfs:comment> property indicating the last hour to purchase something from a restaurant having a HomeDeliveryFacility</rdfs:comment>
+   	<rdfs:domain>
+    		<owl:Class rdf:about="#HomeDelivery">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="http://gaia.fdi.ucm.es/ontologies/calendar.owl#Time"/>
+  </owl:DatatypeProperty>
+  
+  <owl:DatatypeProperty rdf:ID="deliveryDelay">
+   	<rdfs:label>deliveryDelay</rdfs:label>
+   	<rdfs:comment> property indicating the delay for the delivery in the case of a home delivery facility</rdfs:comment>
+	<rdfs:domain>
+    		<owl:Class rdf:about="#HomeDelivery">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="http://gaia.fdi.ucm.es/ontologies/calendar.owl#Duration"/>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:ID="onLineOrder">
+   	<rdfs:label>onLineOrder</rdfs:label>
+   	<rdfs:comment> boolean indicating if the HomeDeliveryFacility has the possibility of on-line order</rdfs:comment>
+   	<rdfs:domain>
+    		<owl:Class rdf:about="#HomeDelivery">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </owl:DatatypeProperty>
+  
+  <owl:DatatypeProperty rdf:ID="onLinePayment">
+   	<rdfs:label>onLinePayment</rdfs:label>
+   	<rdfs:comment> property indicating if an on-line payment is possible for the HomeDeliveryFacility of a restaurant</rdfs:comment>
+   	<rdfs:domain>
+    		<owl:Class rdf:about="#HomeDelivery">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </owl:DatatypeProperty>
+    
+  <owl:DatatypeProperty rdf:ID="cardType">
+   	<rdfs:label>cardType</rdfs:label>
+   	<rdfs:comment> property indicating the type of payment card</rdfs:comment>
+  </owl:DatatypeProperty>
+  
+  <owl:DatatypeProperty rdf:ID="stationName">
+   	<rdfs:label>stationName</rdfs:label>
+   	<rdfs:domain>
+    		<owl:Class rdf:about="#MetroFacility" />
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  
+  
+  
+  
+  
+  
+ <!--Classes related to restaurant constraints such as period of closing, opening-days and opening-hours-->
+
+  <owl:Class rdf:ID="DatePeriod">
+   	<rdfs:label>DatePeriod</rdfs:label>
+   	<rdfs:comment> A period is set of days determined by a startPeriodDate and a endPeriodDate</rdfs:comment>
+	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#startPeriodDate"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#endPeriodDate"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+  </owl:Class>
+  
+    <owl:DatatypeProperty rdf:ID="startPeriodDate">
+   	<rdfs:label>startPeriodDate</rdfs:label>
+   	<rdfs:comment> property indicating the start-date of the period </rdfs:comment>
+	<rdfs:domain>
+    		<owl:Class rdf:about="#DatePeriod">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="http://gaia.fdi.ucm.es/ontologies/calendar.owl#Date"/>
+  </owl:DatatypeProperty>
+  
+    <owl:DatatypeProperty rdf:ID="endPeriodDate">
+   	<rdfs:label>endPeriodDate</rdfs:label>
+   	<rdfs:comment> property indicating the end date for a period</rdfs:comment>
+	<rdfs:domain>
+    		<owl:Class rdf:about="#DatePeriod">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="http://gaia.fdi.ucm.es/ontologies/calendar.owl#Date"/>
+  </owl:DatatypeProperty>
+  
+  
+
+   <owl:Class rdf:ID="OpeningPeriod">
+   	<rdfs:label>OpeningPeriod</rdfs:label>
+   </owl:Class>
+
+
+   <owl:Class rdf:about="#OpeningPeriod">
+	<rdfs:comment> This concept summarizes the list of days which have the same opening hours</rdfs:comment>
+	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="1">
+     			<owl:onProperty rdf:resource="#days"/>
+		</owl:Restriction>
+   	</rdfs:subClassOf>
+	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="1" owl:maxCardinality="2">
+     			<owl:onProperty rdf:resource="#periods"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:ObjectProperty rdf:ID="days">
+   	<rdfs:label>days</rdfs:label>
+   	<rdfs:comment> property indicating the list of opening days in the concept OpeningPeriod</rdfs:comment>
+   	<rdfs:domain>
+    		<owl:Class rdf:about="#OpeningPeriod">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="http://gaia.fdi.ucm.es/ontologies/calendar.owl#DayOfWeek"/>
+  </owl:ObjectProperty>
+  
+   <owl:ObjectProperty rdf:ID="periods">
+   	<rdfs:label>periods</rdfs:label>
+   	<rdfs:comment> property indicating a time-slot of periods</rdfs:comment>
+   	<rdfs:domain>
+    		<owl:Class rdf:about="#OpeningPeriod">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="#TimePeriod"/>
+  </owl:ObjectProperty>
+
+   <owl:Class rdf:ID="TimePeriod">
+	<rdfs:label>TimePeriod</rdfs:label>
+   </owl:Class>	
+
+   <owl:Class rdf:about="#TimePeriod">
+	<rdfs:comment>
+		This class allows to describe a time slot.
+	</rdfs:comment>
+	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#startHour"/>
+    		</owl:Restriction>
+	</rdfs:subClassOf>
+	<rdfs:subClassOf>
+		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#stopHour"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   </owl:Class>
+ 
+  <owl:DatatypeProperty rdf:ID="startHour">
+   	<rdfs:label>startHour</rdfs:label>
+   	<rdfs:comment> property indicating the start time for the time-slot of TimePeriod</rdfs:comment>
+   	<rdfs:domain>
+    		<owl:Class rdf:about="#TimePeriod">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="http://gaia.fdi.ucm.es/ontologies/calendar.owl#Time"/>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:ID="stopHour">
+   	<rdfs:label>stopHour</rdfs:label>
+   	<rdfs:comment> property indicating stop time for the time-slot of TimePeriod</rdfs:comment>
+   	<rdfs:domain>
+    		<owl:Class rdf:about="#TimePeriod">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="http://gaia.fdi.ucm.es/ontologies/calendar.owl#Time"/>
+  </owl:DatatypeProperty>
+  
+
+
+
+
+
+
+<!--Classes for Meals, dishes, beverages-->
+
+   <owl:Class rdf:ID="Meal">
+   	<rdfs:label>Meal</rdfs:label>
+   </owl:Class>
+
+   <owl:Class rdf:about="#Meal">
+	<rdfs:comment>This class is an abstract class. Each type of Meal is a subClass of this Concept.</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0" owl:maxCardinality="1">
+     			<owl:onProperty rdf:resource="#name"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#price"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#numberOfPeople"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#starterChoice"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="1">
+     			<owl:onProperty rdf:resource="#mainChoice"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#desertOrCheeseChoice"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#beverageChoice"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:DatatypeProperty rdf:ID="name">
+   	<rdfs:label>name</rdfs:label>
+   	<rdfs:comment> generic property for name</rdfs:comment>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  
+  <owl:DatatypeProperty rdf:ID="price">
+   	<rdfs:label>price</rdfs:label>
+   	<rdfs:comment> generic property indicating a price</rdfs:comment>
+	<rdfs:range rdf:resource="http://gaia.fdi.ucm.es/ontologies/price.owl#Price"/>
+  </owl:DatatypeProperty>
+   <owl:DatatypeProperty rdf:ID="numberOfPeople">
+   	<rdfs:label>numberOfPeople</rdfs:label>
+   	<rdfs:comment> generic property indicating a number of people</rdfs:comment>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#NonNegativeInteger"/>
+  </owl:DatatypeProperty>
+  <owl:ObjectProperty rdf:ID="starterChoice">
+        <rdfs:label>starterChoice</rdfs:label>
+        <rdfs:comment> property indicating the choice of starters (Dish) for a Meal</rdfs:comment>
+	<rdfs:range rdf:resource="#Dish"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="mainChoice">
+        <rdfs:label>mainChoice</rdfs:label>
+        <rdfs:comment> property indicating the choice of main plates for a Meal</rdfs:comment>
+	<rdfs:range rdf:resource="#Dish"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="desertOrCheeseChoice">
+   	<rdfs:label>desertOrCheeseChoice</rdfs:label>
+   	<rdfs:comment> property indicating the choice of desert in a Meal</rdfs:comment>
+   	<rdfs:range rdf:resource="#Dish"/>
+  </owl:ObjectProperty>  
+  <owl:ObjectProperty rdf:ID="beverageChoice">
+   	<rdfs:label>beverageChoice
+   	</rdfs:label>
+   	<rdfs:comment> property indicating the beverages available in a particular Meal</rdfs:comment>
+	<rdfs:range rdf:resource="#Beverage"/>
+  </owl:ObjectProperty>
+ 
+  <owl:Class rdf:ID="Beverage">
+   	<rdfs:label>Beverage</rdfs:label>
+	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="1">
+     			<owl:onProperty rdf:resource="#name"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#price"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#size"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+  </owl:Class>
+  
+  <owl:DatatypeProperty rdf:ID="size">
+   	<rdfs:label>category</rdfs:label>
+   	<rdfs:comment> generic property for the size for beverages in ml </rdfs:comment>
+	<rdfs:domain rdf:resource="#Beverage"/>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+
+   <owl:Class rdf:ID="Beer">
+   	<rdfs:label>Beer</rdfs:label>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Beverage"/>
+   	</rdfs:subClassOf>
+   </owl:Class>
+
+   <owl:Class rdf:about="#Beer">
+	<rdfs:comment> The concept of beer is decribed by the name of the beer, its price (could be the glass price or the bottle price), its category (white, brown...) and a description giving information about the origin of the beer.
+	</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#category"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="1">
+     			<owl:onProperty rdf:resource="#country"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+  </owl:Class>
+  
+  <owl:DatatypeProperty rdf:ID="category">
+   	<rdfs:label>category</rdfs:label>
+   	<rdfs:comment> generic property for category</rdfs:comment>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+ <owl:DatatypeProperty rdf:ID="country">
+   	<rdfs:label>country</rdfs:label>
+   	<rdfs:comment>give the name of a country</rdfs:comment>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+
+  <owl:Class rdf:ID="Wine">
+   	<rdfs:label>Wine</rdfs:label>
+	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Beverage"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Wine">
+	<rdfs:comment>A wine is defined by its name, its category, its year, the bottle price or/and the priceByGlass and aslo some ratings about this wine </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#year"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#priceByGlass"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#region"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#wineType"/>
+			<owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+  </owl:Class>
+  
+  <owl:DatatypeProperty rdf:ID="year">
+   	<rdfs:label>year</rdfs:label>
+   	<rdfs:comment> generic property for year</rdfs:comment>
+	<rdfs:range rdf:resource="http://gaia.fdi.ucm.es/ontologies/calendar.owl#Year"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="priceByGlass">
+   	<rdfs:label>priceByGlass</rdfs:label>
+   	<rdfs:comment> property indicating the price of a glass of wine</rdfs:comment>
+	<rdfs:domain>
+    		<owl:Class rdf:about="#Wine"></owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="http://gaia.fdi.ucm.es/ontologies/price.owl#Price"/>
+  </owl:DatatypeProperty>
+   <owl:ObjectProperty rdf:ID="region">
+ 	<rdfs:label>region</rdfs:label>
+   	<rdfs:comment> property indicating the region of a wine</rdfs:comment>
+	<rdfs:domain rdf:resource="#Wine"/>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:ObjectProperty>
+ <owl:ObjectProperty rdf:ID="wineType">
+ 	<rdfs:label>wineType</rdfs:label>
+   	<rdfs:comment> property indicating the tyoe of wine: red, white...</rdfs:comment>
+	<rdfs:domain rdf:resource="#Wine"/>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:ObjectProperty> 
+
+  <owl:Class rdf:ID="Dish">
+   	<rdfs:label>Dish</rdfs:label>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Dish">
+	<rdfs:comment> A dish is described by a category(starter, fish, meat, pizza, cheese, desert), a name, a description, a price and some particularities such as spicy dish.
+	</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#name"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     		  <owl:onProperty rdf:resource="#description"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#price"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0" owl:maxCardinality="1">
+     			<owl:onProperty rdf:resource="#vegetarian"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+	  	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0" owl:maxCardinality="1">
+     			<owl:onProperty rdf:resource="#spicy"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+	  <rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0" owl:maxCardinality="1">
+     			<owl:onProperty rdf:resource="#GMOFree"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+	  <rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0" owl:maxCardinality="1">
+     			<owl:onProperty rdf:resource="#numberOfPeople"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+
+  <owl:DatatypeProperty rdf:ID="vegetarian">
+   	<rdfs:label>vegetarian</rdfs:label>
+   	<rdfs:comment> property indicating if a dish is vegetarian or not</rdfs:comment>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:ID="spicy">
+   	<rdfs:label>spicy</rdfs:label>
+   	<rdfs:comment> property indicating if a dish is spicy or not</rdfs:comment>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </owl:DatatypeProperty>
+
+  <owl:DatatypeProperty rdf:ID="GMOFree">
+   	<rdfs:label>GMOFree</rdfs:label>
+   	<rdfs:comment> property indicating if a dish is spicy or not</rdfs:comment>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </owl:DatatypeProperty>
+  
+  
+  
+  
+
+<!--Classes TO BE REMOVED-->
+
+  <owl:Class rdf:ID="Rating">
+   	<rdfs:label>Rating</rdfs:label>
+   	<rdfs:comment>must be part of another ontology TO BE REMOVED</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:ID="Show">
+   <rdfs:label>Show</rdfs:label>
+  </owl:Class>
+
+
+
+
+
+
+<!--Cuisine classes-->
+  
+  <owl:Class rdf:ID="Cuisine">
+   	<rdfs:label>Cuisine</rdfs:label>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Cuisine">
+	<rdfs:comment> The concept cuisine is an abstract concept. all individuals of this concept are first described by a description of the origin and particularities of this cuisine.
+	</rdfs:comment>
+	<rdfs:subClassOf>
+    		<owl:Restriction>
+     			<owl:onProperty rdf:resource="#description"/>
+			<owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   </owl:Class>
+
+   <owl:Class rdf:ID="FrenchCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+   </owl:Class>
+
+  <owl:Class rdf:ID="WineBarCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#FrenchCuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="GastronomicCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#FrenchCuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:about="#GastronomicCuisine">
+	<rdfs:comment> </rdfs:comment>
+	<rdfs:subClassOf>
+    		<owl:Restriction>
+     			<owl:onProperty rdf:resource="#chiefNames"/>
+			<owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   </owl:Class>
+
+  <owl:DatatypeProperty rdf:ID="chiefNames">
+   	<rdfs:label>chiefNames
+   	</rdfs:label>
+   	<rdfs:comment> property indicating the name of the chiefs for a gastronomic cuisine</rdfs:comment>
+  </owl:DatatypeProperty>
+
+  <owl:Class rdf:ID="ClassicFrenchCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#FrenchCuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="BistrotCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#FrenchCuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="NewFrenchCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#FrenchCuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="FastFoodCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="ArgentinianCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="AsianCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="BarbecueCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="BelgianCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="BrasserieCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="BrazilianCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="BritishCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="BritishModernCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#BritishCuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="BritishTraditionalCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#BritishCuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="BurmeseCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="CajunCreoleCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="CambodgianCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="CatalanCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="CentralEuropeanCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="ChineseCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="ChopeHouseCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="CoffeShopCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="CubanCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="DanishCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="DimSumCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="InternationalCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="FinnishCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="FishNChipsCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="GreekCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="HamburgerCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="HungarianCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="IceCreamParlourCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="IndianCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="IrishCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="ItalianCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="ItalianContemporaryCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#ItalianCuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="ItalianTraditionalCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#ItalianCuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="JapaneseCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="JewishCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="KoreanCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="KosherCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="LebaneseCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="MalyasianIndonesianCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="MediterraneanCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="MexicanTexMexCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="MiddleEasternCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="ModernEuropeanCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="MoroccanCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="NepaleseCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="NorthAfricanCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="NorthAmericanCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="PacificRimCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="PersianCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="PeruvianCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="Pizza">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="PolishCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="PortugueseCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="ReunionCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="RussianCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="SaharanCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="SardinianCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="ScottishCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="SeafoodCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="SeychellesCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="SouthAmericanCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="SpanishCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="SudaneseCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="SwedishScandinavianCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="SwissCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="ThaiCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="TurkishCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="TrendyCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="VegetarianCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="VietnameseCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+
+
+
+  <owl:Class rdf:ID="Atmosphere">
+   	<rdfs:label>Atmosphere</rdfs:label>
+  </owl:Class>
+
+  <owl:Class rdf:about="#Atmosphere">
+	<rdfs:comment> This concept has some categories used to identify the atmosphere of a particular restaurant. </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0" owl:maxCardinality="1">
+     			<owl:onProperty rdf:resource="#description"/>
+			<owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="SemiPrivateSpace">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Atmosphere"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="PrivateSpace">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Atmosphere"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="FineDiningAtmosphere">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Atmosphere"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="RomanticAtmosphere">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Atmosphere"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="GayAndLesbianAtmosphere">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Atmosphere"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="BusinessAndCasualAtmosphere">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Atmosphere"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="RelaxedAtmosphere">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Atmosphere"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="FamilialAtmosphere">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Atmosphere"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="CasualAtmosphere">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Atmosphere"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+   <owl:Class rdf:ID="RestaurantGroupParty">
+   	<rdfs:label>RestaurantGroupParty</rdfs:label>
+   	<rdfs:comment>This concept has some categories used to identify the specific occasions managed by the restaurant such as wedding party, new-year evening party etc. 
+	</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:ID="CocktailParty">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#RestaurantGroupParty"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="WeddingParty">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#RestaurantGroupParty"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="BirthdayParty">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#RestaurantGroupParty"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="ChristmasParty">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#RestaurantGroupParty"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="OfficeParty">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#RestaurantGroupParty"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="NewYearEveningParty">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#RestaurantGroupParty"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="ConventionParty">
+	<rdfs:comment> could be convention or meeting party</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#RestaurantGroupParty"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+
+  <owl:Class rdf:ID="SpecialFeature">
+   	<rdfs:label>RestaurantSpecificFeatures</rdfs:label>
+   	<rdfs:comment>This concept has some categories used to identify the specific features proposed by the restaurant such as dancing, biological products etc.
+   	</rdfs:comment>
+  </owl:Class>
+
+<owl:Class rdf:ID="AllDayDining">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#SpecialFeature"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+<owl:Class rdf:ID="BreakfastBrunch">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#SpecialFeature"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+<owl:Class rdf:ID="RestaurantSeating">
+   	<rdfs:label>RestaurantSeating</rdfs:label>
+   	<rdfs:comment>This concept identify the different possibilities of seating for a restaurant. it's an abstract concept
+   	</rdfs:comment>
+  </owl:Class>
+
+  <owl:Class rdf:ID="DanceFloor">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Atmosphere"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="BiologicalCuisine">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#Cuisine"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="OutdoorSeatingOnPavement">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#RestaurantSeating"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="OutdoorSeatingOnTerrace">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#RestaurantSeating"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="OutdoorSeatingInGarden">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#RestaurantSeating"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="IndoorSeating">
+	<rdfs:comment> </rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#RestaurantSeating"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+  <owl:Class rdf:ID="AirConditioning">
+	<rdfs:comment> could be convention or meeting party</rdfs:comment>
+   	<rdfs:subClassOf>
+    		<owl:Class rdf:about="#RestaurantSeating"/>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+
+  <!-- RESTAURANT CLASS -->
+  
+    <owl:Class rdf:ID="Restaurant">
+   	<rdfs:label>Restaurant</rdfs:label>
+  </owl:Class>
+   
+  <owl:Class rdf:about="#Restaurant">
+	<rdfs:comment> the concept of restaurant is described by several sets of attributes:
+		- name, contact and address socially identify the restaurant
+		- closingPeriods, days-and-opening-hours identify opening periods of the restaurant
+		- everage-meal-duration is giving an information for the customer if he/she has some time constraints
+		- specific-occasions, atmospheres, entertainment, particularities are attributes to help the customer to choose a restuarant according to his/her motivations
+		- dishes, meals, beverages,typeOfCuisine can help to choose a restuarant according to the cuisine or some particular dishes, or some particular meals and their prices
+		- ratings represent the notation of the restuarant by professionals or people
+	 </rdfs:comment>
+	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#atmospheres"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#description"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="1">
+     			<owl:onProperty rdf:resource="#contact"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#address"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:cardinality="1">
+     			<owl:onProperty rdf:resource="#name"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#closingPeriods"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0" owl:maxCardinality="1">
+     			<owl:onProperty rdf:resource="#capacity"/>
+			<owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#NonNegativeInteger"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="1">
+     			<owl:onProperty rdf:resource="#openingPeriods"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0" owl:maxCardinality="1">
+     			<owl:onProperty rdf:resource="#averageMealDuration"/>
+			<owl:allValuesFrom rdf:resource="http://gaia.fdi.ucm.es/ontologies/calendar.owl#Duration"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#specificEvents"/>
+			<owl:allValuesFrom rdf:resource="#RestaurantGroupParty"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#entertainment"/>
+			<owl:allValuesFrom rdf:resource="#Show"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#seating"/>
+			<owl:allValuesFrom rdf:resource="#RestaurantSeating"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#caterings"/>
+			<owl:allValuesFrom rdf:resource="#Catering"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#specialFeatures"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#facilities"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#specialities"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#dishes"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#meals"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#beverages"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#ratings"/>
+			<owl:allValuesFrom rdf:resource="#Rating"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+		<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0">
+     			<owl:onProperty rdf:resource="#reviews"/>
+			<owl:allValuesFrom rdf:resource="#Review"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="1">
+     			<owl:onProperty rdf:resource="#typeOfCuisine"/>
+			<owl:allValuesFrom rdf:resource="#Cuisine"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+  </owl:Class>
+
+
+  <owl:ObjectProperty rdf:ID="atmospheres">
+   	<rdfs:label>atmospheres
+   	</rdfs:label>
+   	<rdfs:comment> property indicating one or several atmosphere of the restaurant</rdfs:comment>
+   	<rdfs:domain>
+    		<owl:Class rdf:about="#Restaurant">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="#Atmosphere"/>
+  </owl:ObjectProperty>
+  
+  <owl:ObjectProperty rdf:ID="contact">
+   	<rdfs:label>contact</rdfs:label>
+   	<rdfs:comment> generic property indicating a contact</rdfs:comment>
+	<rdfs:range rdf:resource="http://gaia.fdi.ucm.es/ontologies/contact-details.owl#ContactDetails"/>
+	<rdfs:domain rdf:resource="#Restaurant" />
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:ID="address">
+   	<rdfs:label>address</rdfs:label>
+   	<rdfs:comment> generic property to indicate an address</rdfs:comment>
+	<rdfs:range rdf:resource="http://gaia.fdi.ucm.es/ontologies/address.owl#Address"/>
+	<rdfs:domain rdf:resource="#Restaurant" />
+  </owl:ObjectProperty>
+  
+  
+  <owl:ObjectProperty rdf:ID="closingPeriods">
+   	<rdfs:label>closingPeriods</rdfs:label>
+   	<rdfs:comment> property indicating the closing period of a restaurant</rdfs:comment>
+   	<rdfs:domain>
+    		<owl:Class rdf:about="#Restaurant">
+    			</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="#DatePeriod"/>
+  </owl:ObjectProperty>
+
+
+  <owl:DatatypeProperty rdf:ID="capacity">
+   	<rdfs:label>capacity
+   	</rdfs:label>
+   	<rdfs:comment> generic property indicating a capacity</rdfs:comment>
+  </owl:DatatypeProperty>
+
+
+  <owl:ObjectProperty rdf:ID="openingPeriods">
+   	<rdfs:label>openingPeriods</rdfs:label>
+   	<rdfs:comment> property indicating the opening days and opening hours in a week</rdfs:comment>
+	<rdfs:range rdf:resource="#OpeningPeriod"/>
+  </owl:ObjectProperty>
+
+  <owl:DatatypeProperty rdf:ID="averageMealDuration">
+   	<rdfs:label>averageMealDuration</rdfs:label>
+   	<rdfs:comment> Estimation of the time of a meal</rdfs:comment>				       
+	<rdfs:domain rdf:resource="#Restaurant" />			       
+  </owl:DatatypeProperty>
+  
+    <owl:ObjectProperty rdf:ID="specificEvents">
+   	<rdfs:label>specificEvents</rdfs:label>
+   	<rdfs:comment> property indicating the specific occasions handle by the restaurant</rdfs:comment>
+   	<rdfs:domain>
+    		<owl:Class rdf:about="#Restaurant">
+    		</owl:Class>
+   	</rdfs:domain>
+  </owl:ObjectProperty>
+  
+    <owl:ObjectProperty rdf:ID="entertainment">
+   	<rdfs:label>entertainment</rdfs:label>
+   	<rdfs:comment> property indicating the shows proposed by a restaurant</rdfs:comment>
+   	<rdfs:domain>
+    		<owl:Class rdf:about="#Restaurant">
+    		</owl:Class>
+   	</rdfs:domain>
+  </owl:ObjectProperty>
+  
+  <owl:ObjectProperty rdf:ID="seating">
+   	<rdfs:label>seating</rdfs:label>
+   	<rdfs:comment> property indicating the seating properties of the restaurant</rdfs:comment>
+   	<rdfs:domain>
+    		<owl:Class rdf:about="#Restaurant">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="#RestaurantSeating"/>
+  </owl:ObjectProperty>
+
+
+  <owl:ObjectProperty rdf:ID="caterings">
+   	<rdfs:label>facilities</rdfs:label>
+   	<rdfs:comment> property indicating the caterings available in a restaurant</rdfs:comment>
+	<rdfs:domain>
+    		<owl:Class rdf:about="#Restaurant">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="#Catering"/>
+  </owl:ObjectProperty>
+  
+  <owl:ObjectProperty rdf:ID="specialFeatures">
+   	<rdfs:label>specialFeatures</rdfs:label>
+   	<rdfs:comment>property indicating the specific features available in a restaurant </rdfs:comment>
+	<rdfs:domain>
+    		<owl:Class rdf:about="#Restaurant">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="#SpecialFeature"/>
+  </owl:ObjectProperty>
+  
+  <owl:ObjectProperty rdf:ID="facilities">
+   	<rdfs:label>facilities</rdfs:label>
+   	<rdfs:comment> property indicating the facilities available in a restaurant</rdfs:comment>
+	<rdfs:domain>
+    		<owl:Class rdf:about="#Restaurant">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="#Facility"/>
+  </owl:ObjectProperty>
+
+
+  <owl:ObjectProperty rdf:ID="specialities">
+   	<rdfs:label>specialities
+   	</rdfs:label>
+   	<rdfs:comment> generic property indicating the specialities proposed by a restaurant</rdfs:comment>
+	<rdfs:domain>
+    		<owl:Class rdf:about="#Restaurant">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:ObjectProperty>
+  
+  <owl:ObjectProperty rdf:ID="dishes">
+   	<rdfs:label>dishes</rdfs:label>
+   	<rdfs:comment> property indicating the list of dishes available in a restaurant</rdfs:comment>
+   	<rdfs:domain>
+    		<owl:Class rdf:about="#Restaurant">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="#Dish"/>
+  </owl:ObjectProperty>
+  
+  <owl:ObjectProperty rdf:ID="meals">
+   	<rdfs:label>meals
+   	</rdfs:label>
+   	<rdfs:comment> property indicating a list of meals for a restaurant</rdfs:comment>
+	<rdfs:domain>
+    		<owl:Class rdf:about="#Restaurant">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="#Meal"/>
+  </owl:ObjectProperty>
+  
+  <owl:ObjectProperty rdf:ID="beverages">
+   	<rdfs:label>list of beverages
+   	</rdfs:label>
+   	<rdfs:comment> property indicating the beverages available in a particular Meal</rdfs:comment>
+	<rdfs:range rdf:resource="#Beverage"/>
+  </owl:ObjectProperty>
+  
+  <owl:ObjectProperty rdf:ID="ratings">
+ 	<rdfs:label>ratings</rdfs:label>
+   	<rdfs:comment> generic property indicating the ratings for something</rdfs:comment>
+  </owl:ObjectProperty>
+  
+  <owl:ObjectProperty rdf:ID="reviews">
+   	<rdfs:label>reviews</rdfs:label>
+   	<rdfs:comment> </rdfs:comment>
+   	<rdfs:domain>
+    		<owl:Class rdf:about="#Restaurant">
+    		</owl:Class>
+   	</rdfs:domain>
+	<rdfs:range rdf:resource="#Review"/>
+  </owl:ObjectProperty>
+  
+ <owl:Class rdf:ID="Review">
+   	<rdfs:label>Review</rdfs:label>
+  </owl:Class>
+  
+  <owl:Class rdf:about="#Review">
+   	<rdfs:subClassOf>
+    		<owl:Restriction owl:minCardinality="0" owl:maxCardinality="1">
+     			<owl:onProperty rdf:resource="#description"/>
+			<owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    		</owl:Restriction>
+   	</rdfs:subClassOf>
+  </owl:Class>
+  
+    <owl:ObjectProperty rdf:ID="typeOfCuisine">
+   <rdfs:label>typeOfCuisine</rdfs:label>
+   <rdfs:comment> property for a restaurant to identify the type of cuisine </rdfs:comment>
+	<rdfs:domain>
+	  <owl:Class rdf:about="#Restaurant"/>
+	</rdfs:domain>
+	<rdfs:range>
+	  <owl:Class rdf:about="#Cuisine" />
+	</rdfs:range>
+  </owl:ObjectProperty>
+  
+</rdf:RDF>
+
