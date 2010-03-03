@@ -34,9 +34,15 @@ public class OntologyMapper extends Mapper<OntologyConcept, OntologyConcept, Wor
             /* to use less time use iterator, break after first match found and remove: it.remove() =>
             *  the method will become faster but not all reasons of similarity will be found.*/
             for (OntologyConcept second : secondConcepts) {
+                if (first.getUri().equals(second.getUri())) {
+                    bind(first, second, SAME_URI);
+                    //it.remove();
+                    secondConceptsToRemove.add(second);
+                    //break;
+                }
                 Pair<OntologyConcept, OntologyConcept> conceptPair = synsetComparator.areSimilar(first, second, null);
                 if (conceptPair != null) {
-                    bind(first, second, "same synset");
+                    bind(first, second, SAME_SYNSET);
                     //it.remove();
                     secondConceptsToRemove.add(second);
                     //break;

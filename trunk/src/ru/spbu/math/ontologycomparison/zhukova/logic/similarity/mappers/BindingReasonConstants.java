@@ -8,4 +8,6 @@ public interface BindingReasonConstants {
     public static final String SAME_CHILDREN = "same children";
     public static final String SAME_PARTS = "same parts";
     public static final String SAME_WHOLE = "same whole";
+    public static final String SAME_SYNSET = "same synsets";
+    public static final String SAME_URI = "same URIs";
 }
