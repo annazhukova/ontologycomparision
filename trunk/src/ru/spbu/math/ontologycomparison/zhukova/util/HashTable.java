@@ -5,11 +5,11 @@ import java.util.*;
 /**
  * @author Anna Zhukova
  */
-public class HashTable<K, V> extends HashMap<K, List<V>> implements IHashTable<K,V> {
+public abstract class HashTable<K, V, C extends Collection<V>> extends HashMap<K, C> implements IHashTable<K, V, C> {
 
     public HashTable() {}
 
-    public HashTable(Map<K, List<V>> map) {
+    public HashTable(Map<K, C> map) {
         super(map);
     }
 
@@ -25,25 +25,25 @@ public class HashTable<K, V> extends HashMap<K, List<V>> implements IHashTable<K
     }
 
     public void insert(K key, V value) {
-        List<V> oldValue = this.get(key);
+        C oldValue = this.get(key);
         if (oldValue == null) {
-            oldValue = new ArrayList<V>();
+            oldValue = newCollection();
             super.put(key, oldValue);
         }
         oldValue.add(value);
     }
 
     public void insertAll(K key, Collection<V> values) {
-        List<V> oldValue = this.get(key);
+        C oldValue = this.get(key);
         if (oldValue == null) {
-            oldValue = new ArrayList<V>();
+            oldValue = newCollection();
             super.put(key, oldValue);
         }
         oldValue.addAll(values);
     }
 
-    public void insertAll(IHashTable<K, V> table) {
-        for (Map.Entry<K, List<V>> entry : table.entrySet()) {
+    public void insertAll(IHashTable<K, V, C> table) {
+        for (Map.Entry<K, C> entry : table.entrySet()) {
             this.insertAll(entry.getKey(), entry.getValue());
         }
     }
@@ -56,25 +56,27 @@ public class HashTable<K, V> extends HashMap<K, List<V>> implements IHashTable<K
 
     public boolean deleteValue(K key, V value) {
         /*System.out.printf("DELETIND VALUE %s FOR KEY %s\n", value, key);*/
-        List<V> valueSet = get(key);
-        /*System.out.printf("VALUE SET %s\n", valueSet);*/
-        if (valueSet == null) {
+        C values = get(key);
+        /*System.out.printf("VALUE SET %s\n", values);*/
+        if (values == null) {
             return false;
         }
-        boolean  result = valueSet.remove(value);
+        boolean  result = values.remove(value);
         /*System.out.printf("REMOVED: %s\n", result);*/
-        if (valueSet.size() == 0) {
+        if (values.size() == 0) {
             super.remove(key);
             /*System.out.printf("REMOVED TOTALLY\n");*/
         }
         return result;
     }
 
-    public Collection<V> allValues() {
-        Collection<V> result = new ArrayList<V>();
-        for (List<V> valueList : this.values()) {
+    public C allValues() {
+        C result = newCollection();
+        for (C valueList : this.values()) {
             result.addAll(valueList);
         }
         return result;
     }
+
+    public abstract C newCollection();
 }

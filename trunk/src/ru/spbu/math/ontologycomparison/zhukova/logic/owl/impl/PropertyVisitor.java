@@ -1,5 +1,6 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.owl.impl;
 
+import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLPropertyExpression;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyRelation;
@@ -11,8 +12,9 @@ import ru.spbu.math.ontologycomparison.zhukova.logic.owl.IPropertyVisitor;
 public class PropertyVisitor implements IPropertyVisitor<OntologyConcept> {
 
     public void inRelationship(OntologyConcept node, OntologyConcept friend, OWLPropertyExpression property) {
-        if (node != null) {
-          node.addSubjectRelation(new OntologyRelation(property.toString(), false, node, friend));
+        if (node != null && property instanceof OWLObjectProperty) {
+            OWLObjectProperty objectProperty = (OWLObjectProperty) property;
+            node.addSubjectRelation(new OntologyRelation(objectProperty.getURI(), objectProperty.toString(), false, node, friend));
         }
     }
 }

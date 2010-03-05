@@ -7,10 +7,8 @@ import ru.spbu.math.ontologycomparison.zhukova.util.HashTable;
 import ru.spbu.math.ontologycomparison.zhukova.util.IHashTable;
 
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.net.URISyntaxException;
+import java.util.*;
 
 /**
  * @author Anna Zhukova
@@ -18,13 +16,33 @@ import java.util.Set;
 public class OntologyConcept implements IOntologyConcept<OntologyConcept, OntologyRelation> {
     private final URI uri;
     private final String[] labels;
-    private IHashTable<Synset, String> synsetToReason = new HashTable<Synset, String>();
-    private IHashTable<OntologyConcept, String> conceptToReason = new HashTable<OntologyConcept, String>();
+    private IHashTable<Synset, String, List<String>> synsetToReason = new HashTable<Synset, String, List<String>>() {
+        @Override
+        public List<String> newCollection() {
+            return new ArrayList<String>();
+        }
+    };
+    private IHashTable<OntologyConcept, String, List<String>> conceptToReason = new HashTable<OntologyConcept, String, List<String>>() {
+        @Override
+        public List<String> newCollection() {
+            return new ArrayList<String>();
+        }
+    };
     /*
     private final List<OntologyConcept> children = new ArrayList<OntologyConcept>();*/
     //private final Set<OntologyConcept> parents = new LinkedHashSet<OntologyConcept>();/*
     //private final List<OntologyRelation> objectRelations = new ArrayList<OntologyRelation>();*/
     private final Set<OntologyRelation> subjectRelations = new LinkedHashSet<OntologyRelation>();
+    private static final URI SUBCLASS_URI;
+    static {
+        URI uri = null;
+        try {
+            uri = new URI("http://www.w3.org/TR/rdf-schema/#ch_subclassof");
+        } catch (URISyntaxException e) {
+            // never happens
+        }
+        SUBCLASS_URI = uri;
+    }
 
     public OntologyConcept(URI uri, String label, String comment) {
         this.uri = uri;
@@ -138,7 +156,7 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
 
     public void addParent(OntologyConcept parent) {
         //getParents().add(parent);
-        this.subjectRelations.add(new OntologyRelation(WordNetRelation.HYPONYM.getRelatedOntologyConcept(), true, this, parent));
+        this.subjectRelations.add(new OntologyRelation(SUBCLASS_URI, WordNetRelation.HYPONYM.getRelatedOntologyConcept(), true, this, parent));
         /*addObjectRelation(
                 new OntologyRelation(WordNetRelation.HYPERNYM.getRelatedOntologyConcept(), parent, this));
         *//*addSubjectRelation(
@@ -148,6 +166,19 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
     /*public void addObjectRelation(OntologyRelation relation) {
         *//*getObjectRelations().add(relation);*//*
     }*/
+
+    public String getMainLabel() {
+        return normalizeString(getLabels()[0]);
+    }
+
+    public static String normalizeString(String source) {
+        // todo: manage CamelCase
+        return source.toLowerCase().replace("_", " ").replace("-", " ").replace("\\", "/").trim();
+    }
+
+    public Collection<OntologyConcept> getSimilarConcepts() {
+        return this.conceptToReason.keySet();
+    }
 
     public void addSubjectRelation(OntologyRelation relation) {
         getSubjectRelations().add(relation);
@@ -186,7 +217,7 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
         return this.getUri().equals(((OntologyConcept) o).getUri());
     }
 
-    public IHashTable<Synset, String> getSynsetToReason() {
+    public IHashTable<Synset, String, List<String>> getSynsetToReason() {
         return synsetToReason;
     }
 
@@ -194,7 +225,7 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
         this.synsetToReason.insert(synset, reason);
     }
 
-    public IHashTable<OntologyConcept, String> getConceptToReason() {
+    public IHashTable<OntologyConcept, String, List<String>> getConceptToReason() {
         return conceptToReason;
     }
 

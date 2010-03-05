@@ -5,10 +5,10 @@ import java.util.*;
 /**
  * @author Anna Zhukova
  */
-public class UnmodifiableHashTable<K, V> extends HashMap<K, List<V>> implements IHashTable<K, V> {
-    private final IHashTable<K, V> hashTable;
+public class UnmodifiableHashTable<K, V, C extends Collection<V>> extends HashMap<K, C> implements IHashTable<K, V, C> {
+    private final IHashTable<K, V, C> hashTable;
 
-    public UnmodifiableHashTable(IHashTable<K, V> table) {
+    public UnmodifiableHashTable(IHashTable<K, V, C> table) {
         super(table);
         this.hashTable = table;
     }
@@ -25,7 +25,7 @@ public class UnmodifiableHashTable<K, V> extends HashMap<K, List<V>> implements 
         throw new UnsupportedOperationException();
     }
 
-    public void insertAll(IHashTable<K, V> kviHashTable) {
+    public void insertAll(IHashTable<K, V, C> kviHashTable) {
         throw new UnsupportedOperationException();
     }
 
@@ -37,19 +37,19 @@ public class UnmodifiableHashTable<K, V> extends HashMap<K, List<V>> implements 
         throw new UnsupportedOperationException();
     }
 
-    public Collection<V> allValues() {
+    public C allValues() {
         return this.hashTable.allValues();
     }
 
-    public List<V> put(K key, List<V> value) {
+    public C put(K key, C value) {
         throw new UnsupportedOperationException();
     }
 
-    public List<V> remove(Object key) {
+    public C remove(Object key) {
         throw new UnsupportedOperationException();
     }
 
-    public void putAll(Map<? extends K, ? extends List<V>> m) {
+    public void putAll(Map<? extends K, ? extends C> m) {
         throw new UnsupportedOperationException();
     }
 

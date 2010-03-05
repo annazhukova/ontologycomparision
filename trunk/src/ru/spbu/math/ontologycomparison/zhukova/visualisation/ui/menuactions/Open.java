@@ -83,6 +83,7 @@ public class Open extends AbstractAction {
                     "Comparing ontology %s (blue) to %s (green). (Absolutly equal concepts are colored orange) The similarity is %d %%.",
                     firstOwl.getName(), secondOwl.getName(), similarityCount)
             );
+            System.out.println(similarityCount);
             //Open.main.hideProgressBar();
         } catch (Exception e) {
             //Open.main.hideProgressBar();

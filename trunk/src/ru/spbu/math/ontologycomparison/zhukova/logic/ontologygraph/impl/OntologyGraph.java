@@ -1,6 +1,7 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl;
 
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
+import ru.spbu.math.ontologycomparison.zhukova.util.IHashTable;
 
 import java.net.URI;
 import java.util.Collection;
@@ -13,9 +14,18 @@ import java.util.Set;
  */
 public class OntologyGraph implements IOntologyGraph {
     private final Map<URI, OntologyConcept> uriToConcept;
+    private final Map<URI, OntologyProperty> uriToProperty;
+    private final IHashTable<String, OntologyConcept, Set<OntologyConcept>> labelToConcept;
 
-    public OntologyGraph(Map<URI, OntologyConcept> uriToConcept){
+    public OntologyGraph(Map<URI, OntologyConcept> uriToConcept, Map<URI, OntologyProperty> uriToProperty, 
+                         IHashTable<String, OntologyConcept, Set<OntologyConcept>> labelToConcept){
         this.uriToConcept = uriToConcept;
+        this.uriToProperty = uriToProperty;
+        this.labelToConcept = labelToConcept;
+    }
+
+    public IHashTable<String, OntologyConcept, Set<OntologyConcept>> getLabelToConceptTable() {
+        return this.labelToConcept;
     }
 
     public Map<URI, OntologyConcept> getUriToConceptMap() {
@@ -53,5 +63,13 @@ public class OntologyGraph implements IOntologyGraph {
             result.append(concept).append(", ");
         }
         return result.append("]").toString();
+    }
+
+    public Collection<OntologyProperty> getProperties() {
+        return uriToProperty.values();
+    }
+
+    public Map<URI, OntologyProperty> getUriToPropertyMap() {
+        return uriToProperty;
     }
 }

@@ -63,6 +63,12 @@
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >java</rdfs:label>
   </owl:Class>
+  <owl:ObjectProperty rdf:ID="objectProperty_1">
+    <rdfs:domain rdf:resource="#Class_3"/>
+    <rdfs:range rdf:resource="#Class_4"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >has_friend</rdfs:label>
+  </owl:ObjectProperty>
 </rdf:RDF>
 
 <!-- Created with Protege (with OWL Plugin 3.4.1, Build 536)  http://protege.stanford.edu -->
