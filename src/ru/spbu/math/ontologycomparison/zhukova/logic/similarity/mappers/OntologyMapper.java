@@ -1,16 +1,17 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers;
 
+import edu.smu.tspell.wordnet.Synset;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
-import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.LexicalComparisonHelper;
+import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.MapStore;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.LexicalOrSynsetConceptComparator;
-import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.SynsetComparator;
 import ru.spbu.math.ontologycomparison.zhukova.logic.wordnet.WordNetRelation;
 import ru.spbu.math.ontologycomparison.zhukova.util.ITriple;
-import ru.spbu.math.ontologycomparison.zhukova.util.Pair;
+import ru.spbu.math.ontologycomparison.zhukova.util.SetHelper;
 import ru.spbu.math.ontologycomparison.zhukova.util.Triple;
 
+import java.net.URI;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Set;
 
 import static ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.BindingReasonConstants.*;
 
@@ -20,45 +21,46 @@ import static ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.B
 public class OntologyMapper extends Mapper<OntologyConcept, OntologyConcept, WordNetRelation> {
     private Collection<OntologyConcept> firstConcepts;
     private Collection<OntologyConcept> secondConcepts;
+    private final MapStore mapStore;
 
-    public OntologyMapper(Collection<OntologyConcept> firstConcepts, Collection<OntologyConcept> secondConcepts) {
+    public OntologyMapper(Collection<OntologyConcept> firstConcepts, Collection<OntologyConcept> secondConcepts, MapStore mapStore) {
         this.firstConcepts = firstConcepts;
         this.secondConcepts = secondConcepts;
+        this.mapStore = mapStore;
     }
 
     public Collection<OntologyConcept> map() {
         LexicalOrSynsetConceptComparator conceptComparator = new LexicalOrSynsetConceptComparator();
-        SynsetComparator synsetComparator = new SynsetComparator();
-        Collection<OntologyConcept> secondConceptsToRemove = new HashSet<OntologyConcept>();
-        for (OntologyConcept first : firstConcepts) {
-            /* to use less time use iterator, break after first match found and remove: it.remove() =>
-            *  the method will become faster but not all reasons of similarity will be found.*/
-            for (OntologyConcept second : secondConcepts) {
-                if (first.getUri().equals(second.getUri())) {
-                    bind(first, second, SAME_URI);
-                    //it.remove();
-                    secondConceptsToRemove.add(second);
-                    //break;
-                }
-                Pair<OntologyConcept, OntologyConcept> conceptPair = synsetComparator.areSimilar(first, second, null);
-                if (conceptPair != null) {
+
+        Set<URI> commonUriSet = SetHelper.INSTANCE.setIntersection(mapStore.getFirstUriToConcept().keySet(), mapStore.getSecondUriToConcept().keySet());
+        for (URI uri : commonUriSet) {
+            OntologyConcept first = mapStore.getFirstUriToConcept().get(uri);
+            OntologyConcept second = mapStore.getSecondUriToConcept().get(uri);
+            bind(first, second, SAME_URI);
+            secondConcepts.remove(second);
+        }
+        Set<Synset> commonSynsetSet = SetHelper.INSTANCE.setIntersection(mapStore.getFirstSynsetlToConcept().keySet(), mapStore.getSecondSynsetToConcept().keySet());
+        for (Synset synset : commonSynsetSet) {
+            for (OntologyConcept first : mapStore.getFirstSynsetlToConcept().get(synset)) {
+                for (OntologyConcept second : mapStore.getSecondSynsetToConcept().get(synset)) {
                     bind(first, second, SAME_SYNSET);
-                    //it.remove();
-                    secondConceptsToRemove.add(second);
-                    //break;
-                }
-                if (!LexicalComparisonHelper.areSimilar(first, second)) {
-                    continue;
-                }
-                if (tryToBind(conceptComparator, first, second, getBindFactors())) {
-                    //it.remove();
-                    secondConceptsToRemove.add(second);
-                    //break;
+                    secondConcepts.remove(second);
                 }
             }
         }
-        secondConcepts.removeAll(secondConceptsToRemove);
+        Set<String> commonLabelSet = SetHelper.INSTANCE.setIntersection(mapStore.getFirstLabelToConcept().keySet(), mapStore.getSecondLabelToConcept().keySet());
+        for (String label : commonLabelSet) {
+            for (OntologyConcept first : mapStore.getFirstLabelToConcept().get(label)) {
+                for (OntologyConcept second : mapStore.getSecondLabelToConcept().get(label)) {
+                    if (tryToBind(conceptComparator, first, second, getBindFactors())) {
+                        secondConcepts.remove(second);
+                        break;
+                    }
+                }
+            }
+        }
         firstConcepts.addAll(secondConcepts);
+        System.out.println("binded ontologies");
         return firstConcepts;
     }
 

@@ -1,5 +1,6 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators;
 
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.ILabeledEntity;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyRelation;
 import ru.spbu.math.ontologycomparison.zhukova.logic.wordnet.WordNetRelation;
@@ -25,7 +26,7 @@ public class LexicalComparisonHelper {
         return source.toLowerCase().replace("_", " ").replace("-", " ").replace("\\", "/").trim();
     }
 
-    public static boolean areSimilar(OntologyConcept first, OntologyConcept second) {
+    public static boolean areSimilar(ILabeledEntity first, ILabeledEntity second) {
         for (String firstLabel : first.getLabels()) {
             for (String secondLabel : second.getLabels()) {
                 if (areSimilar(firstLabel, secondLabel)) {

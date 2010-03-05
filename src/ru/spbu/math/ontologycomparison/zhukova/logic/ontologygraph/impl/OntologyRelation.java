@@ -2,17 +2,21 @@ package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl;
 
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyRelation;
 
+import java.net.URI;
+
 /**
  * @author Anna Zhukova
  */
 public class OntologyRelation implements IOntologyRelation<OntologyConcept> {
+    private final URI uri;
     private final String name;
     private final OntologyConcept subject;
     private final OntologyConcept object;
     private final boolean isTransitive;
     private boolean inWordNet;
 
-    public OntologyRelation(String name, boolean isTransitive, OntologyConcept subject, OntologyConcept object) {
+    public OntologyRelation(URI uri, String name, boolean isTransitive, OntologyConcept subject, OntologyConcept object) {
+        this.uri = uri;
         this.name = name;
         this.subject = subject;
         this.object = object;
@@ -70,5 +74,9 @@ public class OntologyRelation implements IOntologyRelation<OntologyConcept> {
 
     public boolean isTransitive() {
         return isTransitive;
+    }
+
+    public URI getUri() {
+        return uri;
     }
 }

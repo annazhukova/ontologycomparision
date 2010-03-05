@@ -1,5 +1,6 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph;
 
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyRelation;
 
 import java.net.URI;
@@ -9,15 +10,13 @@ import java.util.Set;
 /**
  * @author Anna Zhukova
  */
-public interface IOntologyConcept<C extends IOntologyConcept, R extends IOntologyRelation<C>> {
+public interface IOntologyConcept<C extends IOntologyConcept, R extends IOntologyRelation<C>> extends ILabeledEntity {
 
     /**
      * URI of thic concept.
      * @return URI.
      */
     URI getUri();
-
-    String[] getLabels();
 
     Collection<String> getLabelCollection();
 
@@ -81,4 +80,8 @@ public interface IOntologyConcept<C extends IOntologyConcept, R extends IOntolog
      * @return List of relations.
      */
     /*List<R> getRelations(String relationName);*/
+
+    Collection<OntologyConcept> getSimilarConcepts();
+
+    String getMainLabel();
 }

@@ -25,6 +25,12 @@
     >C#</rdfs:label>
     <rdfs:subClassOf rdf:resource="#OJC_1"/>
   </owl:Class>
+  <owl:ObjectProperty rdf:ID="prop_1">
+    <rdfs:domain rdf:resource="#OJC_2"/>
+    <rdfs:range rdf:resource="#OJC_3"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >has_friend</rdfs:label>
+  </owl:ObjectProperty>
 </rdf:RDF>
 
 <!-- Created with Protege (with OWL Plugin 3.4.1, Build 536)  http://protege.stanford.edu -->

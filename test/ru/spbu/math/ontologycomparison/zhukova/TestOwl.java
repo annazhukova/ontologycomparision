@@ -28,12 +28,12 @@ public class TestOwl extends TestCase {
     }
 
     public void testLoadedConceptCount() {
-        Map<URI, OntologyConcept> result = loader.load(new ClassAnnotationVisitor());
+        Map<URI, OntologyConcept> result = loader.load(new ClassAnnotationVisitor()).getFirst();
         assertEquals(OntologyTestConstants.ONTO_PL_CONCEPTS_COUNT, result.size());
     }
 
     public void testLoadedContent() {
-        Map<URI, OntologyConcept> result = loader.load(new ClassAnnotationVisitor());
+        Map<URI, OntologyConcept> result = loader.load(new ClassAnnotationVisitor()).getFirst();
         for (OntologyConcept concept : result.values()) {
             if (concept.getLabelCollection().contains(OntologyTestConstants.JAVA)) {
                 return;

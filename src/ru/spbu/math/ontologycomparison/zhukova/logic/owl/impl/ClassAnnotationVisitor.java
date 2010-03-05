@@ -15,7 +15,7 @@ public class ClassAnnotationVisitor implements IClassAnnotationVisitor<OntologyC
     private String comment;
 
     public OntologyConcept getOntologyConcept(URI uri) {
-        return new OntologyConcept(uri, this.label, this.comment);
+        return new OntologyConcept(uri, this.getLabel(), this.getComment());
     }
 
     public void visit(OWLObjectAnnotation owlObjectAnnotation) {
@@ -23,10 +23,26 @@ public class ClassAnnotationVisitor implements IClassAnnotationVisitor<OntologyC
 
     public void visit(OWLConstantAnnotation owlConstantAnnotation) {
         if (owlConstantAnnotation.isLabel()) {
-            this.label = owlConstantAnnotation.getAnnotationValue().getLiteral();
+            this.setLabel(owlConstantAnnotation.getAnnotationValue().getLiteral());
         }
         if (owlConstantAnnotation.isComment()) {
-            this.comment = owlConstantAnnotation.getAnnotationValue().getLiteral();
+            this.setComment(owlConstantAnnotation.getAnnotationValue().getLiteral());
         }
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

@@ -10,13 +10,12 @@ import ru.spbu.math.ontologycomparison.zhukova.util.Pair;
 public abstract class Mapper<C1, C2, P> implements IMapper<C1,C2,P> {
 
     protected boolean tryToBind(IComparator<C1, C2, P> comparator, C1 first, C2 second, ITriple<P, String, String>... bindFactors) {
-        boolean result = false;
         for (ITriple<P, String, String> bind : bindFactors) {
             if (tryToBind(comparator, first, second, bind.getFirst(), bind.getSecond(), bind.getThird())) {
-                result = true;
+                return true;
             }
         }
-        return result;
+        return false;
     }
 
     protected boolean tryToBind(IComparator<C1, C2, P> comparator, C1 first, C2 second, P relation, String reasonForOrigin, String reasonForFound) {
