@@ -2,7 +2,7 @@ package ru.spbu.math.ontologycomparison.zhukova;
 
 import junit.framework.TestCase;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.OntologyGraphBuilder;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IMapStore;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.OntologyComparator;
 
 import java.io.FileNotFoundException;
@@ -11,11 +11,11 @@ import java.io.FileNotFoundException;
  * @author Anna Zhukova
  */
 public class TestOntologyComparator extends TestCase {
-    IOntologyGraph ontoPLGraph;
-    IOntologyGraph ontoJavaGraph;
-    IOntologyGraph ontoPLFull;
-    IOntologyGraph ontoJavaCSharpGraph;
-    IOntologyGraph ontoDrinkGraph;
+    IMapStore ontoPLGraph;
+    IMapStore ontoJavaGraph;
+    IMapStore ontoPLFull;
+    IMapStore ontoJavaCSharpGraph;
+    IMapStore ontoDrinkGraph;
 
     public void setUp() throws FileNotFoundException {
         this.ontoPLGraph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);

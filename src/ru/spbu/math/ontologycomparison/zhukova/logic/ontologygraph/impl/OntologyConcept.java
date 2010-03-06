@@ -26,6 +26,8 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
     //private final List<OntologyRelation> objectRelations = new ArrayList<OntologyRelation>();*/
     private final Set<OntologyRelation> subjectRelations = new LinkedHashSet<OntologyRelation>();
     private static final URI SUBCLASS_URI;
+    private boolean isRoot = true;
+
     static {
         URI uri = null;
         try {
@@ -147,6 +149,7 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
     }
 
     public void addParent(OntologyConcept parent) {
+        isRoot = false;
         //getParents().add(parent);
         this.subjectRelations.add(new OntologyRelation(SUBCLASS_URI, WordNetRelation.HYPONYM.getRelatedOntologyConcept(), true, this, parent));
         /*addObjectRelation(
@@ -158,6 +161,10 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
     /*public void addObjectRelation(OntologyRelation relation) {
         *//*getObjectRelations().add(relation);*//*
     }*/
+
+    public boolean isRoot() {
+        return this.isRoot;
+    }
 
     public String getMainLabel() {
         return normalizeString(getLabels()[0]);
@@ -223,5 +230,9 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
 
     public void addConcept(OntologyConcept concept, String reason) {
         this.conceptToReason.insert(concept, reason);
+    }
+
+    public void setIsRoot(boolean root) {
+        isRoot = root;
     }
 }

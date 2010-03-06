@@ -1,4 +1,4 @@
-package ru.spbu.math.ontologycomparison.zhukova.logic.owl;
+package ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader;
 
 import net.sourceforge.fluxion.utils.OWLTransformationException;
 import net.sourceforge.fluxion.utils.OWLUtils;
@@ -9,10 +9,12 @@ import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.io.StreamInputSource;
 import org.semanticweb.owl.model.*;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyRelation;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IMapStore;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyProperty;
-import ru.spbu.math.ontologycomparison.zhukova.util.*;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.MapStore;
+import ru.spbu.math.ontologycomparison.zhukova.util.IHashTable;
+import ru.spbu.math.ontologycomparison.zhukova.util.SetHashTable;
 
 import java.io.File;
 import java.io.InputStream;
@@ -26,7 +28,7 @@ import java.util.Set;
  * @author Anna Zhukova
  *         Processes OWL file and creates internal ontology map (node id to node).
  */
-public class OntologyLoader<C extends IOntologyConcept, R extends IOntologyRelation<C>> {
+public class OntologyLoader {
     private OWLOntology ontology;
     private OWLReasoner reasoner;
 
@@ -72,38 +74,35 @@ public class OntologyLoader<C extends IOntologyConcept, R extends IOntologyRelat
      * @param propertyVisitors  To visit properties.
      * @return Map ontology's been loaded into.
      */
-    public ITriple<Map<URI, C>, Map<URI, OntologyProperty>, IHashTable<String, OntologyConcept, Set<OntologyConcept>>> load(IClassAnnotationVisitor<C> annotationVisitor,
-                                                         IPropertyVisitor<C>... propertyVisitors) {
-        Map<URI, C> concepts = new HashMap<URI, C>();
-        Map<URI, OntologyProperty> properties = new HashMap<URI, OntologyProperty>();
-        IHashTable<String, OntologyConcept, Set<OntologyConcept>> labelToConcept = new HashTable<String, OntologyConcept, Set<OntologyConcept>>() {
-            @Override
-            public Set<OntologyConcept> newCollection() {
-                return new HashSet<OntologyConcept>();
-            }
-        };
+    public IMapStore load(IClassAnnotationVisitor<OntologyConcept> annotationVisitor, IPropertyVisitor<OntologyConcept>... propertyVisitors) {
+        Map<URI, OntologyConcept> uriToConcept = new HashMap<URI, OntologyConcept>();
+        Map<URI, OntologyProperty> uriToProperty = new HashMap<URI, OntologyProperty>();
+        IHashTable<String, OntologyConcept, Set<OntologyConcept>> labelToConcept = new SetHashTable<String, OntologyConcept>();
+        IHashTable<String, OntologyProperty, Set<OntologyProperty>> labelToProperty = new SetHashTable<String, OntologyProperty>();
+        Set<OntologyConcept> roots = new HashSet<OntologyConcept>();
         ReasonerSession session = OWLUtils.getReasonerSession(this.ontology);
         try {
             this.reasoner = session.getReasoner();
             for (OWLClass cls : this.ontology.getReferencedClasses()) {
-                loadClass(cls, annotationVisitor, concepts, labelToConcept);
+                loadClass(cls, annotationVisitor, uriToConcept, labelToConcept, roots);
             }
             for (OWLProperty property : this.ontology.getReferencedObjectProperties()) {
-                loadProperty(property, properties, concepts);
+                loadProperty(property, uriToProperty, labelToProperty, uriToConcept);
             }
         } catch (OWLReasonerException e) {
             throw new RuntimeException(e);
         } finally {
             session.releaseSession();
         }
-        for (IPropertyVisitor<C> visitor : propertyVisitors) {
-            loadProperties(visitor, concepts);
+        for (IPropertyVisitor<OntologyConcept> visitor : propertyVisitors) {
+            loadProperties(visitor, uriToConcept);
         }
-        return new Triple<Map<URI,C>, Map<URI, OntologyProperty>,
-                IHashTable<String, OntologyConcept, Set<OntologyConcept>>>(concepts, properties, labelToConcept);
+        return new MapStore(roots, uriToConcept, labelToConcept, uriToProperty, labelToProperty);
     }
 
-    private void loadProperty(OWLProperty property, Map<URI, OntologyProperty> properties, Map<URI, C> concepts) {
+    private void loadProperty(OWLProperty property, Map<URI, OntologyProperty> uriToProperty,
+                              IHashTable<String, OntologyProperty, Set<OntologyProperty>> labelToProperty,
+                              Map<URI, OntologyConcept> uriToConcept) {
         if (property.isAnonymous()) {
             return;
         }
@@ -120,7 +119,7 @@ public class OntologyLoader<C extends IOntologyConcept, R extends IOntologyRelat
         for (Object domain : property.getDomains(ontology)) {
             OWLDescription domainDescription = (OWLDescription) domain;
             for (OWLClass clazz : domainDescription.getClassesInSignature()) {
-                C concept = concepts.get(clazz.getURI());
+                OntologyConcept concept = uriToConcept.get(clazz.getURI());
                 if (concept != null) {
                     domains.add(concept);
                 }
@@ -130,15 +129,17 @@ public class OntologyLoader<C extends IOntologyConcept, R extends IOntologyRelat
         for (Object domain : property.getRanges(ontology)) {
             OWLDescription rangeDescription = (OWLDescription) domain;
             for (OWLClass clazz : rangeDescription.getClassesInSignature()) {
-                C concept = concepts.get(clazz.getURI());
+                OntologyConcept concept = uriToConcept.get(clazz.getURI());
                 if (concept != null) {
                     ranges.add(concept);
                 }
             }
         }
-        properties.put(property.getURI(), new OntologyProperty(property.getURI(), label,
-                domains.toArray(new IOntologyConcept[domains.size()]), ranges.toArray(new IOntologyConcept[ranges.size()])));
-
+        OntologyProperty ontologyProperty = new OntologyProperty(property.getURI(), label,
+                domains.toArray(new IOntologyConcept[domains.size()]), ranges.toArray(new IOntologyConcept[ranges.size()]),
+                property.isFunctional(ontology));
+        uriToProperty.put(property.getURI(), ontologyProperty);
+        labelToProperty.insert(ontologyProperty.getMainLabel(), ontologyProperty);
             /*
 }
         System.out.println(property.getURI());
@@ -161,11 +162,11 @@ public class OntologyLoader<C extends IOntologyConcept, R extends IOntologyRelat
      * Finds all classes with the relationship induced by the property the given visitor is interested in
      * and gives them to the visitor
      */
-    private void loadProperties(IPropertyVisitor<C> visitor, Map<URI, C> concepts) {
+    private void loadProperties(IPropertyVisitor<OntologyConcept> visitor, Map<URI, OntologyConcept> concepts) {
 
         for (OWLClass clazz : this.ontology.getReferencedClasses()) {
             URI uri = clazz.getURI();
-            C concept = concepts.get(uri);
+            OntologyConcept concept = concepts.get(uri);
             Set<OWLRestriction> owlRestrictions = null;
             try {
                 owlRestrictions = OWLUtils.keep(this.ontology, clazz);
@@ -207,12 +208,13 @@ public class OntologyLoader<C extends IOntologyConcept, R extends IOntologyRelat
      * @param ontologyMap Map id -> internal node implementation.
      * @throws OWLReasonerException  If operations with the reasoner fail.
      */
-    private C loadClass(OWLClass clazz, IClassAnnotationVisitor<C> annotationVisitor,
-                        Map<URI, C> concepts, IHashTable<String, OntologyConcept, Set<OntologyConcept>> labelToConcept)
+    private OntologyConcept loadClass(OWLClass clazz, IClassAnnotationVisitor<OntologyConcept> annotationVisitor,
+                        Map<URI, OntologyConcept> concepts, IHashTable<String, OntologyConcept, Set<OntologyConcept>> labelToConcept,
+                        Set<OntologyConcept> roots)
             throws OWLReasonerException {
         if (this.reasoner.isSatisfiable(clazz)) {
             URI uri = clazz.getURI();
-            C concept = concepts.get(uri);
+            OntologyConcept concept = concepts.get(uri);
             if (concept == null) {
                 for (OWLAnnotation annotation : clazz.getAnnotations(this.ontology)) {
                     annotation.accept(annotationVisitor);
@@ -222,15 +224,17 @@ public class OntologyLoader<C extends IOntologyConcept, R extends IOntologyRelat
                 for (Set<OWLClass> setOfClasses : children) {
                     for (OWLClass child : setOfClasses) {
                         if (!child.equals(clazz)) {
-                            C childConcept = loadClass(child, annotationVisitor, concepts, labelToConcept);
+                            OntologyConcept childConcept = loadClass(child, annotationVisitor, concepts, labelToConcept, roots);
                             if (childConcept != null) {
                                 /*concept.addChild(childConcept);*/
                                 childConcept.addParent(concept);
+                                roots.remove(childConcept);
                             }
                         }
                     }
                 }
                 concepts.put(uri, concept);
+                roots.add(concept);
                 labelToConcept.insert(concept.getMainLabel(), (OntologyConcept)concept);
             }
             return concept;

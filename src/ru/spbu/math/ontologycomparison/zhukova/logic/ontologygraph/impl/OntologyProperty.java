@@ -17,9 +17,11 @@ public class OntologyProperty implements ILabeledEntity {
     private final String[] labels;
     private final IOntologyConcept[] domains;
     private final IOntologyConcept[] ranges;
+    private final boolean isFunctional;
 
-    public OntologyProperty(URI uri, String label, IOntologyConcept[] domains, IOntologyConcept[] ranges) {
+    public OntologyProperty(URI uri, String label, IOntologyConcept[] domains, IOntologyConcept[] ranges, boolean functional) {
         this.uri = uri;
+        isFunctional = functional;
         Set<String> labels = new LinkedHashSet<String>();
         if (label != null && !label.isEmpty()) {
             labels.add(label);
@@ -40,26 +42,15 @@ public class OntologyProperty implements ILabeledEntity {
         return this.labels;
     }
 
+    public String getMainLabel() {
+        return this.labels[0];
+    }
+
     public Collection<String> getLabelCollection() {
         return Arrays.asList(this.labels);
     }
 
     public String toString() {
-        /*StringBuilder builder = new StringBuilder(getLabels());
-        builder.append("\t children [");
-        for (OntologyConcept child : getChildren()) {
-            builder.append(child.getLabels()).append(", ");
-        }
-        builder.append("]\n");
-        for (int i = 0; i < getLabels().length(); i++) {
-            builder.append(" ");
-        }
-        builder.append("\t relations [");
-        for (OntologyRelation relation : getRelations()) {
-            builder.append(relation).append(", ");
-        }
-        builder.append("]\n");
-        return builder.toString();*/
         return getLabelCollection().toString();
     }
 
@@ -83,5 +74,9 @@ public class OntologyProperty implements ILabeledEntity {
 
     public Collection<IOntologyConcept> getRanges() {
         return Arrays.asList(ranges);
+    }
+
+    public boolean isFunctional() {
+        return isFunctional;
     }
 }
