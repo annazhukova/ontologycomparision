@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * @author Anna Zhukova
  */
-public interface IMapStore {
+public interface IOntologyGraph {
     Map<URI, OntologyConcept> getUriToConcept();
 
     Set<URI> getConceptUris();

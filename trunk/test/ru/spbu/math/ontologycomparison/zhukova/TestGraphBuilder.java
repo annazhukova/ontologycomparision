@@ -2,7 +2,7 @@ package ru.spbu.math.ontologycomparison.zhukova;
 
 import junit.framework.TestCase;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.OntologyGraphBuilder;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IMapStore;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
 
 import java.io.FileNotFoundException;
@@ -17,12 +17,12 @@ public class TestGraphBuilder extends TestCase {
     }
 
     public void testConceptsNumber() throws FileNotFoundException {
-        IMapStore graph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
+        IOntologyGraph graph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
         assertEquals(OntologyTestConstants.ONTO_PL_CONCEPTS_COUNT, graph.getConcepts().size());
     }
 
     public void testConceptsContent() throws FileNotFoundException {
-        IMapStore graph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
+        IOntologyGraph graph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
         for (OntologyConcept concept : graph.getConcepts()) {
             if (concept.getLabelCollection().contains(OntologyTestConstants.JAVA)) {
                 return;
@@ -32,7 +32,7 @@ public class TestGraphBuilder extends TestCase {
     }
 
     public void testChildParentRelation() throws FileNotFoundException {
-        IMapStore graph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
+        IOntologyGraph graph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
         for (OntologyConcept concept : graph.getConcepts()) {
             if (concept.getLabelCollection().contains(OntologyTestConstants.JAVA)) {
                 for (OntologyConcept parent : concept.getParents()) {

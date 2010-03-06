@@ -1,7 +1,7 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl;
 
 import edu.smu.tspell.wordnet.Synset;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IMapStore;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparison.zhukova.util.IHashTable;
 
 import java.net.URI;
@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * @author Anna Zhukova
  */
-public class MapStore implements IMapStore {
+public class OntologyGraph implements IOntologyGraph {
     private Map<URI, OntologyConcept> uriToConcept;
 
     private IHashTable<String, OntologyConcept, Set<OntologyConcept>> labelToConcept;
@@ -25,7 +25,7 @@ public class MapStore implements IMapStore {
 
     private IHashTable<String, OntologyProperty, Set<OntologyProperty>> labelToProperty;
 
-    public MapStore(Set<OntologyConcept> roots, Map<URI, OntologyConcept> uriToConcept, IHashTable<String, OntologyConcept, Set<OntologyConcept>> labelToConcept,
+    public OntologyGraph(Set<OntologyConcept> roots, Map<URI, OntologyConcept> uriToConcept, IHashTable<String, OntologyConcept, Set<OntologyConcept>> labelToConcept,
                     Map<URI, OntologyProperty> uriToProperty, IHashTable<String, OntologyProperty, Set<OntologyProperty>> labelToProperty) {
         this.uriToConcept = uriToConcept;
         this.labelToConcept = labelToConcept;
