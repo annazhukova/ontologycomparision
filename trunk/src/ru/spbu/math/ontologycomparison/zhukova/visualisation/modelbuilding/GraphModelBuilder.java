@@ -2,7 +2,7 @@ package ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding;
 
 
 import edu.smu.tspell.wordnet.Synset;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IMapStore;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyRelation;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.OntologyComparator;
@@ -16,8 +16,8 @@ import java.util.*;
 
 
 public class GraphModelBuilder implements IGraphModelBuilder {
-    private final IOntologyGraph firstOntologyGraph;
-    private final IOntologyGraph secondOntologyGraph;
+    private final IMapStore firstOntologyGraph;
+    private final IMapStore secondOntologyGraph;
     private final Collection<OntologyConcept> mergedConcepts;
     private final int similarity;
     private static final Color firstOntologyColor = Color.BLUE;
@@ -28,8 +28,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
     private static final int FRAME_WIDTH = 800;
     private static final int LABEL_GAP = 2;
 
-    public GraphModelBuilder(IOntologyGraph firstOntologyGraph,
-                             IOntologyGraph secondOntologyGraph) {
+    public GraphModelBuilder(IMapStore firstOntologyGraph, IMapStore secondOntologyGraph) {
         this.firstOntologyGraph = firstOntologyGraph;
         this.secondOntologyGraph = secondOntologyGraph;
         OntologyComparator ontologyComparator = new OntologyComparator(
@@ -42,7 +41,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         GraphModel graphModel = new GraphModel(graphPane);
         Map<String, SuperVertex> keyToSyperVertex = new HashMap<String, SuperVertex>();
         Map<String, SimpleVertex> conceptNameToVertex = new HashMap<String, SimpleVertex>();
-        buildVertices(graphPane, graphModel, keyToSyperVertex, conceptNameToVertex, true);
+        buildVertices(graphPane, graphModel, keyToSyperVertex, conceptNameToVertex);
         buildArcs(conceptNameToVertex, graphModel);
         graphModel.setKeyToSuperVertexMap(keyToSyperVertex);
         graphModel.setIntToSimpleVertexMap(conceptNameToVertex);
@@ -51,7 +50,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
 
     private void buildVertices(GraphPane graphPane, IGraphModel graphModel,
                                Map<String, SuperVertex> keyToSuperVertex,
-                               Map<String, SimpleVertex> conceptNameToVertices, boolean showUnmappedUnmergedOnes) {
+                               Map<String, SimpleVertex> conceptNameToVertices) {
         Graphics g = graphPane.getGraphics();
         Font font = new Font(Font.MONOSPACED, Font.ITALIC, 15);
         g.setFont(font);

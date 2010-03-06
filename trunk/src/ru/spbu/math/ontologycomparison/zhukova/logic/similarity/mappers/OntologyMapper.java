@@ -1,8 +1,8 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers;
 
 import edu.smu.tspell.wordnet.Synset;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IMapStore;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
-import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.MapStore;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.LexicalOrSynsetConceptComparator;
 import ru.spbu.math.ontologycomparison.zhukova.logic.wordnet.WordNetRelation;
 import ru.spbu.math.ontologycomparison.zhukova.util.ITriple;
@@ -21,37 +21,42 @@ import static ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.B
 public class OntologyMapper extends Mapper<OntologyConcept, OntologyConcept, WordNetRelation> {
     private Collection<OntologyConcept> firstConcepts;
     private Collection<OntologyConcept> secondConcepts;
-    private final MapStore mapStore;
+    private final IMapStore firstMapStore;
+    private final IMapStore secondMapStore;
 
-    public OntologyMapper(Collection<OntologyConcept> firstConcepts, Collection<OntologyConcept> secondConcepts, MapStore mapStore) {
+    public OntologyMapper(Collection<OntologyConcept> firstConcepts, Collection<OntologyConcept> secondConcepts,
+                          IMapStore firstMapStore, IMapStore secondMapStore) {
         this.firstConcepts = firstConcepts;
         this.secondConcepts = secondConcepts;
-        this.mapStore = mapStore;
+        this.firstMapStore = firstMapStore;
+        this.secondMapStore = secondMapStore;
     }
 
     public Collection<OntologyConcept> map() {
         LexicalOrSynsetConceptComparator conceptComparator = new LexicalOrSynsetConceptComparator();
 
-        Set<URI> commonUriSet = SetHelper.INSTANCE.setIntersection(mapStore.getFirstUriToConcept().keySet(), mapStore.getSecondUriToConcept().keySet());
+        Set<URI> commonUriSet = SetHelper.INSTANCE.setIntersection(firstMapStore.getConceptUris(),
+                secondMapStore.getConceptUris());
         for (URI uri : commonUriSet) {
-            OntologyConcept first = mapStore.getFirstUriToConcept().get(uri);
-            OntologyConcept second = mapStore.getSecondUriToConcept().get(uri);
+            OntologyConcept first = firstMapStore.getUriToConcept().get(uri);
+            OntologyConcept second = secondMapStore.getUriToConcept().get(uri);
             bind(first, second, SAME_URI);
             secondConcepts.remove(second);
         }
-        Set<Synset> commonSynsetSet = SetHelper.INSTANCE.setIntersection(mapStore.getFirstSynsetlToConcept().keySet(), mapStore.getSecondSynsetToConcept().keySet());
+        Set<Synset> commonSynsetSet = SetHelper.INSTANCE.setIntersection(firstMapStore.getSynsets(), secondMapStore.getSynsets());
         for (Synset synset : commonSynsetSet) {
-            for (OntologyConcept first : mapStore.getFirstSynsetlToConcept().get(synset)) {
-                for (OntologyConcept second : mapStore.getSecondSynsetToConcept().get(synset)) {
+            for (OntologyConcept first : firstMapStore.getSynsetToConcept().get(synset)) {
+                for (OntologyConcept second : secondMapStore.getSynsetToConcept().get(synset)) {
                     bind(first, second, SAME_SYNSET);
                     secondConcepts.remove(second);
                 }
             }
         }
-        Set<String> commonLabelSet = SetHelper.INSTANCE.setIntersection(mapStore.getFirstLabelToConcept().keySet(), mapStore.getSecondLabelToConcept().keySet());
+        Set<String> commonLabelSet = SetHelper.INSTANCE.setIntersection(firstMapStore.getConceptLabels(),
+                secondMapStore.getConceptLabels());
         for (String label : commonLabelSet) {
-            for (OntologyConcept first : mapStore.getFirstLabelToConcept().get(label)) {
-                for (OntologyConcept second : mapStore.getSecondLabelToConcept().get(label)) {
+            for (OntologyConcept first : firstMapStore.getLabelToConcept().get(label)) {
+                for (OntologyConcept second : secondMapStore.getLabelToConcept().get(label)) {
                     if (tryToBind(conceptComparator, first, second, getBindFactors())) {
                         secondConcepts.remove(second);
                         break;

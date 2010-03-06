@@ -5,7 +5,7 @@ package ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.menuactions;
 
 import org.apache.log4j.Logger;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.OntologyGraphBuilder;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IMapStore;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.GraphModel;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.GraphModelBuilder;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.IGraphModelBuilder;
@@ -66,12 +66,10 @@ public class Open extends AbstractAction {
         try {
             System.out.printf("Loading %s\n", firstOwl.getName());
             Open.main.updateDescriptionPanel(String.format("Loading %s", firstOwl.getName()));
-            IOntologyGraph firstOntologyGraph =
-                    OntologyGraphBuilder.build(firstOwl);
+            IMapStore firstOntologyGraph = OntologyGraphBuilder.build(firstOwl);
             System.out.printf("Loading %s\n", secondOwl.getName());
             Open.main.updateDescriptionPanel(String.format("Loading %s", secondOwl.getName()));
-            IOntologyGraph secondOntologyGraph =
-                    OntologyGraphBuilder.build(secondOwl);
+            IMapStore secondOntologyGraph = OntologyGraphBuilder.build(secondOwl);
             System.out.printf("Merging\n");
             Open.main.updateDescriptionPanel("Merging ontologies");
             IGraphModelBuilder myGraphModelBuilder =

@@ -1,26 +1,22 @@
 package ru.spbu.math.ontologycomparison.zhukova;
 
 import junit.framework.TestCase;
+import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.OntologyLoader;
+import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.ClassAnnotationVisitor;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyRelation;
-import ru.spbu.math.ontologycomparison.zhukova.logic.owl.OntologyLoader;
-import ru.spbu.math.ontologycomparison.zhukova.logic.owl.impl.ClassAnnotationVisitor;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.net.URI;
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * @author Anna Zhukova
  */
 public class TestOwl extends TestCase {
-    private OntologyLoader<OntologyConcept, OntologyRelation> loader;
+    private OntologyLoader loader;
 
     public void setUp() throws FileNotFoundException {
-        this.loader =
-                new OntologyLoader<OntologyConcept, OntologyRelation>(
-                        new FileInputStream(OntologyTestConstants.ONTOPL_URL));
+        this.loader = new OntologyLoader(new FileInputStream(OntologyTestConstants.ONTOPL_URL));
     }
 
     public void testItLoadsAnything() {
@@ -28,13 +24,13 @@ public class TestOwl extends TestCase {
     }
 
     public void testLoadedConceptCount() {
-        Map<URI, OntologyConcept> result = loader.load(new ClassAnnotationVisitor()).getFirst();
+        Collection<OntologyConcept> result = loader.load(new ClassAnnotationVisitor()).getConcepts();
         assertEquals(OntologyTestConstants.ONTO_PL_CONCEPTS_COUNT, result.size());
     }
 
     public void testLoadedContent() {
-        Map<URI, OntologyConcept> result = loader.load(new ClassAnnotationVisitor()).getFirst();
-        for (OntologyConcept concept : result.values()) {
+        Collection<OntologyConcept> result = loader.load(new ClassAnnotationVisitor()).getConcepts();
+        for (OntologyConcept concept : result) {
             if (concept.getLabelCollection().contains(OntologyTestConstants.JAVA)) {
                 return;
             }

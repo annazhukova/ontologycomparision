@@ -1,9 +1,9 @@
-package ru.spbu.math.ontologycomparison.zhukova.logic.owl.impl;
+package ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl;
 
 import org.semanticweb.owl.model.OWLConstantAnnotation;
 import org.semanticweb.owl.model.OWLObjectAnnotation;
+import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.IClassAnnotationVisitor;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
-import ru.spbu.math.ontologycomparison.zhukova.logic.owl.IClassAnnotationVisitor;
 
 import java.net.URI;
 

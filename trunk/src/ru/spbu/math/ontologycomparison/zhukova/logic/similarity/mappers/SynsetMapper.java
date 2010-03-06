@@ -5,9 +5,9 @@ import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.Ontology
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.ConceptToSynsetComparator;
 import ru.spbu.math.ontologycomparison.zhukova.logic.wordnet.WordNetHelper;
 import ru.spbu.math.ontologycomparison.zhukova.logic.wordnet.WordNetRelation;
-import ru.spbu.math.ontologycomparison.zhukova.util.HashTable;
 import ru.spbu.math.ontologycomparison.zhukova.util.IHashTable;
 import ru.spbu.math.ontologycomparison.zhukova.util.ITriple;
+import ru.spbu.math.ontologycomparison.zhukova.util.SetHashTable;
 import ru.spbu.math.ontologycomparison.zhukova.util.Triple;
 
 import java.util.Collection;
@@ -21,12 +21,7 @@ import static ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.B
  */
 public class SynsetMapper extends Mapper<OntologyConcept, Synset, WordNetRelation> {
     private final Collection<OntologyConcept> conceptCollection;
-    private final IHashTable<Synset, OntologyConcept, Set<OntologyConcept>> synsetToConcept = new HashTable<Synset, OntologyConcept, Set<OntologyConcept>>() {
-        @Override
-        public Set<OntologyConcept> newCollection() {
-            return new HashSet<OntologyConcept>();
-        }
-    };
+    private final IHashTable<Synset, OntologyConcept, Set<OntologyConcept>> synsetToConcept = new SetHashTable<Synset, OntologyConcept>();
 
     public SynsetMapper(Collection<OntologyConcept> conceptCollection) {
         this.conceptCollection = conceptCollection;

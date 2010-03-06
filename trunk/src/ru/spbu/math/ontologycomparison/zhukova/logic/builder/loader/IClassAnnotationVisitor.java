@@ -1,4 +1,4 @@
-package ru.spbu.math.ontologycomparison.zhukova.logic.owl;
+package ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader;
 
 import org.semanticweb.owl.model.OWLAnnotationVisitor;
 

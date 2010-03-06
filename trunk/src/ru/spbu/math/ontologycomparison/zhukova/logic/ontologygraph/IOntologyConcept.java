@@ -76,12 +76,14 @@ public interface IOntologyConcept<C extends IOntologyConcept, R extends IOntolog
 
     /**
      * Returns all relations with the given name for this concept.
-     * @param relationName  Relation name.
+     * @para m relationName  Relation name.
      * @return List of relations.
      */
     /*List<R> getRelations(String relationName);*/
 
     Collection<OntologyConcept> getSimilarConcepts();
 
-    String getMainLabel();
+    boolean isRoot();
+
+    void setIsRoot(boolean root);
 }

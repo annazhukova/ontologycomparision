@@ -6,4 +6,6 @@ package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph;
 public interface ILabeledEntity {
 
     String[] getLabels();
+
+    String getMainLabel();
 }
