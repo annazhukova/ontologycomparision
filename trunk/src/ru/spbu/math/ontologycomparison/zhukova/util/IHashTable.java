@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * @author Anna Zhukova
  */
-public interface IHashTable<K, V, C extends Collection<V>> extends Map<K, C>, Cloneable, Serializable {
+public interface IHashTable<K, V, C> extends Map<K, C>, Cloneable, Serializable {
 
     boolean has(Object value);
 

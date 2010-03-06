@@ -3,12 +3,14 @@ package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl;
 import edu.smu.tspell.wordnet.Synset;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.wordnet.WordNetRelation;
-import ru.spbu.math.ontologycomparison.zhukova.util.HashTable;
-import ru.spbu.math.ontologycomparison.zhukova.util.IHashTable;
+import ru.spbu.math.ontologycomparison.zhukova.util.HashMapTable;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @author Anna Zhukova
@@ -16,18 +18,8 @@ import java.util.*;
 public class OntologyConcept implements IOntologyConcept<OntologyConcept, OntologyRelation> {
     private final URI uri;
     private final String[] labels;
-    private IHashTable<Synset, String, List<String>> synsetToReason = new HashTable<Synset, String, List<String>>() {
-        @Override
-        public List<String> newCollection() {
-            return new ArrayList<String>();
-        }
-    };
-    private IHashTable<OntologyConcept, String, List<String>> conceptToReason = new HashTable<OntologyConcept, String, List<String>>() {
-        @Override
-        public List<String> newCollection() {
-            return new ArrayList<String>();
-        }
-    };
+    private HashMapTable<Synset, String> synsetToReason = new HashMapTable<Synset, String>();
+    private HashMapTable<OntologyConcept, String> conceptToReason = new HashMapTable<OntologyConcept, String>();
     /*
     private final List<OntologyConcept> children = new ArrayList<OntologyConcept>();*/
     //private final Set<OntologyConcept> parents = new LinkedHashSet<OntologyConcept>();/*
@@ -217,7 +209,7 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
         return this.getUri().equals(((OntologyConcept) o).getUri());
     }
 
-    public IHashTable<Synset, String, List<String>> getSynsetToReason() {
+    public HashMapTable<Synset, String> getSynsetToReason() {
         return synsetToReason;
     }
 
@@ -225,7 +217,7 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
         this.synsetToReason.insert(synset, reason);
     }
 
-    public IHashTable<OntologyConcept, String, List<String>> getConceptToReason() {
+    public HashMapTable<OntologyConcept, String> getConceptToReason() {
         return conceptToReason;
     }
 

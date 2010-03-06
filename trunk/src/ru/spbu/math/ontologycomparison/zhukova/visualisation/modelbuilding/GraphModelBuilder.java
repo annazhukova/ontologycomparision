@@ -85,7 +85,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
                     break;
                 }
             }
-            String superLabel = String.format("%s (%s)", lbl, mainConcept.getConceptToReason().allValues());
+            String superLabel = String.format("%s (%s)", lbl, mainConcept.getConceptToReason().values());
             int simpleVertexNumber = conceptSet.size();
             int superVertexWidth = (X_GAP + maxSimpleVertexWidth) * simpleVertexNumber + X_GAP;
             int superVertexHeight = (Y_GAP + simpleVertexHeight) * simpleVertexNumber + letterHeight + LABEL_GAP + Y_GAP;
