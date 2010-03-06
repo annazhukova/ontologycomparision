@@ -9,10 +9,10 @@ import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.io.StreamInputSource;
 import org.semanticweb.owl.model.*;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IMapStore;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyProperty;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.MapStore;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyGraph;
 import ru.spbu.math.ontologycomparison.zhukova.util.IHashTable;
 import ru.spbu.math.ontologycomparison.zhukova.util.SetHashTable;
 
@@ -74,7 +74,7 @@ public class OntologyLoader {
      * @param propertyVisitors  To visit properties.
      * @return Map ontology's been loaded into.
      */
-    public IMapStore load(IClassAnnotationVisitor<OntologyConcept> annotationVisitor, IPropertyVisitor<OntologyConcept>... propertyVisitors) {
+    public IOntologyGraph load(IClassAnnotationVisitor<OntologyConcept> annotationVisitor, IPropertyVisitor<OntologyConcept>... propertyVisitors) {
         Map<URI, OntologyConcept> uriToConcept = new HashMap<URI, OntologyConcept>();
         Map<URI, OntologyProperty> uriToProperty = new HashMap<URI, OntologyProperty>();
         IHashTable<String, OntologyConcept, Set<OntologyConcept>> labelToConcept = new SetHashTable<String, OntologyConcept>();
@@ -97,7 +97,7 @@ public class OntologyLoader {
         for (IPropertyVisitor<OntologyConcept> visitor : propertyVisitors) {
             loadProperties(visitor, uriToConcept);
         }
-        return new MapStore(roots, uriToConcept, labelToConcept, uriToProperty, labelToProperty);
+        return new OntologyGraph(roots, uriToConcept, labelToConcept, uriToProperty, labelToProperty);
     }
 
     private void loadProperty(OWLProperty property, Map<URI, OntologyProperty> uriToProperty,
