@@ -62,7 +62,7 @@ public class Arc implements IArc {
     }
 
     public void paint(Graphics g) {
-        g.setColor(Color.BLACK);
+        g.setColor(Color.GRAY);
         Point loc = this.fromVertex.getAbsoluteLocation();
         int x1 = loc.x + this.fromVertex.getWidth() / 2;
         int y1 = loc.y + this.fromVertex.getHeight() / 2;
