@@ -45,7 +45,7 @@ public class OntologyProperty implements ILabeledEntity {
     }
 
     public String getMainLabel() {
-        return this.labels[0];
+        return this.labels.length > 0 ? this.labels[0] : "";
     }
 
     public Collection<String> getLabelCollection() {
