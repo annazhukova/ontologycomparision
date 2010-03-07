@@ -1,4 +1,6 @@
-package ru.spbu.math.ontologycomparison.zhukova.util;
+package ru.spbu.math.ontologycomparison.zhukova.util.impl;
+
+import ru.spbu.math.ontologycomparison.zhukova.util.IHashTable;
 
 import java.util.Collection;
 import java.util.HashMap;

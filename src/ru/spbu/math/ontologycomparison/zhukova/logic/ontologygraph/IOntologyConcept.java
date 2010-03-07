@@ -1,24 +1,15 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph;
 
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyRelation;
+import edu.smu.tspell.wordnet.Synset;
+import ru.spbu.math.ontologycomparison.zhukova.util.impl.HashMapTable;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.Set;
 
 /**
  * @author Anna Zhukova
  */
-public interface IOntologyConcept<C extends IOntologyConcept, R extends IOntologyRelation<C>> extends ILabeledEntity {
-
-    /**
-     * URI of thic concept.
-     * @return URI.
-     */
-    URI getUri();
-
-    Collection<String> getLabelCollection();
+public interface IOntologyConcept extends ILabeledOntologyEntity {
 
     /**
      * Returns all direct hyponyms of this concept.
@@ -32,11 +23,11 @@ public interface IOntologyConcept<C extends IOntologyConcept, R extends IOntolog
      * Returns all direct hypernyms of this concept.
      * @return Hypernym list.
      */
-    Set<C> getParents();
+    Set<IOntologyConcept> getParents();
 
-    Set<C> getAllParents();
+    Set<IOntologyConcept> getAllParents();
 
-    void addParent(C parent);
+    void addParent(IOntologyConcept parent);
 
     /**
      * Returns relations where this concept acts as an object.
@@ -48,7 +39,7 @@ public interface IOntologyConcept<C extends IOntologyConcept, R extends IOntolog
      * Returns relations where this concept acts as a subject.
      * @return List of relations.
      */
-    Set<R> getSubjectRelations();
+    Set<IOntologyRelation> getSubjectRelations();
 
     /**
      * Returns all relations for this concept.
@@ -70,9 +61,9 @@ public interface IOntologyConcept<C extends IOntologyConcept, R extends IOntolog
      * @param relationName  Relation name.
      * @return List of relations.
      */
-    Set<R> getSubjectRelations(String relationName);
+    Set<IOntologyRelation> getSubjectRelations(String relationName);
 
-    void addSubjectRelation(OntologyRelation relation);
+    void addSubjectRelation(IOntologyRelation relation);
 
     /**
      * Returns all relations with the given name for this concept.
@@ -81,9 +72,19 @@ public interface IOntologyConcept<C extends IOntologyConcept, R extends IOntolog
      */
     /*List<R> getRelations(String relationName);*/
 
-    Collection<OntologyConcept> getSimilarConcepts();
+    Collection<IOntologyConcept> getSimilarConcepts();
 
     boolean isRoot();
 
     void setIsRoot(boolean root);
+
+    HashMapTable<Synset, String> getSynsetToReason();
+
+    void addSynset(Synset synset, String reason);
+
+    HashMapTable<IOntologyConcept, String> getConceptToReason();
+
+    void addConcept(IOntologyConcept concept, String reason);
+
+    boolean hasMappedConcepts();
 }

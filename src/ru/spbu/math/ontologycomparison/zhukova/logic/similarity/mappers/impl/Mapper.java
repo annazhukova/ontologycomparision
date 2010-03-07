@@ -1,8 +1,9 @@
-package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers;
+package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.impl;
 
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.IComparator;
+import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.IMapper;
 import ru.spbu.math.ontologycomparison.zhukova.util.ITriple;
-import ru.spbu.math.ontologycomparison.zhukova.util.Pair;
+import ru.spbu.math.ontologycomparison.zhukova.util.impl.Pair;
 
 /**
  * @author Anna Zhukova

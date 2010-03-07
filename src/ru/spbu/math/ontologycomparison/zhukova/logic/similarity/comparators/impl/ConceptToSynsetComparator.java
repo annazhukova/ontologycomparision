@@ -1,7 +1,7 @@
-package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators;
+package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.impl;
 
 import edu.smu.tspell.wordnet.Synset;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.wordnet.WordNetHelper;
 import ru.spbu.math.ontologycomparison.zhukova.logic.wordnet.WordNetRelation;
 
@@ -12,8 +12,8 @@ import java.util.Set;
 /**
  * @author Anna Zhukova
  */
-public class ConceptToSynsetComparator extends Comparator<OntologyConcept, Synset, WordNetRelation> {
-    public Set<OntologyConcept> getByFirstProperty(OntologyConcept concept, WordNetRelation property) {
+public class ConceptToSynsetComparator extends Comparator<IOntologyConcept, Synset, WordNetRelation> {
+    public Set<IOntologyConcept> getByFirstProperty(IOntologyConcept concept, WordNetRelation property) {
         return LexicalComparisonHelper.getConceptSetByConceptAndProperty(concept, property);
     }
 
@@ -31,7 +31,7 @@ public class ConceptToSynsetComparator extends Comparator<OntologyConcept, Synse
         return Collections.emptySet();
     }
 
-    public boolean areSimilar(OntologyConcept first, Synset second) {
+    public boolean areSimilar(IOntologyConcept first, Synset second) {
         for (String label : first.getLabels()) {
             if (WordNetHelper.getSynsetsForWord(LexicalComparisonHelper.normalizeString(label)).contains(second)) {
                 return true;

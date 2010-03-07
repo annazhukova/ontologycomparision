@@ -1,7 +1,9 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl;
 
 import edu.smu.tspell.wordnet.Synset;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyProperty;
 import ru.spbu.math.ontologycomparison.zhukova.util.IHashTable;
 
 import java.net.URI;
@@ -13,20 +15,20 @@ import java.util.Set;
  * @author Anna Zhukova
  */
 public class OntologyGraph implements IOntologyGraph {
-    private Map<URI, OntologyConcept> uriToConcept;
+    private Map<URI, IOntologyConcept> uriToConcept;
 
-    private IHashTable<String, OntologyConcept, Set<OntologyConcept>> labelToConcept;
+    private IHashTable<String, IOntologyConcept, Set<IOntologyConcept>> labelToConcept;
 
-    private IHashTable<Synset, OntologyConcept, Set<OntologyConcept>> synsetToConcept;
+    private IHashTable<Synset, IOntologyConcept, Set<IOntologyConcept>> synsetToConcept;
 
-    private Set<OntologyConcept> roots;
+    private Set<IOntologyConcept> roots;
 
-    private Map<URI, OntologyProperty> uriToProperty;
+    private Map<URI, IOntologyProperty> uriToProperty;
 
-    private IHashTable<String, OntologyProperty, Set<OntologyProperty>> labelToProperty;
+    private IHashTable<String, IOntologyProperty, Set<IOntologyProperty>> labelToProperty;
 
-    public OntologyGraph(Set<OntologyConcept> roots, Map<URI, OntologyConcept> uriToConcept, IHashTable<String, OntologyConcept, Set<OntologyConcept>> labelToConcept,
-                    Map<URI, OntologyProperty> uriToProperty, IHashTable<String, OntologyProperty, Set<OntologyProperty>> labelToProperty) {
+    public OntologyGraph(Set<IOntologyConcept> roots, Map<URI, IOntologyConcept> uriToConcept, IHashTable<String, IOntologyConcept, Set<IOntologyConcept>> labelToConcept,
+                    Map<URI, IOntologyProperty> uriToProperty, IHashTable<String, IOntologyProperty, Set<IOntologyProperty>> labelToProperty) {
         this.uriToConcept = uriToConcept;
         this.labelToConcept = labelToConcept;
         this.roots = roots;
@@ -34,7 +36,7 @@ public class OntologyGraph implements IOntologyGraph {
         this.labelToProperty = labelToProperty;
     }
 
-    public Map<URI, OntologyConcept> getUriToConcept() {
+    public Map<URI, IOntologyConcept> getUriToConcept() {
         return uriToConcept;
     }
 
@@ -58,59 +60,59 @@ public class OntologyGraph implements IOntologyGraph {
         return synsetToConcept.keySet();
     }
 
-    public void setUriToConcept(Map<URI, OntologyConcept> uriToConcept) {
+    public void setUriToConcept(Map<URI, IOntologyConcept> uriToConcept) {
         this.uriToConcept = uriToConcept;
     }
 
-    public IHashTable<String, OntologyConcept, Set<OntologyConcept>> getLabelToConcept() {
+    public IHashTable<String, IOntologyConcept, Set<IOntologyConcept>> getLabelToConcept() {
         return labelToConcept;
     }
 
-    public void setLabelToConcept(IHashTable<String, OntologyConcept, Set<OntologyConcept>> labelToConcept) {
+    public void setLabelToConcept(IHashTable<String, IOntologyConcept, Set<IOntologyConcept>> labelToConcept) {
         this.labelToConcept = labelToConcept;
     }
 
-    public IHashTable<Synset, OntologyConcept, Set<OntologyConcept>> getSynsetToConcept() {
+    public IHashTable<Synset, IOntologyConcept, Set<IOntologyConcept>> getSynsetToConcept() {
         return synsetToConcept;
     }
 
-    public void setSynsetToConcept(IHashTable<Synset, OntologyConcept, Set<OntologyConcept>> synsetToConcept) {
+    public void setSynsetToConcept(IHashTable<Synset, IOntologyConcept, Set<IOntologyConcept>> synsetToConcept) {
         this.synsetToConcept = synsetToConcept;
     }
 
-    public Set<OntologyConcept> getRoots() {
+    public Set<IOntologyConcept> getRoots() {
         return roots;
     }
 
-    public void setRoots(Set<OntologyConcept> roots) {
+    public void setRoots(Set<IOntologyConcept> roots) {
         this.roots = roots;
     }
 
-    public Map<URI, OntologyProperty> getUriToProperty() {
+    public Map<URI, IOntologyProperty> getUriToProperty() {
         return uriToProperty;
     }
 
-    public void setUriToProperty(Map<URI, OntologyProperty> uriToProperty) {
+    public void setUriToProperty(Map<URI, IOntologyProperty> uriToProperty) {
         this.uriToProperty = uriToProperty;
     }
 
-    public IHashTable<String, OntologyProperty, Set<OntologyProperty>> getLabelToProperty() {
+    public IHashTable<String, IOntologyProperty, Set<IOntologyProperty>> getLabelToProperty() {
         return labelToProperty;
     }
 
-    public void setLabelToProperty(IHashTable<String, OntologyProperty, Set<OntologyProperty>> labelToProperty) {
+    public void setLabelToProperty(IHashTable<String, IOntologyProperty, Set<IOntologyProperty>> labelToProperty) {
         this.labelToProperty = labelToProperty;
     }
 
-    public OntologyConcept getConceptByURI(URI uri) {
+    public IOntologyConcept getConceptByURI(URI uri) {
         return this.uriToConcept != null ? this.uriToConcept.get(uri) : null;
     }
 
-    public Collection<OntologyProperty> getProperties() {
+    public Collection<IOntologyProperty> getProperties() {
         return uriToProperty.values();
     }
 
-    public Collection<OntologyConcept> getConcepts() {
+    public Collection<IOntologyConcept> getConcepts() {
         return uriToConcept.values();
     }
 }

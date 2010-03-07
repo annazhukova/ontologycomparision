@@ -1,5 +1,6 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl;
 
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyRelation;
 
 import java.net.URI;
@@ -7,15 +8,15 @@ import java.net.URI;
 /**
  * @author Anna Zhukova
  */
-public class OntologyRelation implements IOntologyRelation<OntologyConcept> {
+public class OntologyRelation implements IOntologyRelation {
     private final URI uri;
     private final String name;
-    private final OntologyConcept subject;
-    private final OntologyConcept object;
+    private final IOntologyConcept subject;
+    private final IOntologyConcept object;
     private final boolean isTransitive;
     private boolean inWordNet;
 
-    public OntologyRelation(URI uri, String name, boolean isTransitive, OntologyConcept subject, OntologyConcept object) {
+    public OntologyRelation(URI uri, String name, boolean isTransitive, IOntologyConcept subject, IOntologyConcept object) {
         this.uri = uri;
         this.name = name;
         this.subject = subject;
@@ -24,11 +25,11 @@ public class OntologyRelation implements IOntologyRelation<OntologyConcept> {
     }
 
 
-    public OntologyConcept getSubject() {
+    public IOntologyConcept getSubject() {
         return subject;
     }
 
-    public OntologyConcept getObject() {
+    public IOntologyConcept getObject() {
         return object;
     }
 

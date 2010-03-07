@@ -1,8 +1,8 @@
-package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators;
+package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.impl;
 
 import edu.smu.tspell.wordnet.Synset;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
-import ru.spbu.math.ontologycomparison.zhukova.util.SetHelper;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
+import ru.spbu.math.ontologycomparison.zhukova.util.impl.SetHelper;
 
 import java.util.Set;
 
@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public class LexicalOrSynsetConceptComparator extends LexicalConceptComparator {    
 
-    public boolean areSimilar(OntologyConcept first, OntologyConcept second) {
+    public boolean areSimilar(IOntologyConcept first, IOntologyConcept second) {
         if (first.getConceptToReason().containsKey(second)) {
             return true;
         }

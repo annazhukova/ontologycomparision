@@ -2,10 +2,11 @@ package ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding;
 
 
 import edu.smu.tspell.wordnet.Synset;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyRelation;
-import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.OntologyComparator;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyRelation;
+import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.IOntologyComparator;
+import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.impl.OntologyComparator;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.SimilarityReason;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IArcFilter;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IGraphModel;
@@ -19,7 +20,7 @@ import java.util.*;
 public class GraphModelBuilder implements IGraphModelBuilder {
     private final IOntologyGraph firstOntologyGraph;
     private final IOntologyGraph secondOntologyGraph;
-    private final Collection<OntologyConcept> mergedConcepts;
+    private final Collection<IOntologyConcept> mergedConcepts;
     private final int similarity;
     private static final Color firstOntologyColor = Color.BLUE;
     private static final Color secondOntologyColor = Color.GREEN;
@@ -32,7 +33,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
     public GraphModelBuilder(IOntologyGraph firstOntologyGraph, IOntologyGraph secondOntologyGraph) {
         this.firstOntologyGraph = firstOntologyGraph;
         this.secondOntologyGraph = secondOntologyGraph;
-        OntologyComparator ontologyComparator = new OntologyComparator(
+        IOntologyComparator ontologyComparator = new OntologyComparator(
                 this.firstOntologyGraph, this.secondOntologyGraph);
         this.mergedConcepts = ontologyComparator.mapOntologies().getFirst();
         this.similarity = (int) (ontologyComparator.getSimilarity() * 100);
@@ -60,21 +61,21 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         int currentY = Y_GAP;
         int maxHeight = letterHeight + LABEL_GAP + 2 * Y_GAP;
         int simpleVertexHeight = letterHeight + 2 * LABEL_GAP;
-        for (OntologyConcept mainConcept : this.mergedConcepts) {
+        for (IOntologyConcept mainConcept : this.mergedConcepts) {
             int maxSimpleVertexWidth = 0;
-            Set<OntologyConcept> conceptSet = new LinkedHashSet<OntologyConcept>(mainConcept.getConceptToReason().keySet());
+            Set<IOntologyConcept> conceptSet = new LinkedHashSet<IOntologyConcept>(mainConcept.getConceptToReason().keySet());
             conceptSet.add(mainConcept);
             if (conceptSet.isEmpty()) {
                 continue;
             }
-            for (OntologyConcept concept : conceptSet) {
+            for (IOntologyConcept concept : conceptSet) {
                 String simpleLabel = concept.getLabelCollection().toString();
                 maxSimpleVertexWidth =
                         Math.max(letterWidth * simpleLabel.length() + 2 * LABEL_GAP, maxSimpleVertexWidth);
             }
             String superLabel = mainConcept.hasMappedConcepts() ? SimilarityReason.LEXICAL.name() : SimilarityReason.NO.name();
             Synset synset = null;
-            for (OntologyConcept c : conceptSet) {
+            for (IOntologyConcept c : conceptSet) {
                 if (!c.getSynsetToReason().isEmpty()) {
                     superLabel = SimilarityReason.WORDNET.name();
                     synset = c.getSynsetToReason().keySet().iterator().next();
@@ -103,7 +104,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
             int conceptX = X_GAP + currentX;
             int conceptY = LABEL_GAP + letterHeight + currentY;
             int newChildren = 0;
-            for (OntologyConcept concept : conceptSet) {
+            for (IOntologyConcept concept : conceptSet) {
                 SimpleVertex simpleVertex = conceptNameToVertices.get(concept.getUri().toString());
                 if (simpleVertex == null) {
                     String simpleLabel = concept.getLabelCollection().toString();
@@ -134,12 +135,12 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         }
     }
 
-    private boolean isHidden(boolean showUnmapped, boolean showUnmappedWithSynsets, OntologyConcept mainConcept, String superLabel) {
+    private boolean isHidden(boolean showUnmapped, boolean showUnmappedWithSynsets, IOntologyConcept mainConcept, String superLabel) {
         return !showUnmapped && superLabel.equals(SimilarityReason.NO.name()) ||
                 !showUnmappedWithSynsets && superLabel.equals(SimilarityReason.WORDNET.name()) && !mainConcept.hasMappedConcepts();
     }
 
-    private String createToolTip(OntologyConcept mainConcept, Synset synset) {
+    private String createToolTip(IOntologyConcept mainConcept, Synset synset) {
         StringBuilder result = new StringBuilder("<html>");
         if (synset == null && !mainConcept.hasMappedConcepts()) {
             return null;
@@ -158,7 +159,8 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         return result.toString();
     }
 
-    private SimpleVertex createSimpleVertex(IGraphModel graphModel, Font font, int letterWidth, int letterHeight, int simpleVertexHeight, SuperVertex superVertex, int conceptX, int conceptY, OntologyConcept concept, String simpleLabel, int simpleVertexWidth) {
+    private SimpleVertex createSimpleVertex(IGraphModel graphModel, Font font, int letterWidth, int letterHeight, int simpleVertexHeight,
+                                            SuperVertex superVertex, int conceptX, int conceptY, IOntologyConcept concept, String simpleLabel, int simpleVertexWidth) {
         SimpleVertex simpleVertex =
                 new SimpleVertex(new Point(conceptX, conceptY), simpleLabel, superVertex,
                         getColorForConcept(concept));
@@ -178,7 +180,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
 
     private SuperVertex createSuperVertex(IGraphModel graphModel, Font font, int letterWidth, int letterHeight,
                                           int currentX, int currentY, String superLabel, int superVertexWidth, int superVertexHeight,
-                                          OntologyConcept mainConcept, Synset synset) {
+                                          IOntologyConcept mainConcept, Synset synset) {
         String toolTip = createToolTip(mainConcept, synset);
         SuperVertex superVertex = new SuperVertex(new Point(currentX, currentY), superLabel, toolTip);
         initVertex(graphModel, font, letterWidth, letterHeight, superVertexHeight, superVertexWidth, superVertex);
@@ -190,11 +192,11 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         if (filter == null) {
             Arc.setArcFilter(new ArcFilter());
         }
-        Collection<OntologyConcept> firstConcepts = this.firstOntologyGraph.getConcepts();
-        Collection<OntologyConcept> secondConcepts = this.secondOntologyGraph.getConcepts();
-        Collection<OntologyConcept> allConcepts = new ArrayList<OntologyConcept>(firstConcepts);
+        Collection<IOntologyConcept> firstConcepts = this.firstOntologyGraph.getConcepts();
+        Collection<IOntologyConcept> secondConcepts = this.secondOntologyGraph.getConcepts();
+        Collection<IOntologyConcept> allConcepts = new ArrayList<IOntologyConcept>(firstConcepts);
         allConcepts.addAll(secondConcepts);
-        for (OntologyConcept child : allConcepts) {
+        for (IOntologyConcept child : allConcepts) {
             String childName = child.getUri().toString();
             SimpleVertex childVertex = nameToVertex.get(childName);
             if (childVertex == null) {
@@ -203,7 +205,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
             /*for (OntologyRelation relation :
                     child.getSubjectRelations(WordNetRelation.HYPERNYM.getRelatedOntologyConcept())) {
                */
-            /*for (OntologyConcept parent : child.getParents()) {
+            /*for (IOntologyConcept parent : child.getParents()) {
                 *//*String parentName = relation.getObject().getUri().toString();*//*
                 String parentName = parent.getUri().toString();
                 SimpleVertex parentVertex = nameToVertex.get(parentName);
@@ -214,8 +216,8 @@ public class GraphModelBuilder implements IGraphModelBuilder {
 
             }*/
 
-            for (OntologyRelation relation : child.getSubjectRelations()) {
-                OntologyConcept objectConcept = relation.getObject();
+            for (IOntologyRelation relation : child.getSubjectRelations()) {
+                IOntologyConcept objectConcept = relation.getObject();
                 if (objectConcept != null) {
                     String objectName = objectConcept.getUri().toString();
                     SimpleVertex objectVertex = nameToVertex.get(objectName);
@@ -228,7 +230,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         }
     }
 
-    private Color getColorForConcept(OntologyConcept concept) {
+    private Color getColorForConcept(IOntologyConcept concept) {
         return (this.firstOntologyGraph.getConceptByURI(concept.getUri()) != null) ?
                 ((this.secondOntologyGraph.getConceptByURI(concept.getUri()) != null) ?
                         GraphModelBuilder.bothOntologyColor : GraphModelBuilder.firstOntologyColor) :
