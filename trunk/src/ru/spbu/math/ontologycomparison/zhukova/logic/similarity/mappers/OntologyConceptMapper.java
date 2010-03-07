@@ -18,13 +18,13 @@ import static ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.B
 /**
  * @author Anna Zhukova
  */
-public class OntologyMapper extends Mapper<OntologyConcept, OntologyConcept, WordNetRelation> {
+public class OntologyConceptMapper extends Mapper<OntologyConcept, OntologyConcept, WordNetRelation> {
     private Collection<OntologyConcept> firstConcepts;
     private Collection<OntologyConcept> secondConcepts;
     private final IOntologyGraph firstGraph;
     private final IOntologyGraph secondGraph;
 
-    public OntologyMapper(Collection<OntologyConcept> firstConcepts, Collection<OntologyConcept> secondConcepts,
+    public OntologyConceptMapper(Collection<OntologyConcept> firstConcepts, Collection<OntologyConcept> secondConcepts,
                           IOntologyGraph firstGraph, IOntologyGraph secondGraph) {
         this.firstConcepts = firstConcepts;
         this.secondConcepts = secondConcepts;

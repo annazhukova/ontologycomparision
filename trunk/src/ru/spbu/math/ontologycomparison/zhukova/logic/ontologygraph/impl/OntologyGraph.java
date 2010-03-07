@@ -106,6 +106,10 @@ public class OntologyGraph implements IOntologyGraph {
         return this.uriToConcept != null ? this.uriToConcept.get(uri) : null;
     }
 
+    public Collection<OntologyProperty> getProperties() {
+        return uriToProperty.values();
+    }
+
     public Collection<OntologyConcept> getConcepts() {
         return uriToConcept.values();
     }

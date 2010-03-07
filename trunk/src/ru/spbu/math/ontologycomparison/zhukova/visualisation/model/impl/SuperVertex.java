@@ -14,10 +14,12 @@ public class SuperVertex extends Vertex {
     private final Set<SimpleVertex> simpleVertices = new HashSet<SimpleVertex>();
     private static final Color COLOR = Color.BLACK;
     private static final Color SELECTED_COLOR = new Color(192, 192, 192, 50);
+    private final String toolTip;
 
-    public SuperVertex(Point location, String name) {
+    public SuperVertex(Point location, String name, String toolTip) {
         super(name);
         setLocation(location);
+        this.toolTip = toolTip;
     }
 
     public void addSimpleVertex(SimpleVertex vertex) {
@@ -76,7 +78,7 @@ public class SuperVertex extends Vertex {
 
 
     public String getToolTipText() {
-        return getName();
+        return toolTip;
     }
 
     /*public boolean equals(Object obj) {
