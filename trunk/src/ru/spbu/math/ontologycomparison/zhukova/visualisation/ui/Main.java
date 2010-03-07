@@ -1,5 +1,6 @@
 package ru.spbu.math.ontologycomparison.zhukova.visualisation.ui;
 
+import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.SimilarityReason;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IGraphModel;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IVertex;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.GraphModel;
@@ -32,6 +33,8 @@ public class Main {
     private final JPanel descriptionPanel = new JPanel();
     private final JLabel descriptionLabel = new JLabel();
     private JFrame progressFrame;
+    private JCheckBox showSingleSynsetVertexCheckBox;
+    private JCheckBox showUnmappedConceptsCheckBox;
 
     public Main() {
         FileChoosers.setMain(this);
@@ -133,7 +136,7 @@ public class Main {
 
     private JPanel getCheckBoxPanel() {
         JPanel result = new JPanel(new GridLayout(2, 1));
-        final JCheckBox showUnmappedConceptsCheckBox = new JCheckBox("Show unmapped concepts with no synsets");
+        this.showUnmappedConceptsCheckBox = new JCheckBox("Show unmapped concepts with no synsets");
         showUnmappedConceptsCheckBox.setSelected(true);
         showUnmappedConceptsCheckBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -141,8 +144,8 @@ public class Main {
                 IGraphModel graphModel = Main.this.getGraphModel();
                 if (graphModel != null) {
                     for (SuperVertex vertex : graphModel.getSuperVertices()) {
-                        if (vertex.getName().contains("UNMAPPED")) {
-                            vertex.setHidden(!showUnmapped);
+                        if (vertex.getName().equals(SimilarityReason.NO.name())) {
+                            //vertex.setHidden(!showUnmapped);
                             for (IVertex subVertex : vertex.getSimpleVertices()) {
                                 subVertex.setHidden(!showUnmapped);
                             }
@@ -154,7 +157,7 @@ public class Main {
         });
         result.add(showUnmappedConceptsCheckBox);
 
-        final JCheckBox showSingleSynsetVertexCheckBox = new JCheckBox("Show unmapped concepts with synsets");
+        this.showSingleSynsetVertexCheckBox = new JCheckBox("Show unmapped concepts with synsets");
         showSingleSynsetVertexCheckBox.setSelected(true);
         showSingleSynsetVertexCheckBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -162,7 +165,7 @@ public class Main {
                 IGraphModel graphModel = Main.this.getGraphModel();
                 if (graphModel != null) {
                     for (SuperVertex vertex : graphModel.getSuperVertices()) {
-                        if (vertex.getName().contains("SYNSET")) {
+                        if (vertex.getName().equals(SimilarityReason.WORDNET.name())) {
                             Set<SimpleVertex> vertexSet = vertex.getSimpleVertices();  
                             if (vertexSet != null && vertexSet.size() <= 1) {
                                 vertex.setHidden(!showSingleSynsetVertex);
@@ -178,5 +181,13 @@ public class Main {
         });
         result.add(showSingleSynsetVertexCheckBox);
         return result;
+    }
+
+    public boolean areUnmappedConceptsVisible() {
+        return showUnmappedConceptsCheckBox.isSelected();
+    }
+
+    public boolean areUnmappedConceptsWithSynsetsVisible() {
+        return showSingleSynsetVertexCheckBox.isSelected();
     }
 }

@@ -6,6 +6,7 @@ import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGrap
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyRelation;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.OntologyComparator;
+import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.SimilarityReason;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IArcFilter;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IGraphModel;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.*;
@@ -37,20 +38,19 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         this.similarity = (int) (ontologyComparator.getSimilarity() * 100);
     }
 
-    public GraphModel buildGraphModel(GraphPane graphPane) {
+    public GraphModel buildGraphModel(GraphPane graphPane, boolean showUnmapped, boolean showUnmappedWithSynsets) {
         GraphModel graphModel = new GraphModel(graphPane);
         Map<String, SuperVertex> keyToSyperVertex = new HashMap<String, SuperVertex>();
         Map<String, SimpleVertex> conceptNameToVertex = new HashMap<String, SimpleVertex>();
-        buildVertices(graphPane, graphModel, keyToSyperVertex, conceptNameToVertex);
+        buildVertices(graphPane, graphModel, keyToSyperVertex, conceptNameToVertex, showUnmapped, showUnmappedWithSynsets);
         buildArcs(conceptNameToVertex, graphModel);
         graphModel.setKeyToSuperVertexMap(keyToSyperVertex);
         graphModel.setIntToSimpleVertexMap(conceptNameToVertex);
         return graphModel;
     }
 
-    private void buildVertices(GraphPane graphPane, IGraphModel graphModel,
-                               Map<String, SuperVertex> keyToSuperVertex,
-                               Map<String, SimpleVertex> conceptNameToVertices) {
+    private void buildVertices(GraphPane graphPane, IGraphModel graphModel, Map<String, SuperVertex> keyToSuperVertex,
+                               Map<String, SimpleVertex> conceptNameToVertices, boolean showUnpapped, boolean showUnmappedWithSynsets) {
         Graphics g = graphPane.getGraphics();
         Font font = new Font(Font.MONOSPACED, Font.ITALIC, 15);
         g.setFont(font);
@@ -72,11 +72,11 @@ public class GraphModelBuilder implements IGraphModelBuilder {
                 maxSimpleVertexWidth =
                         Math.max(letterWidth * simpleLabel.length() + 2 * LABEL_GAP, maxSimpleVertexWidth);
             }
-            String superLabel = conceptSet.size() > 1 ? "LEXICAL" : "UNMAPPED";
+            String superLabel = conceptSet.size() > 1 ? SimilarityReason.LEXICAL.name() : SimilarityReason.NO.name();
             Synset synset = null;
             for (OntologyConcept c : conceptSet) {
                 if (!c.getSynsetToReason().isEmpty()) {
-                    superLabel = "SYNSET";
+                    superLabel = SimilarityReason.WORDNET.name();
                     synset = c.getSynsetToReason().keySet().iterator().next();
                     break;
                 }
@@ -94,9 +94,12 @@ public class GraphModelBuilder implements IGraphModelBuilder {
             if (superVertex != null) {
                 continue;
             }
-            String toolTip = createToolTip(mainConcept, synset);
             superVertex = createSuperVertex(graphModel, font, letterWidth, letterHeight, currentX,
-                    currentY, superLabel, toolTip, superVertexWidth, superVertexHeight);
+                    currentY, superLabel, superVertexWidth, superVertexHeight, mainConcept, synset);
+            boolean hidden = isHidden(showUnpapped, showUnmappedWithSynsets, conceptSet, superLabel);
+            if (hidden || superLabel.equals(SimilarityReason.NO.name())) {
+                superVertex.setHidden(true);
+            }
             int conceptX = X_GAP + currentX;
             int conceptY = LABEL_GAP + letterHeight + currentY;
             int newChildren = 0;
@@ -110,6 +113,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
                         conceptY += simpleVertexHeight + Y_GAP;
                     }
                     simpleVertex = createSimpleVertex(graphModel, font, letterWidth, letterHeight, simpleVertexHeight, superVertex, conceptX, conceptY, concept, simpleLabel, simpleVertexWidth);
+                    simpleVertex.setHidden(hidden);
                     conceptNameToVertices.put(concept.getUri().toString(), simpleVertex);
                     conceptX += simpleVertex.getWidth() + X_GAP;
                     newChildren++;
@@ -130,18 +134,23 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         }
     }
 
+    private boolean isHidden(boolean showUnmapped, boolean showUnmappedWithSynsets, Set<OntologyConcept> conceptSet, String superLabel) {
+        return !showUnmapped && superLabel.equals(SimilarityReason.NO.name()) ||
+                !showUnmappedWithSynsets && superLabel.equals(SimilarityReason.WORDNET.name()) && conceptSet.size() <= 1;
+    }
+
     private String createToolTip(OntologyConcept mainConcept, Synset synset) {
         StringBuilder result = new StringBuilder("<html>");
-        Collection<Map<String, Integer>> values = mainConcept.getConceptToReason().values();
-        if (synset == null && values.isEmpty()) {
+        if (synset == null && !mainConcept.hasMappedConcepts()) {
             return null;
         }
         if (synset != null) {
             result.append("<p>").append(synset.getDefinition()).append("</p>");
         }         
-        if (!values.isEmpty()) {
+        if (mainConcept.hasMappedConcepts()) {
             result.append("<ul>");
-            for (Map.Entry<String, Integer> reason : values.iterator().next().entrySet()) {
+            for (Map.Entry<String, Integer> reason :
+                    mainConcept.getConceptToReason().values().iterator().next().entrySet()) {
                 result.append("<li>").append(reason.getKey()).append(" (").append(reason.getValue()).append(")");
             }
             result.append("</ul>");
@@ -168,7 +177,9 @@ public class GraphModelBuilder implements IGraphModelBuilder {
     }
 
     private SuperVertex createSuperVertex(IGraphModel graphModel, Font font, int letterWidth, int letterHeight,
-                                          int currentX, int currentY, String superLabel, String toolTip, int superVertexWidth, int superVertexHeight) {
+                                          int currentX, int currentY, String superLabel, int superVertexWidth, int superVertexHeight,
+                                          OntologyConcept mainConcept, Synset synset) {
+        String toolTip = createToolTip(mainConcept, synset);
         SuperVertex superVertex = new SuperVertex(new Point(currentX, currentY), superLabel, toolTip);
         initVertex(graphModel, font, letterWidth, letterHeight, superVertexHeight, superVertexWidth, superVertex);
         return superVertex;

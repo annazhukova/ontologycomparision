@@ -235,4 +235,8 @@ public class OntologyConcept implements IOntologyConcept<OntologyConcept, Ontolo
     public void setIsRoot(boolean root) {
         isRoot = root;
     }
+
+    public boolean hasMappedConcepts() {
+        return !this.conceptToReason.isEmpty();
+    }
 }

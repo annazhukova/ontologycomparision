@@ -74,7 +74,7 @@ public class Open extends AbstractAction {
             Open.main.updateDescriptionPanel("Merging ontologies");
             IGraphModelBuilder myGraphModelBuilder =
                     new GraphModelBuilder(firstOntologyGraph, secondOntologyGraph);
-            GraphModel myGraphModel = myGraphModelBuilder.buildGraphModel(main.getGraphPane());
+            GraphModel myGraphModel = myGraphModelBuilder.buildGraphModel(main.getGraphPane(), main.areUnmappedConceptsVisible(), main.areUnmappedConceptsWithSynsetsVisible());
             Open.main.setGraphModel(myGraphModel);
             int similarityCount = myGraphModelBuilder.getSimilarity();
             Open.main.updateDescriptionPanel(String.format(
