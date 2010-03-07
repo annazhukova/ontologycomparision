@@ -51,4 +51,6 @@ public interface IOntologyGraph {
     OntologyConcept getConceptByURI(URI uri);
 
     Collection<OntologyConcept> getConcepts();
+
+    Collection<OntologyProperty> getProperties();
 }

@@ -33,7 +33,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         this.secondOntologyGraph = secondOntologyGraph;
         OntologyComparator ontologyComparator = new OntologyComparator(
                 this.firstOntologyGraph, this.secondOntologyGraph);
-        this.mergedConcepts = ontologyComparator.mapOntologies();
+        this.mergedConcepts = ontologyComparator.mapOntologies().getFirst();
         this.similarity = (int) (ontologyComparator.getSimilarity() * 100);
     }
 
@@ -72,19 +72,15 @@ public class GraphModelBuilder implements IGraphModelBuilder {
                 maxSimpleVertexWidth =
                         Math.max(letterWidth * simpleLabel.length() + 2 * LABEL_GAP, maxSimpleVertexWidth);
             }
-            String lbl = conceptSet.size() > 1 ? "LEXICAL" : "UNMAPPED";
+            String superLabel = conceptSet.size() > 1 ? "LEXICAL" : "UNMAPPED";
+            Synset synset = null;
             for (OntologyConcept c : conceptSet) {
                 if (!c.getSynsetToReason().isEmpty()) {
-                    StringBuilder labelBuilder = new StringBuilder("SYNSET {");
-                    for (Synset synset: c.getSynsetToReason().keySet()) {
-                          labelBuilder.append(synset.getDefinition()).append(c.getSynsetToReason().get(synset)).append(", ");
-                    }
-                    labelBuilder.append("}");
-                    lbl = labelBuilder.toString();
+                    superLabel = "SYNSET";
+                    synset = c.getSynsetToReason().keySet().iterator().next();
                     break;
                 }
             }
-            String superLabel = String.format("%s (%s)", lbl, mainConcept.getConceptToReason().values());
             int simpleVertexNumber = conceptSet.size();
             int superVertexWidth = (X_GAP + maxSimpleVertexWidth) * simpleVertexNumber + X_GAP;
             int superVertexHeight = (Y_GAP + simpleVertexHeight) * simpleVertexNumber + letterHeight + LABEL_GAP + Y_GAP;
@@ -98,8 +94,9 @@ public class GraphModelBuilder implements IGraphModelBuilder {
             if (superVertex != null) {
                 continue;
             }
+            String toolTip = createToolTip(mainConcept, synset);
             superVertex = createSuperVertex(graphModel, font, letterWidth, letterHeight, currentX,
-                    currentY, superLabel, superVertexWidth, superVertexHeight);
+                    currentY, superLabel, toolTip, superVertexWidth, superVertexHeight);
             int conceptX = X_GAP + currentX;
             int conceptY = LABEL_GAP + letterHeight + currentY;
             int newChildren = 0;
@@ -133,6 +130,25 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         }
     }
 
+    private String createToolTip(OntologyConcept mainConcept, Synset synset) {
+        StringBuilder result = new StringBuilder("<html>");
+        Collection<Map<String, Integer>> values = mainConcept.getConceptToReason().values();
+        if (synset == null && values.isEmpty()) {
+            return null;
+        }
+        if (synset != null) {
+            result.append("<p>").append(synset.getDefinition()).append("</p>");
+        }         
+        if (!values.isEmpty()) {
+            result.append("<ul>");
+            for (Map.Entry<String, Integer> reason : values.iterator().next().entrySet()) {
+                result.append("<li>").append(reason.getKey()).append(" (").append(reason.getValue()).append(")");
+            }
+            result.append("</ul>");
+        }
+        return result.toString();
+    }
+
     private SimpleVertex createSimpleVertex(IGraphModel graphModel, Font font, int letterWidth, int letterHeight, int simpleVertexHeight, SuperVertex superVertex, int conceptX, int conceptY, OntologyConcept concept, String simpleLabel, int simpleVertexWidth) {
         SimpleVertex simpleVertex =
                 new SimpleVertex(new Point(conceptX, conceptY), simpleLabel, superVertex,
@@ -151,8 +167,9 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         graphModel.addVertex(vertex);
     }
 
-    private SuperVertex createSuperVertex(IGraphModel graphModel, Font font, int letterWidth, int letterHeight, int currentX, int currentY, String superLabel, int superVertexWidth, int superVertexHeight) {
-        SuperVertex superVertex = new SuperVertex(new Point(currentX, currentY), superLabel);
+    private SuperVertex createSuperVertex(IGraphModel graphModel, Font font, int letterWidth, int letterHeight,
+                                          int currentX, int currentY, String superLabel, String toolTip, int superVertexWidth, int superVertexHeight) {
+        SuperVertex superVertex = new SuperVertex(new Point(currentX, currentY), superLabel, toolTip);
         initVertex(graphModel, font, letterWidth, letterHeight, superVertexHeight, superVertexWidth, superVertex);
         return superVertex;
     }

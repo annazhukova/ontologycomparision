@@ -35,7 +35,7 @@ public class PropertyComparator extends SameClassComparator<OntologyProperty, Ob
         if (!rangesAreSimilar(first, second)) {
             return false;
         }
-        return true;
+        return (first.isFunctional() == second.isFunctional());
     }
 
     private boolean rangesAreSimilar(OntologyProperty first, OntologyProperty second) {
