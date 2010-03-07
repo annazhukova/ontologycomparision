@@ -72,7 +72,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
                 maxSimpleVertexWidth =
                         Math.max(letterWidth * simpleLabel.length() + 2 * LABEL_GAP, maxSimpleVertexWidth);
             }
-            String superLabel = conceptSet.size() > 1 ? SimilarityReason.LEXICAL.name() : SimilarityReason.NO.name();
+            String superLabel = mainConcept.hasMappedConcepts() ? SimilarityReason.LEXICAL.name() : SimilarityReason.NO.name();
             Synset synset = null;
             for (OntologyConcept c : conceptSet) {
                 if (!c.getSynsetToReason().isEmpty()) {
@@ -96,7 +96,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
             }
             superVertex = createSuperVertex(graphModel, font, letterWidth, letterHeight, currentX,
                     currentY, superLabel, superVertexWidth, superVertexHeight, mainConcept, synset);
-            boolean hidden = isHidden(showUnpapped, showUnmappedWithSynsets, conceptSet, superLabel);
+            boolean hidden = isHidden(showUnpapped, showUnmappedWithSynsets, mainConcept, superLabel);
             if (hidden || superLabel.equals(SimilarityReason.NO.name())) {
                 superVertex.setHidden(true);
             }
@@ -134,9 +134,9 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         }
     }
 
-    private boolean isHidden(boolean showUnmapped, boolean showUnmappedWithSynsets, Set<OntologyConcept> conceptSet, String superLabel) {
+    private boolean isHidden(boolean showUnmapped, boolean showUnmappedWithSynsets, OntologyConcept mainConcept, String superLabel) {
         return !showUnmapped && superLabel.equals(SimilarityReason.NO.name()) ||
-                !showUnmappedWithSynsets && superLabel.equals(SimilarityReason.WORDNET.name()) && conceptSet.size() <= 1;
+                !showUnmappedWithSynsets && superLabel.equals(SimilarityReason.WORDNET.name()) && !mainConcept.hasMappedConcepts();
     }
 
     private String createToolTip(OntologyConcept mainConcept, Synset synset) {
