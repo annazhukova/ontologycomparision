@@ -1,8 +1,8 @@
-package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators;
+package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.impl;
 
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.ILabeledEntity;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyRelation;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.ILabeledOntologyEntity;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyRelation;
 import ru.spbu.math.ontologycomparison.zhukova.logic.wordnet.WordNetRelation;
 
 import java.util.LinkedHashSet;
@@ -13,9 +13,9 @@ import java.util.Set;
  */
 public class LexicalComparisonHelper {
 
-    public static Set<OntologyConcept> getConceptSetByConceptAndProperty(OntologyConcept concept, WordNetRelation property) {
-        Set<OntologyConcept> result = new LinkedHashSet<OntologyConcept>();
-        for (OntologyRelation relation : concept.getSubjectRelations(property.getRelatedOntologyConcept())) {
+    public static Set<IOntologyConcept> getConceptSetByConceptAndProperty(IOntologyConcept concept, WordNetRelation property) {
+        Set<IOntologyConcept> result = new LinkedHashSet<IOntologyConcept>();
+        for (IOntologyRelation relation : concept.getSubjectRelations(property.getRelatedOntologyConcept())) {
             result.add(relation.getObject());
         }
         return result;
@@ -26,7 +26,7 @@ public class LexicalComparisonHelper {
         return source.toLowerCase().replace("_", " ").replace("-", " ").replace("\\", "/").trim();
     }
 
-    public static boolean areSimilar(ILabeledEntity first, ILabeledEntity second) {
+    public static boolean areSimilar(ILabeledOntologyEntity first, ILabeledOntologyEntity second) {
         for (String firstLabel : first.getLabels()) {
             for (String secondLabel : second.getLabels()) {
                 if (areSimilar(firstLabel, secondLabel)) {

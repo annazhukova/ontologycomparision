@@ -1,14 +1,14 @@
-package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers;
+package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.impl;
 
 import edu.smu.tspell.wordnet.Synset;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
-import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.ConceptToSynsetComparator;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
+import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.impl.ConceptToSynsetComparator;
 import ru.spbu.math.ontologycomparison.zhukova.logic.wordnet.WordNetHelper;
 import ru.spbu.math.ontologycomparison.zhukova.logic.wordnet.WordNetRelation;
 import ru.spbu.math.ontologycomparison.zhukova.util.IHashTable;
 import ru.spbu.math.ontologycomparison.zhukova.util.ITriple;
-import ru.spbu.math.ontologycomparison.zhukova.util.SetHashTable;
-import ru.spbu.math.ontologycomparison.zhukova.util.Triple;
+import ru.spbu.math.ontologycomparison.zhukova.util.impl.SetHashTable;
+import ru.spbu.math.ontologycomparison.zhukova.util.impl.Triple;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -19,18 +19,18 @@ import static ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.B
 /**
  * @author Anna Zhukova
  */
-public class SynsetMapper extends Mapper<OntologyConcept, Synset, WordNetRelation> {
-    private final Collection<OntologyConcept> conceptCollection;
-    private final IHashTable<Synset, OntologyConcept, Set<OntologyConcept>> synsetToConcept = new SetHashTable<Synset, OntologyConcept>();
+public class SynsetMapper extends Mapper<IOntologyConcept, Synset, WordNetRelation> {
+    private final Collection<IOntologyConcept> conceptCollection;
+    private final IHashTable<Synset, IOntologyConcept, Set<IOntologyConcept>> synsetToConcept = new SetHashTable<Synset, IOntologyConcept>();
 
-    public SynsetMapper(Collection<OntologyConcept> conceptCollection) {
+    public SynsetMapper(Collection<IOntologyConcept> conceptCollection) {
         this.conceptCollection = conceptCollection;
     }
 
-    public Collection<OntologyConcept> map() {
+    public Collection<IOntologyConcept> map() {
         ConceptToSynsetComparator conceptToSynsetComparator = new ConceptToSynsetComparator();
         /*System.out.printf("SYNSET HELPER FOR GRAPH: %s\n", graph);*/
-        for (OntologyConcept childConcept : conceptCollection) {
+        for (IOntologyConcept childConcept : conceptCollection) {
             for (Synset childSynset : getSynsets(childConcept)) {
                 tryToBind(conceptToSynsetComparator, childConcept, childSynset, getBindFactors());
             }
@@ -46,7 +46,7 @@ public class SynsetMapper extends Mapper<OntologyConcept, Synset, WordNetRelatio
         };
     }
 
-    private Collection<Synset> getSynsets(OntologyConcept concept) {
+    private Collection<Synset> getSynsets(IOntologyConcept concept) {
         Collection<Synset> result = new HashSet<Synset>();
         for (String label : concept.getLabels()) {
             result.addAll(WordNetHelper.getSynsetsForWord(label.toLowerCase()));
@@ -54,13 +54,13 @@ public class SynsetMapper extends Mapper<OntologyConcept, Synset, WordNetRelatio
         return result;
     }
 
-    public void bind(OntologyConcept concept, Synset synset, String reason) {
+    public void bind(IOntologyConcept concept, Synset synset, String reason) {
         /*System.out.printf("\tBINDED %s <-> %s\n", concept, synset);*/
         concept.addSynset(synset, reason);
         synsetToConcept.insert(synset, concept);
     }
 
-    public IHashTable<Synset, OntologyConcept, Set<OntologyConcept>> getSynsetToConceptTable() {
+    public IHashTable<Synset, IOntologyConcept, Set<IOntologyConcept>> getSynsetToConceptTable() {
         return synsetToConcept;
     }
 }

@@ -2,7 +2,6 @@ package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph;
 
 import edu.smu.tspell.wordnet.Synset;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyProperty;
 import ru.spbu.math.ontologycomparison.zhukova.util.IHashTable;
 
 import java.net.URI;
@@ -14,7 +13,7 @@ import java.util.Set;
  * @author Anna Zhukova
  */
 public interface IOntologyGraph {
-    Map<URI, OntologyConcept> getUriToConcept();
+    Map<URI, IOntologyConcept> getUriToConcept();
 
     Set<URI> getConceptUris();
 
@@ -26,31 +25,31 @@ public interface IOntologyGraph {
 
     Set<Synset> getSynsets();
 
-    void setUriToConcept(Map<URI, OntologyConcept> uriToConcept);
+    void setUriToConcept(Map<URI, IOntologyConcept> uriToConcept);
 
-    IHashTable<String, OntologyConcept, Set<OntologyConcept>> getLabelToConcept();
+    IHashTable<String, IOntologyConcept, Set<IOntologyConcept>> getLabelToConcept();
 
-    void setLabelToConcept(IHashTable<String, OntologyConcept, Set<OntologyConcept>> labelToConcept);
+    void setLabelToConcept(IHashTable<String, IOntologyConcept, Set<IOntologyConcept>> labelToConcept);
 
-    IHashTable<Synset, OntologyConcept, Set<OntologyConcept>> getSynsetToConcept();
+    IHashTable<Synset, IOntologyConcept, Set<IOntologyConcept>> getSynsetToConcept();
 
-    void setSynsetToConcept(IHashTable<Synset, OntologyConcept, Set<OntologyConcept>> synsetToConcept);
+    void setSynsetToConcept(IHashTable<Synset, IOntologyConcept, Set<IOntologyConcept>> synsetToConcept);
 
-    Set<OntologyConcept> getRoots();
+    Set<IOntologyConcept> getRoots();
 
-    void setRoots(Set<OntologyConcept> roots);
+    void setRoots(Set<IOntologyConcept> roots);
 
-    Map<URI, OntologyProperty> getUriToProperty();
+    Map<URI, IOntologyProperty> getUriToProperty();
 
-    void setUriToProperty(Map<URI, OntologyProperty> uriToProperty);
+    void setUriToProperty(Map<URI, IOntologyProperty> uriToProperty);
 
-    IHashTable<String, OntologyProperty, Set<OntologyProperty>> getLabelToProperty();
+    IHashTable<String, IOntologyProperty, Set<IOntologyProperty>> getLabelToProperty();
 
-    void setLabelToProperty(IHashTable<String, OntologyProperty, Set<OntologyProperty>> labelToProperty);
+    void setLabelToProperty(IHashTable<String, IOntologyProperty, Set<IOntologyProperty>> labelToProperty);
 
-    OntologyConcept getConceptByURI(URI uri);
+    IOntologyConcept getConceptByURI(URI uri);
 
-    Collection<OntologyConcept> getConcepts();
+    Collection<IOntologyConcept> getConcepts();
 
-    Collection<OntologyProperty> getProperties();
+    Collection<IOntologyProperty> getProperties();
 }

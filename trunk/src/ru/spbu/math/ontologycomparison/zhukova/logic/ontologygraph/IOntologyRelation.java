@@ -5,13 +5,15 @@ import java.net.URI;
 /**
  * @author Anna Zhukova
  */
-public interface IOntologyRelation<C extends IOntologyConcept> {
+public interface IOntologyRelation {
 
-    C getSubject();
+    IOntologyConcept getSubject();
 
-    C getObject();
+    IOntologyConcept getObject();
     
     String getRelationName();
 
     URI getUri();
+
+    boolean isTransitive();
 }

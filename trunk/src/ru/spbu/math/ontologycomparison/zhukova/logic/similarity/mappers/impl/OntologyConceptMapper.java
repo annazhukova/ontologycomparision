@@ -1,13 +1,13 @@
-package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers;
+package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.impl;
 
 import edu.smu.tspell.wordnet.Synset;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
-import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.LexicalOrSynsetConceptComparator;
+import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.impl.LexicalOrSynsetConceptComparator;
 import ru.spbu.math.ontologycomparison.zhukova.logic.wordnet.WordNetRelation;
 import ru.spbu.math.ontologycomparison.zhukova.util.ITriple;
-import ru.spbu.math.ontologycomparison.zhukova.util.SetHelper;
-import ru.spbu.math.ontologycomparison.zhukova.util.Triple;
+import ru.spbu.math.ontologycomparison.zhukova.util.impl.SetHelper;
+import ru.spbu.math.ontologycomparison.zhukova.util.impl.Triple;
 
 import java.net.URI;
 import java.util.Collection;
@@ -18,13 +18,13 @@ import static ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.B
 /**
  * @author Anna Zhukova
  */
-public class OntologyConceptMapper extends Mapper<OntologyConcept, OntologyConcept, WordNetRelation> {
-    private Collection<OntologyConcept> firstConcepts;
-    private Collection<OntologyConcept> secondConcepts;
+public class OntologyConceptMapper extends Mapper<IOntologyConcept, IOntologyConcept, WordNetRelation> {
+    private Collection<IOntologyConcept> firstConcepts;
+    private Collection<IOntologyConcept> secondConcepts;
     private final IOntologyGraph firstGraph;
     private final IOntologyGraph secondGraph;
 
-    public OntologyConceptMapper(Collection<OntologyConcept> firstConcepts, Collection<OntologyConcept> secondConcepts,
+    public OntologyConceptMapper(Collection<IOntologyConcept> firstConcepts, Collection<IOntologyConcept> secondConcepts,
                           IOntologyGraph firstGraph, IOntologyGraph secondGraph) {
         this.firstConcepts = firstConcepts;
         this.secondConcepts = secondConcepts;
@@ -32,21 +32,21 @@ public class OntologyConceptMapper extends Mapper<OntologyConcept, OntologyConce
         this.secondGraph = secondGraph;
     }
 
-    public Collection<OntologyConcept> map() {
+    public Collection<IOntologyConcept> map() {
         LexicalOrSynsetConceptComparator conceptComparator = new LexicalOrSynsetConceptComparator();
 
         Set<URI> commonUriSet = SetHelper.INSTANCE.setIntersection(firstGraph.getConceptUris(),
                 secondGraph.getConceptUris());
         for (URI uri : commonUriSet) {
-            OntologyConcept first = firstGraph.getUriToConcept().get(uri);
-            OntologyConcept second = secondGraph.getUriToConcept().get(uri);
+            IOntologyConcept first = firstGraph.getUriToConcept().get(uri);
+            IOntologyConcept second = secondGraph.getUriToConcept().get(uri);
             bind(first, second, SAME_URI);
             secondConcepts.remove(second);
         }
         Set<Synset> commonSynsetSet = SetHelper.INSTANCE.setIntersection(firstGraph.getSynsets(), secondGraph.getSynsets());
         for (Synset synset : commonSynsetSet) {
-            for (OntologyConcept first : firstGraph.getSynsetToConcept().get(synset)) {
-                for (OntologyConcept second : secondGraph.getSynsetToConcept().get(synset)) {
+            for (IOntologyConcept first : firstGraph.getSynsetToConcept().get(synset)) {
+                for (IOntologyConcept second : secondGraph.getSynsetToConcept().get(synset)) {
                     bind(first, second, SAME_SYNSET);
                     secondConcepts.remove(second);
                 }
@@ -55,8 +55,8 @@ public class OntologyConceptMapper extends Mapper<OntologyConcept, OntologyConce
         Set<String> commonLabelSet = SetHelper.INSTANCE.setIntersection(firstGraph.getConceptLabels(),
                 secondGraph.getConceptLabels());
         for (String label : commonLabelSet) {
-            for (OntologyConcept first : firstGraph.getLabelToConcept().get(label)) {
-                for (OntologyConcept second : secondGraph.getLabelToConcept().get(label)) {
+            for (IOntologyConcept first : firstGraph.getLabelToConcept().get(label)) {
+                for (IOntologyConcept second : secondGraph.getLabelToConcept().get(label)) {
                     if (tryToBind(conceptComparator, first, second, getBindFactors())) {
                         secondConcepts.remove(second);
                         break;
@@ -76,7 +76,7 @@ public class OntologyConceptMapper extends Mapper<OntologyConcept, OntologyConce
         };
     }
 
-    public void bind(OntologyConcept first, OntologyConcept second, String reason) {
+    public void bind(IOntologyConcept first, IOntologyConcept second, String reason) {
         first.addConcept(second, reason);
     }
 }

@@ -1,4 +1,6 @@
-package ru.spbu.math.ontologycomparison.zhukova.util;
+package ru.spbu.math.ontologycomparison.zhukova.util.impl;
+
+import ru.spbu.math.ontologycomparison.zhukova.util.IPair;
 
 public class Pair<F,S> implements IPair<F, S> {
     private final F first;

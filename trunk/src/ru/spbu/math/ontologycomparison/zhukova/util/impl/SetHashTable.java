@@ -1,4 +1,4 @@
-package ru.spbu.math.ontologycomparison.zhukova.util;
+package ru.spbu.math.ontologycomparison.zhukova.util.impl;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -2,8 +2,8 @@ package ru.spbu.math.ontologycomparison.zhukova;
 
 import junit.framework.TestCase;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.OntologyGraphBuilder;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
 
 import java.io.FileNotFoundException;
 
@@ -23,7 +23,7 @@ public class TestGraphBuilder extends TestCase {
 
     public void testConceptsContent() throws FileNotFoundException {
         IOntologyGraph graph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
-        for (OntologyConcept concept : graph.getConcepts()) {
+        for (IOntologyConcept concept : graph.getConcepts()) {
             if (concept.getLabelCollection().contains(OntologyTestConstants.JAVA)) {
                 return;
             }
@@ -33,9 +33,9 @@ public class TestGraphBuilder extends TestCase {
 
     public void testChildParentRelation() throws FileNotFoundException {
         IOntologyGraph graph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
-        for (OntologyConcept concept : graph.getConcepts()) {
+        for (IOntologyConcept concept : graph.getConcepts()) {
             if (concept.getLabelCollection().contains(OntologyTestConstants.JAVA)) {
-                for (OntologyConcept parent : concept.getParents()) {
+                for (IOntologyConcept parent : concept.getParents()) {
                     if (parent.getLabelCollection().contains(OntologyTestConstants.PROGRAMMING_LANGUAGE)) {
                         return;
                     }

@@ -1,6 +1,7 @@
-package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators;
+package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.impl;
 
-import ru.spbu.math.ontologycomparison.zhukova.util.Pair;
+import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.IComparator;
+import ru.spbu.math.ontologycomparison.zhukova.util.impl.Pair;
 
 import java.util.Set;
 
