@@ -8,7 +8,7 @@ import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.GraphP
  */
 public interface IGraphModelBuilder {
 
-    GraphModel buildGraphModel(GraphPane graphPane);
+    GraphModel buildGraphModel(GraphPane graphPane, boolean showUnmapped, boolean showUnmappedWithSynsets);
     
     int getSimilarity();
 }
