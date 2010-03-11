@@ -14,7 +14,6 @@ public class OntologyRelation implements IOntologyRelation {
     private final IOntologyConcept subject;
     private final IOntologyConcept object;
     private final boolean isTransitive;
-    private boolean inWordNet;
 
     public OntologyRelation(URI uri, String name, boolean isTransitive, IOntologyConcept subject, IOntologyConcept object) {
         this.uri = uri;
@@ -63,14 +62,6 @@ public class OntologyRelation implements IOntologyRelation {
         result += 13 * this.getSubject().hashCode();
         result += 13 * this.getObject().hashCode();
         return result;
-    }
-
-    public boolean isInWordNet() {
-        return inWordNet;
-    }
-
-    public void setInWordNet(boolean inWordNet) {
-        this.inWordNet = inWordNet;
     }
 
     public boolean isTransitive() {

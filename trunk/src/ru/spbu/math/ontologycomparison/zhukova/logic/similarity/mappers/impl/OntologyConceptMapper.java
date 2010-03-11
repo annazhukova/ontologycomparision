@@ -41,14 +41,12 @@ public class OntologyConceptMapper extends Mapper<IOntologyConcept, IOntologyCon
             IOntologyConcept first = firstGraph.getUriToConcept().get(uri);
             IOntologyConcept second = secondGraph.getUriToConcept().get(uri);
             bind(first, second, SAME_URI);
-            secondConcepts.remove(second);
         }
         Set<Synset> commonSynsetSet = SetHelper.INSTANCE.setIntersection(firstGraph.getSynsets(), secondGraph.getSynsets());
         for (Synset synset : commonSynsetSet) {
             for (IOntologyConcept first : firstGraph.getSynsetToConcept().get(synset)) {
                 for (IOntologyConcept second : secondGraph.getSynsetToConcept().get(synset)) {
                     bind(first, second, SAME_SYNSET);
-                    secondConcepts.remove(second);
                 }
             }
         }
@@ -58,7 +56,6 @@ public class OntologyConceptMapper extends Mapper<IOntologyConcept, IOntologyCon
             for (IOntologyConcept first : firstGraph.getLabelToConcept().get(label)) {
                 for (IOntologyConcept second : secondGraph.getLabelToConcept().get(label)) {
                     if (tryToBind(conceptComparator, first, second, getBindFactors())) {
-                        secondConcepts.remove(second);
                         break;
                     }
                 }
@@ -76,7 +73,12 @@ public class OntologyConceptMapper extends Mapper<IOntologyConcept, IOntologyCon
         };
     }
 
+    public void bind(IOntologyConcept first, IOntologyConcept second, String reason, int count) {
+        first.addConcept(second, reason, count);
+        secondConcepts.remove(second);
+    }
+
     public void bind(IOntologyConcept first, IOntologyConcept second, String reason) {
-        first.addConcept(second, reason);
+        bind(first, second, reason, 1);
     }
 }

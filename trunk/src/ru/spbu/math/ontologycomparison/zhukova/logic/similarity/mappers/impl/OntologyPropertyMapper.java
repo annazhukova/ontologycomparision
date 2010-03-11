@@ -40,7 +40,6 @@ public class OntologyPropertyMapper extends Mapper<IOntologyProperty, IOntologyP
             IOntologyProperty first = firstGraph.getUriToProperty().get(uri);
             IOntologyProperty second = secondGraph.getUriToProperty().get(uri);
             bind(first, second, SAME_URI);
-            secondProperties.remove(second);
         }
 
         PropertyComparator propertyComparator = new PropertyComparator(mappedConcepts);
@@ -50,7 +49,6 @@ public class OntologyPropertyMapper extends Mapper<IOntologyProperty, IOntologyP
             for (IOntologyProperty first : firstGraph.getLabelToProperty().get(label)) {
                 for (IOntologyProperty second : secondGraph.getLabelToProperty().get(label)) {
                     if (tryToBind(propertyComparator, first, second, getBindFactors())) {
-                        secondProperties.remove(second);
                         break;
                     }
                 }
@@ -65,7 +63,12 @@ public class OntologyPropertyMapper extends Mapper<IOntologyProperty, IOntologyP
         return new Triple[0];
     }
 
+    public void bind(IOntologyProperty first, IOntologyProperty second, String reason, int count) {
+        first.addProperty(second, reason, count);
+        secondProperties.remove(second);
+    }
+
     public void bind(IOntologyProperty first, IOntologyProperty second, String reason) {
-        first.addProperty(second, reason);
+        bind(first, second, reason, 1);
     }
 }

@@ -6,8 +6,8 @@ import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConc
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyRelation;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.IOntologyComparator;
-import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.impl.OntologyComparator;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.SimilarityReason;
+import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.impl.OntologyComparator;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IArcFilter;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IGraphModel;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.*;
@@ -25,10 +25,10 @@ public class GraphModelBuilder implements IGraphModelBuilder {
     private static final Color firstOntologyColor = Color.BLUE;
     private static final Color secondOntologyColor = Color.GREEN;
     private static final Color bothOntologyColor = Color.ORANGE;
-    private static final int X_GAP = 6;
-    private static final int Y_GAP = 6;
+    private static final int X_GAP = 4;
+    private static final int Y_GAP = 2;
     private static final int FRAME_WIDTH = 800;
-    private static final int LABEL_GAP = 2;
+    private static final int LABEL_GAP = 4;
 
     public GraphModelBuilder(IOntologyGraph firstOntologyGraph, IOntologyGraph secondOntologyGraph) {
         this.firstOntologyGraph = firstOntologyGraph;
@@ -51,7 +51,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
     }
 
     private void buildVertices(GraphPane graphPane, IGraphModel graphModel, Map<String, SuperVertex> keyToSuperVertex,
-                               Map<String, SimpleVertex> conceptNameToVertices, boolean showUnpapped, boolean showUnmappedWithSynsets) {
+                               Map<String, SimpleVertex> conceptNameToVertices, boolean showUnmapped, boolean showUnmappedWithSynsets) {
         Graphics g = graphPane.getGraphics();
         Font font = new Font(Font.MONOSPACED, Font.ITALIC, 15);
         g.setFont(font);
@@ -62,16 +62,12 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         int maxHeight = letterHeight + LABEL_GAP + 2 * Y_GAP;
         int simpleVertexHeight = letterHeight + 2 * LABEL_GAP;
         for (IOntologyConcept mainConcept : this.mergedConcepts) {
-            int maxSimpleVertexWidth = 0;
+            int superVertexWidth = 0;
             Set<IOntologyConcept> conceptSet = new LinkedHashSet<IOntologyConcept>(mainConcept.getConceptToReason().keySet());
             conceptSet.add(mainConcept);
-            if (conceptSet.isEmpty()) {
-                continue;
-            }
             for (IOntologyConcept concept : conceptSet) {
                 String simpleLabel = concept.getLabelCollection().toString();
-                maxSimpleVertexWidth =
-                        Math.max(letterWidth * simpleLabel.length() + 2 * LABEL_GAP, maxSimpleVertexWidth);
+                superVertexWidth += letterWidth * simpleLabel.length() + 2 * LABEL_GAP + X_GAP;
             }
             String superLabel = mainConcept.hasMappedConcepts() ? SimilarityReason.LEXICAL.name() : SimilarityReason.NO.name();
             Synset synset = null;
@@ -83,23 +79,26 @@ public class GraphModelBuilder implements IGraphModelBuilder {
                 }
             }
             int simpleVertexNumber = conceptSet.size();
-            int superVertexWidth = (X_GAP + maxSimpleVertexWidth) * simpleVertexNumber + X_GAP;
-            int superVertexHeight = (Y_GAP + simpleVertexHeight) * simpleVertexNumber + letterHeight + LABEL_GAP + Y_GAP;
-
             if (currentX > FRAME_WIDTH - superVertexWidth) {
                 currentX = X_GAP;
                 currentY += maxHeight + Y_GAP;
             }
 
-            SuperVertex superVertex = keyToSuperVertex.get(superLabel + conceptSet);
-            if (superVertex != null) {
-                continue;
-            }
-            superVertex = createSuperVertex(graphModel, font, letterWidth, letterHeight, currentX,
-                    currentY, superLabel, superVertexWidth, superVertexHeight, mainConcept, synset);
-            boolean hidden = isHidden(showUnpapped, showUnmappedWithSynsets, mainConcept, superLabel);
-            if (hidden || superLabel.equals(SimilarityReason.NO.name())) {
-                superVertex.setHidden(true);
+            boolean hidden = isHidden(showUnmapped, showUnmappedWithSynsets, mainConcept, superLabel);
+            SuperVertex superVertex = null;
+            int superVertexHeight = 0;
+            if (!superLabel.equals(SimilarityReason.NO.name())) {
+                superVertexHeight = (Y_GAP + simpleVertexHeight) * simpleVertexNumber + letterHeight + LABEL_GAP + Y_GAP;
+                superVertex = keyToSuperVertex.get(superLabel + conceptSet);
+                if (superVertex != null) {
+                    continue;
+                }
+                superVertex = createSuperVertex(graphModel, font, letterWidth, letterHeight, currentX,
+                        currentY, superLabel, superVertexWidth + X_GAP, superVertexHeight, mainConcept, synset);
+                if (hidden) {
+                    superVertex.setHidden(true);
+                }
+                keyToSuperVertex.put(superLabel + conceptSet, superVertex);
             }
             int conceptX = X_GAP + currentX;
             int conceptY = LABEL_GAP + letterHeight + currentY;
@@ -118,20 +117,23 @@ public class GraphModelBuilder implements IGraphModelBuilder {
                     conceptNameToVertices.put(concept.getUri().toString(), simpleVertex);
                     conceptX += simpleVertex.getWidth() + X_GAP;
                     newChildren++;
-                    superVertex.addSimpleVertex(simpleVertex);
+                    if (superVertex != null) {
+                        superVertex.addSimpleVertex(simpleVertex);
+                    }
                 }
             }
             if (newChildren == 0) {
                 continue;
             }
-            if (conceptY + simpleVertexHeight + Y_GAP < currentY + superVertexHeight) {
-                int newHeight = conceptY - currentY + simpleVertexHeight + Y_GAP;
-                superVertex.setHeight(newHeight);
-                superVertexHeight = newHeight;
+            if (superVertexHeight > 0) {
+                if (conceptY + simpleVertexHeight + Y_GAP < currentY + superVertexHeight) {
+                    int newHeight = conceptY - currentY + simpleVertexHeight + Y_GAP;
+                    superVertex.setHeight(newHeight);
+                    superVertexHeight = newHeight;
+                }
+                maxHeight = Math.max(maxHeight, superVertexHeight);
             }
-            maxHeight = Math.max(maxHeight, superVertexHeight);
             currentX += superVertexWidth + X_GAP;
-            keyToSuperVertex.put(superLabel + conceptSet, superVertex);
         }
     }
 
@@ -147,7 +149,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         }
         if (synset != null) {
             result.append("<p>").append(synset.getDefinition()).append("</p>");
-        }         
+        }
         if (mainConcept.hasMappedConcepts()) {
             result.append("<ul>");
             for (Map.Entry<String, Integer> reason :
@@ -196,33 +198,27 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         Collection<IOntologyConcept> secondConcepts = this.secondOntologyGraph.getConcepts();
         Collection<IOntologyConcept> allConcepts = new ArrayList<IOntologyConcept>(firstConcepts);
         allConcepts.addAll(secondConcepts);
-        for (IOntologyConcept child : allConcepts) {
-            String childName = child.getUri().toString();
-            SimpleVertex childVertex = nameToVertex.get(childName);
-            if (childVertex == null) {
+        for (IOntologyConcept parent : allConcepts) {
+            String parentName = parent.getUri().toString();
+            SimpleVertex parentVertex = nameToVertex.get(parentName);
+            if (parentVertex == null) {
                 continue;
             }
-            /*for (OntologyRelation relation :
-                    child.getSubjectRelations(WordNetRelation.HYPERNYM.getRelatedOntologyConcept())) {
-               */
-            /*for (IOntologyConcept parent : child.getParents()) {
-                *//*String parentName = relation.getObject().getUri().toString();*//*
-                String parentName = parent.getUri().toString();
-                SimpleVertex parentVertex = nameToVertex.get(parentName);
-                if (parentVertex != null) {
-                    graphModel.addArc(new Arc(childVertex, parentVertex,
-                            Arrays.asList(WordNetRelation.HYPONYM.getRelatedOntologyConcept())));
+            for (IOntologyConcept child : parent.getParents()) {
+                String childName = child.getUri().toString();
+                SimpleVertex childVertex = nameToVertex.get(childName);
+                if (childVertex != null) {
+                    graphModel.addArc(new Arc(parentVertex, childVertex, Collections.EMPTY_LIST, Color.DARK_GRAY));
                 }
+            }
 
-            }*/
-
-            for (IOntologyRelation relation : child.getSubjectRelations()) {
+            for (IOntologyRelation relation : parent.getSubjectRelations()) {
                 IOntologyConcept objectConcept = relation.getObject();
                 if (objectConcept != null) {
                     String objectName = objectConcept.getUri().toString();
                     SimpleVertex objectVertex = nameToVertex.get(objectName);
                     if (objectVertex != null) {
-                        graphModel.addArc(new Arc(childVertex, objectVertex,
+                        graphModel.addArc(new Arc(parentVertex, objectVertex,
                                 Arrays.asList(relation.getRelationName())));
                     }
                 }

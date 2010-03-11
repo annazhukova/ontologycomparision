@@ -37,7 +37,7 @@ public class TestWordNet extends TestCase {
         for (Synset synset : WordNetHelper.getSynsetsForWord(JAVA)) {
             if (synset.getDefinition().contains(JAVA_DEFINITION)) {
                 Collection<? extends Synset> hypernymSet =
-                        WordNetHelper.getHypernymsForSynset(synset);
+                        WordNetHelper.getHypernymsForSynsetRecursively(synset);
                 for (Synset hypernym : hypernymSet) {
                     if (hypernym.getDefinition().contains(PROGRAMMING_LANGUAGE_DEFINITION)) {
                         return;

@@ -3,6 +3,7 @@ package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyProperty;
 import ru.spbu.math.ontologycomparison.zhukova.util.impl.HashMapTable;
+import ru.spbu.math.ontologycomparison.zhukova.util.IHashMapTable;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -15,7 +16,7 @@ public class OntologyProperty extends LabeledOntologyEntity implements IOntology
     private final IOntologyConcept[] domains;
     private final IOntologyConcept[] ranges;
     private final boolean isFunctional;
-    private HashMapTable<IOntologyProperty, String> propertyToReason = new HashMapTable<IOntologyProperty, String>();
+    private IHashMapTable<IOntologyProperty, String> propertyToReason = new HashMapTable<IOntologyProperty, String>();
 
     public OntologyProperty(URI uri, String label, IOntologyConcept[] domains, IOntologyConcept[] ranges, boolean functional) {
         super(uri, label);
@@ -50,7 +51,7 @@ public class OntologyProperty extends LabeledOntologyEntity implements IOntology
         return isFunctional;
     }
 
-    public void addProperty(IOntologyProperty property, String reason) {
-        propertyToReason.insert(property, reason);
+    public void addProperty(IOntologyProperty property, String reason, int count) {
+        propertyToReason.insert(property, reason, count);
     }
 }

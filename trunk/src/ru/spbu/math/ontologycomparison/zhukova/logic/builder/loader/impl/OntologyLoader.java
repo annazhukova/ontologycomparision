@@ -142,23 +142,7 @@ public class OntologyLoader implements IOntologyLoader {
                 domains.toArray(new IOntologyConcept[domains.size()]), ranges.toArray(new IOntologyConcept[ranges.size()]),
                 property.isFunctional(ontology));
         uriToProperty.put(property.getURI(), ontologyProperty);
-        labelToProperty.insert(ontologyProperty.getMainLabel(), ontologyProperty);
-            /*
-}
-        System.out.println(property.getURI());
-        for (Object o : property.getDomains(ontology)) {
-            OWLDescription description = (OWLDescription) o;
-            System.out.println(description.isLiteral());
-            System.out.println((description.asOWLClass()).getAnnotations(ontology));
-        }
-        System.out.println(property.getDomains(ontology));
-        System.out.println(property.getRanges(ontology));
-        System.out.println(property.isBuiltIn());
-        System.out.println(property.isFunctional(ontology));
-        System.out.println(property.getAnnotations(ontology));
-        System.out.println(property.getSignature());
-        System.out.println("");
-*/
+        labelToProperty.insert(ontologyProperty.getNormalizedMainLabel(), ontologyProperty);
     }
 
     /*
@@ -229,7 +213,6 @@ public class OntologyLoader implements IOntologyLoader {
                         if (!child.equals(clazz)) {
                             IOntologyConcept childConcept = loadClass(child, annotationVisitor, concepts, labelToConcept, roots);
                             if (childConcept != null) {
-                                /*concept.addChild(childConcept);*/
                                 childConcept.addParent(concept);
                                 roots.remove(childConcept);
                             }
@@ -238,7 +221,7 @@ public class OntologyLoader implements IOntologyLoader {
                 }
                 concepts.put(uri, concept);
                 roots.add(concept);
-                labelToConcept.insert(concept.getMainLabel(), (IOntologyConcept)concept);
+                labelToConcept.insert(concept.getNormalizedMainLabel(), (IOntologyConcept)concept);
             }
             return concept;
         }

@@ -58,13 +58,14 @@ public class SelectingTool extends Tool {
             }
             Set<SuperVertex> superVertices = graphPane.getGraphModel().getSuperVertices();
             for (SuperVertex v : superVertices) {
-                boolean leftX = v.leftBorderTest(mouseLocation);
+                /*boolean leftX = v.leftBorderTest(mouseLocation);
                 boolean rightX = v.rightBorderTest(mouseLocation);
                 boolean topY = v.topBorderTest(mouseLocation);
                 boolean bottomY = v.bottomBorderTest(mouseLocation);
                 if (leftX || rightX || topY || bottomY) {
                     resizeOn(mouseLocation, v, leftX, rightX, topY, bottomY);
-                } else if (v.hitTest(mouseLocation)) {
+                } else*/
+                if (v.hitTest(mouseLocation)) {
                     graphPane.selectVertex(v);
                     moveOn(mouseLocation);
                     return;
@@ -89,23 +90,23 @@ public class SelectingTool extends Tool {
             Point mouseLocation = e.getPoint();
             GraphPane graphPane = Tool.getGraphPane();
             if (mouseLocation.equals(SelectingTool.left)) {
-                if (SelectingTool.isOnlySuperVerticesSelection) {
-                    Set<SuperVertex> vertices = graphPane.getGraphModel().getSuperVertices();
-                    for (IVertex v : vertices) {
-                        if (v.hitTest(mouseLocation)) {
-                            graphPane.selectVertex(v);
-                            break;
-                        }
-                    }
-                } else {
-                    Set<IVertex> vertices = graphPane.getGraphModel().getVertices();
-                    for (IVertex v : vertices) {
+                if (!SelectingTool.isOnlySuperVerticesSelection) {
+                    Set<SimpleVertex> simpleVertices = graphPane.getGraphModel().getSimpleVertices();
+                    for (IVertex v : simpleVertices) {
                         if (v.hitTest(mouseLocation)) {
                             graphPane.selectVertex(v);
                             break;
                         }
                     }
                 }
+                Set<SuperVertex> vertices = graphPane.getGraphModel().getSuperVertices();
+                for (IVertex v : vertices) {
+                    if (v.hitTest(mouseLocation)) {
+                        graphPane.selectVertex(v);
+                        break;
+                    }
+                }
+
             } else {
                 Set<SuperVertex> superVertices = graphPane.getGraphModel().getSuperVertices();
                 for (SuperVertex v : superVertices) {

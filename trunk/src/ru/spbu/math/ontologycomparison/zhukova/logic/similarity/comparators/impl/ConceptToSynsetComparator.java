@@ -14,19 +14,22 @@ import java.util.Set;
  */
 public class ConceptToSynsetComparator extends Comparator<IOntologyConcept, Synset, WordNetRelation> {
     public Set<IOntologyConcept> getByFirstProperty(IOntologyConcept concept, WordNetRelation property) {
+        if (property.equals(WordNetRelation.HYPONYM)) {
+            return concept.getAllParents();
+        }
         return LexicalComparisonHelper.getConceptSetByConceptAndProperty(concept, property);
     }
 
-    public Set<Synset> getBySecondProperty(Synset concept, WordNetRelation property) {
+    public Set<Synset> getBySecondProperty(Synset synset, WordNetRelation property) {
         switch (property) {
             case HYPONYM:
-                return new LinkedHashSet<Synset>(WordNetHelper.getHypernymsForSynset(concept));
+                return new LinkedHashSet<Synset>(WordNetHelper.getHypernymsForSynsetRecursively(synset));
             case HYPERNYM:
-                return new LinkedHashSet<Synset>(WordNetHelper.getHyponymsForSynset(concept));
+                return new LinkedHashSet<Synset>(WordNetHelper.getHyponymsForSynsetRecursively(synset));
             case HOLONYM:
                 return Collections.emptySet();
             case MERONYM:
-                return new LinkedHashSet<Synset>(WordNetHelper.getPartHolonymsForSynset(concept));
+                return new LinkedHashSet<Synset>(WordNetHelper.getPartHolonymsForSynset(synset));
         }
         return Collections.emptySet();
     }

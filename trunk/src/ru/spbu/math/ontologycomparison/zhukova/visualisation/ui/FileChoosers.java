@@ -11,7 +11,7 @@ public class FileChoosers {
     private static Main main;
     private static final String[] ACCEPTED_FORMATS = new String[]{".owl", ".rdf", ".rdfs", ".obo", ".n3"};
 
-    private static final JFileChooser fileChooser = new JFileChooser("./resources/test/");
+    private static final JFileChooser fileChooser = new JFileChooser("./resources/ontologyexamples");
 
     private static final FileFilter filter = new FileFilter() {
         public boolean accept(File f) {

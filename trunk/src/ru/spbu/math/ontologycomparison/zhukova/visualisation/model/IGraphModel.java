@@ -22,8 +22,6 @@ public interface IGraphModel {
 
     void removeArc(IArc arc);
 
-    Set<IVertex> getVertices();
-
     Set<SimpleVertex> getSimpleVertices();
 
     Set<SuperVertex> getSuperVertices();
