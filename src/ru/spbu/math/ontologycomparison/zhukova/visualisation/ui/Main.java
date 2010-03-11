@@ -31,10 +31,11 @@ public class Main {
     private final JScrollPane graphScrollPane = new JScrollPane(this.graphPane,
             ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     private final JPanel descriptionPanel = new JPanel();
-    private final JLabel descriptionLabel = new JLabel();
-    private JFrame progressFrame;
+    private final JLabel descriptionLabel = new JLabel("Press \"Open\" to select ontologies to compare");
     private JCheckBox showSingleSynsetVertexCheckBox;
     private JCheckBox showUnmappedConceptsCheckBox;
+    private JFrame progressFrame;
+    private JProgressBar progressBar = new JProgressBar();
 
     public Main() {
         FileChoosers.setMain(this);
@@ -75,9 +76,10 @@ public class Main {
         this.graphScrollPane.setPreferredSize(this.frame.getPreferredSize());
     }
 
-    public void setGraphModel(GraphModel graphModel) {
+    public void setGraphModel(final GraphModel graphModel) {
         //this.progressFrame.setVisible(false);
-        this.graphPane.setGraphModel(graphModel);
+        graphPane.setGraphModel(graphModel);
+
     }
 
     public void showProgressBar() {
@@ -85,7 +87,6 @@ public class Main {
             progressFrame = new JFrame();
             progressFrame.setUndecorated(true);
             progressFrame.getContentPane().setLayout(new BorderLayout());
-            JProgressBar progressBar = new JProgressBar();
             Dimension d = new Dimension(200, 20);
             progressBar.setPreferredSize(d);
             progressBar.setSize(d);
@@ -93,19 +94,16 @@ public class Main {
             progressBar.setMinimum(0);
             progressBar.setMaximum(100);
             progressBar.setValue(0);
-
             progressBar.setStringPainted(true);
             progressBar.setString("Loading Ontologies...");
+            progressBar.setIndeterminate(true);
             progressFrame.getContentPane().add(progressBar, BorderLayout.CENTER);
-            progressBar.setVisible(true);
             progressFrame.pack();
             progressFrame.setResizable(false);
             progressFrame.setLocation((int) getFrame().getLocation().getX() + getFrame().getWidth() / 2,
                     (int) getFrame().getLocation().getY() + getFrame().getHeight() / 2);
             //progressFrame.setLocationRelativeTo(this.getFrame());
             progressFrame.setAlwaysOnTop(true);
-            progressFrame.setVisible(true);
-            progressBar.setIndeterminate(true);
         }
         progressFrame.setVisible(true);
         progressFrame.requestFocus();
@@ -117,9 +115,10 @@ public class Main {
         }
     }
 
-    public void updateDescriptionPanel(String descrintion) {
-        this.descriptionLabel.setText(descrintion);
-        this.descriptionPanel.repaint();
+    public void updateDescriptionPanel(final String description) {
+        progressBar.setString(description);
+        descriptionLabel.setText(description);
+        descriptionLabel.repaint();
     }
 
     public IGraphModel getGraphModel() {
@@ -143,12 +142,9 @@ public class Main {
                 final boolean showUnmapped = showUnmappedConceptsCheckBox.isSelected();
                 IGraphModel graphModel = Main.this.getGraphModel();
                 if (graphModel != null) {
-                    for (SuperVertex vertex : graphModel.getSuperVertices()) {
-                        if (vertex.getName().equals(SimilarityReason.NO.name())) {
-                            //vertex.setHidden(!showUnmapped);
-                            for (IVertex subVertex : vertex.getSimpleVertices()) {
-                                subVertex.setHidden(!showUnmapped);
-                            }
+                    for (SimpleVertex vertex : graphModel.getSimpleVertices()) {
+                        if (vertex.getSuperVertex() == null) {
+                            vertex.setHidden(!showUnmapped);
                         }
                     }
                     graphModel.update();
@@ -166,7 +162,7 @@ public class Main {
                 if (graphModel != null) {
                     for (SuperVertex vertex : graphModel.getSuperVertices()) {
                         if (vertex.getName().equals(SimilarityReason.WORDNET.name())) {
-                            Set<SimpleVertex> vertexSet = vertex.getSimpleVertices();  
+                            Set<SimpleVertex> vertexSet = vertex.getSimpleVertices();
                             if (vertexSet != null && vertexSet.size() <= 1) {
                                 vertex.setHidden(!showSingleSynsetVertex);
                                 for (IVertex subVertex : vertexSet) {

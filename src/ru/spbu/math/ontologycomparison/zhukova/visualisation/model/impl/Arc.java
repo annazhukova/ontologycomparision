@@ -13,6 +13,7 @@ import static java.lang.Math.*;
  */
 public class Arc implements IArc {
     private static IArcFilter arcFilter;
+    private final Color color;
 
     public static void setArcFilter(IArcFilter arcFilter) {
         Arc.arcFilter = arcFilter;
@@ -26,10 +27,15 @@ public class Arc implements IArc {
     private final SimpleVertex toVertex;
     private final List<String> labels;
 
-    public Arc(SimpleVertex from, SimpleVertex to, List<String> labels) {             
+    public Arc(SimpleVertex from, SimpleVertex to, List<String> labels, Color color) {
         this.fromVertex = from;
         this.toVertex = to;
         this.labels = labels;
+        this.color = color;
+    }
+
+    public Arc(SimpleVertex from, SimpleVertex to, List<String> labels) {
+        this(from, to, labels, Color.LIGHT_GRAY);
     }
 
     public SimpleVertex getFromVertex() {
@@ -62,7 +68,7 @@ public class Arc implements IArc {
     }
 
     public void paint(Graphics g) {
-        g.setColor(Color.GRAY);
+        g.setColor(color);
         Point loc = this.fromVertex.getAbsoluteLocation();
         int x1 = loc.x + this.fromVertex.getWidth() / 2;
         int y1 = loc.y + this.fromVertex.getHeight() / 2;
@@ -112,6 +118,6 @@ public class Arc implements IArc {
     }
 
     public boolean isHidden() {
-        return this.fromVertex.isHidden() || this.toVertex.isHidden() || "<html>".equals(getToolTipHTML());
+        return this.fromVertex.isHidden() || this.toVertex.isHidden();
     }
 }

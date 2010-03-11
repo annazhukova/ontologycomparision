@@ -1,8 +1,8 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.builder;
 
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.IOntologyLoader;
-import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.OntologyLoader;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.ClassAnnotationVisitor;
+import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.OntologyLoader;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.PropertyVisitor;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
 

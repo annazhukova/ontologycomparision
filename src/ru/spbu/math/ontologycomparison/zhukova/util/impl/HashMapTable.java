@@ -1,5 +1,6 @@
 package ru.spbu.math.ontologycomparison.zhukova.util.impl;
 
+import ru.spbu.math.ontologycomparison.zhukova.util.IHashMapTable;
 import ru.spbu.math.ontologycomparison.zhukova.util.IHashTable;
 
 import java.util.Collection;
@@ -9,7 +10,7 @@ import java.util.Map;
 /**
  * @author Anna Zhukova
  */
-public class HashMapTable<K, V> extends HashMap<K, Map<V, Integer>> {
+public class HashMapTable<K, V> extends HashMap<K, Map<V, Integer>> implements IHashMapTable<K,V> {
 
     public boolean has(Object value) {
         for (Map<V, Integer> valueCollection : this.values()) {
@@ -22,9 +23,13 @@ public class HashMapTable<K, V> extends HashMap<K, Map<V, Integer>> {
         return false;
     }
 
-    public void insert(K key, V value) {
+    public void insert(K key, V value, int count) {
         Map<V, Integer> oldValue = getOldValueOrNew(key);
-        addToInnerMap(value, oldValue);
+        addToInnerMap(value, count, oldValue);
+    }
+
+    public void insert(K key, V value) {
+        this.insert(key, value, 1);
     }
 
     private Map<V, Integer> getOldValueOrNew(K key) {

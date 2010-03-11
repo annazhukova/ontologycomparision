@@ -30,9 +30,12 @@ public class SynsetMapper extends Mapper<IOntologyConcept, Synset, WordNetRelati
     public Collection<IOntologyConcept> map() {
         ConceptToSynsetComparator conceptToSynsetComparator = new ConceptToSynsetComparator();
         /*System.out.printf("SYNSET HELPER FOR GRAPH: %s\n", graph);*/
-        for (IOntologyConcept childConcept : conceptCollection) {
-            for (Synset childSynset : getSynsets(childConcept)) {
-                tryToBind(conceptToSynsetComparator, childConcept, childSynset, getBindFactors());
+        for (IOntologyConcept concept : conceptCollection) {
+            Collection<Synset> synsetCollection = getSynsets(concept);
+            for (Synset synset : synsetCollection) {
+                if (tryToBind(conceptToSynsetComparator, concept, synset, getBindFactors())) {
+                    break;
+                }
             }
         }
         System.out.println("binded synsets");
@@ -49,15 +52,19 @@ public class SynsetMapper extends Mapper<IOntologyConcept, Synset, WordNetRelati
     private Collection<Synset> getSynsets(IOntologyConcept concept) {
         Collection<Synset> result = new HashSet<Synset>();
         for (String label : concept.getLabels()) {
-            result.addAll(WordNetHelper.getSynsetsForWord(label.toLowerCase()));
+            result.addAll(WordNetHelper.getSynsetsForWord(label));
         }
         return result;
     }
 
-    public void bind(IOntologyConcept concept, Synset synset, String reason) {
+    public void bind(IOntologyConcept concept, Synset synset, String reason, int count) {
         /*System.out.printf("\tBINDED %s <-> %s\n", concept, synset);*/
-        concept.addSynset(synset, reason);
+        concept.addSynset(synset, reason, count);
         synsetToConcept.insert(synset, concept);
+    }
+
+    public void bind(IOntologyConcept first, Synset synset, String reason) {
+        bind(first, synset, reason, 1);
     }
 
     public IHashTable<Synset, IOntologyConcept, Set<IOntologyConcept>> getSynsetToConceptTable() {

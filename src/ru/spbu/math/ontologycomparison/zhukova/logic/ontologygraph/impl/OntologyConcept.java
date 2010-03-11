@@ -3,12 +3,15 @@ package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl;
 import edu.smu.tspell.wordnet.Synset;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyRelation;
-import ru.spbu.math.ontologycomparison.zhukova.logic.wordnet.WordNetRelation;
+import ru.spbu.math.ontologycomparison.zhukova.util.IHashMapTable;
+import ru.spbu.math.ontologycomparison.zhukova.util.IHashTable;
+import ru.spbu.math.ontologycomparison.zhukova.util.RecursiveAddHelper;
 import ru.spbu.math.ontologycomparison.zhukova.util.impl.HashMapTable;
+import ru.spbu.math.ontologycomparison.zhukova.util.impl.SetHashTable;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -18,13 +21,19 @@ import java.util.Set;
 public class OntologyConcept extends LabeledOntologyEntity implements IOntologyConcept {
     private HashMapTable<Synset, String> synsetToReason = new HashMapTable<Synset, String>();
     private HashMapTable<IOntologyConcept, String> conceptToReason = new HashMapTable<IOntologyConcept, String>();
-    /*
-    private final List<IOntologyConcept> children = new ArrayList<IOntologyConcept>();*/
-    //private final Set<IOntologyConcept> parents = new LinkedHashSet<IOntologyConcept>();/*
-    //private final List<OntologyRelation> objectRelations = new ArrayList<OntologyRelation>();*/
-    private final Set<IOntologyRelation> subjectRelations = new LinkedHashSet<IOntologyRelation>();
-    private static final URI SUBCLASS_URI;
+    private final Set<IOntologyConcept> parents = new HashSet<IOntologyConcept>();
+    private final IHashTable<String, IOntologyRelation, Set<IOntologyRelation>> labelToSubjectRelation = new SetHashTable<String, IOntologyRelation>();
     private boolean isRoot = true;
+    private int depth = 0;
+    private static final RecursiveAddHelper<IOntologyConcept> RECURSIVE_ADD_HELPER = new RecursiveAddHelper<IOntologyConcept>();
+    private static final RecursiveAddHelper.ElementsToAddExtractor<IOntologyConcept> EXTRACTOR = new RecursiveAddHelper.ElementsToAddExtractor<IOntologyConcept>() {
+        public Collection<IOntologyConcept> extract(IOntologyConcept element) {
+            return element.getParents();
+        }
+    };
+    private static final int MAX_RECURSIVE_LEVEL = 5;
+    private static final int MAX_RECURSIVE_SIZE = 20;
+    /*private static final URI SUBCLASS_URI;
 
     static {
         URI uri = null;
@@ -34,108 +43,45 @@ public class OntologyConcept extends LabeledOntologyEntity implements IOntologyC
             // never happens
         }
         SUBCLASS_URI = uri;
+    }*/
+
+    public OntologyConcept(URI uri, String label, int depth) {
+        super(uri, label);
+        this.depth = depth;
     }
 
     public OntologyConcept(URI uri, String label) {
-        super(uri, label);
+        this(uri, label, 0);
     }
-
-    /*public List<OntologyRelation> getObjectRelations() {
-        return this.objectRelations;
-    }*/
 
     public Set<IOntologyRelation> getSubjectRelations() {
-        return this.subjectRelations;
+        return this.labelToSubjectRelation.allValues();
     }
 
-    /*public List<OntologyRelation> getRelations() {
-        List<OntologyRelation> result = new ArrayList<OntologyRelation>(getSubjectRelations());
-        result.addAll(getObjectRelations());
-        return result;
-    }*/
-
-    /*public List<OntologyRelation> getObjectRelations(String relationName) {
-        List<OntologyRelation> result = new ArrayList<OntologyRelation>();
-        for (OntologyRelation relation : getObjectRelations()) {
-            if (relationName.equalsIgnoreCase(relation.getRelationName())) {
-                result.add(relation);
-            }
-        }
-        return result;
-    }*/
-
-    public Set<IOntologyRelation> getSubjectRelations(String relationName) {
-        Set<IOntologyRelation> result = new LinkedHashSet<IOntologyRelation>();
-        for (IOntologyRelation relation : getSubjectRelations()) {
-            if (relationName.equalsIgnoreCase(relation.getRelationName())) {
-                result.add(relation);
-                if (relation.isTransitive()) {
-                    result.addAll(relation.getObject().getSubjectRelations(relationName));
-                }
-            }
-        }
-        return result;
-    }
-
-    /*public List<OntologyRelation> getRelations(String relationName) {
-        List<OntologyRelation> result = new ArrayList<OntologyRelation>(
-                getSubjectRelations(relationName));
-        result.addAll(getObjectRelations(relationName));
-        return result;
-    }*/
-
-    /*public List<IOntologyConcept> getChildren() {
-        return this.children;
-    }*/
-
-    /*public void addChild(IOntologyConcept child) {
-        getChildren().add(child);
-       *//* addSubjectRelation(
-                new OntologyRelation(WordNetRelation.HYPERNYM.getRelatedOntologyConcept(), this, child));
-        *//**//*addObjectRelation(
-                new OntologyRelation(WordNetRelation.HYPONYM.getRelatedOntologyConcept(), child, this));*//*
-    }*/
-
-    public Set<IOntologyConcept> getAllParents() {
-        Set<IOntologyConcept> result = new LinkedHashSet<IOntologyConcept>(getParents());
-        addParentsRecursively(result, getParents());
-        return result;
-    }
-
-    private static void addParentsRecursively(Set<IOntologyConcept> whereToAdd, Set<IOntologyConcept> whoseParentsToAdd) {
-        if (whoseParentsToAdd == null || whoseParentsToAdd.isEmpty()) {
-            return;
-        }
-        Set<IOntologyConcept> parents = new LinkedHashSet<IOntologyConcept>();
-        for (IOntologyConcept child : whoseParentsToAdd) {
-            parents.addAll(child.getParents());
-        }
-        whereToAdd.addAll(parents);
-        addParentsRecursively(whereToAdd, parents);
+    public Set<IOntologyRelation> getSubjectRelations(String label) {
+        return this.labelToSubjectRelation.get(label);
     }
 
     public Set<IOntologyConcept> getParents() {
-        Set<IOntologyConcept> result = new LinkedHashSet<IOntologyConcept>();
-        for (IOntologyRelation relation : getSubjectRelations(WordNetRelation.HYPONYM.getRelatedOntologyConcept())) {
-             result.add(relation.getObject());
+        /*Set<IOntologyConcept> result = new LinkedHashSet<IOntologyConcept>();
+        for (IOntologyRelation relation : this.labelToSubjectRelation.get(WordNetRelation.HYPONYM.getRelatedOntologyConcept())) {
+            result.add(relation.getObject());
         }
-        return result;
-        //return this.parents;
+        return result;*/
+        return this.parents;
     }
 
     public void addParent(IOntologyConcept parent) {
+        parents.add(parent);
         isRoot = false;
-        //getParents().add(parent);
-        this.subjectRelations.add(new OntologyRelation(SUBCLASS_URI, WordNetRelation.HYPONYM.getRelatedOntologyConcept(), true, this, parent));
-        /*addObjectRelation(
-                new OntologyRelation(WordNetRelation.HYPERNYM.getRelatedOntologyConcept(), parent, this));
-        *//*addSubjectRelation(
-                new OntologyRelation(WordNetRelation.HYPONYM.getRelatedOntologyConcept(), this, parent));*/
+        /*this.labelToSubjectRelation.insert(WordNetRelation.HYPONYM.getRelatedOntologyConcept(), new OntologyRelation(SUBCLASS_URI, WordNetRelation.HYPONYM.getRelatedOntologyConcept(), true, this, parent));*/
     }
 
-    /*public void addObjectRelation(OntologyRelation relation) {
-        *//*getObjectRelations().add(relation);*//*
-    }*/
+    public Set<IOntologyConcept> getAllParents() {
+        Set<IOntologyConcept> result = new LinkedHashSet<IOntologyConcept>(getParents());
+        RECURSIVE_ADD_HELPER.addRecursively(result, getParents(), EXTRACTOR, MAX_RECURSIVE_LEVEL, MAX_RECURSIVE_SIZE);
+        return result;
+    }
 
     public boolean isRoot() {
         return this.isRoot;
@@ -163,20 +109,20 @@ public class OntologyConcept extends LabeledOntologyEntity implements IOntologyC
         return this.getUri().equals(((OntologyConcept) o).getUri());
     }
 
-    public HashMapTable<Synset, String> getSynsetToReason() {
+    public IHashMapTable<Synset, String> getSynsetToReason() {
         return synsetToReason;
     }
 
-    public void addSynset(Synset synset, String reason) {
-        this.synsetToReason.insert(synset, reason);
+    public void addSynset(Synset synset, String reason, int count) {
+        this.synsetToReason.insert(synset, reason, count);
     }
 
-    public HashMapTable<IOntologyConcept, String> getConceptToReason() {
+    public IHashMapTable<IOntologyConcept, String> getConceptToReason() {
         return conceptToReason;
     }
 
-    public void addConcept(IOntologyConcept concept, String reason) {
-        this.conceptToReason.insert(concept, reason);
+    public void addConcept(IOntologyConcept concept, String reason, int count) {
+        this.conceptToReason.insert(concept, reason, count);
     }
 
     public void setIsRoot(boolean root) {
@@ -185,5 +131,13 @@ public class OntologyConcept extends LabeledOntologyEntity implements IOntologyC
 
     public boolean hasMappedConcepts() {
         return !this.conceptToReason.isEmpty();
+    }
+
+    public int getDepth() {
+        return depth;
+    }
+
+    public void increaseDepth() {
+        this.depth++;
     }
 }

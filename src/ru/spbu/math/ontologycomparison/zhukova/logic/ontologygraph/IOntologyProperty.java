@@ -13,5 +13,5 @@ public interface IOntologyProperty extends ILabeledOntologyEntity {
 
     boolean isFunctional();
 
-    void addProperty(IOntologyProperty property, String reason);
+    void addProperty(IOntologyProperty property, String reason, int count);
 }

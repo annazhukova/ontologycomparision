@@ -15,8 +15,11 @@ public class LexicalComparisonHelper {
 
     public static Set<IOntologyConcept> getConceptSetByConceptAndProperty(IOntologyConcept concept, WordNetRelation property) {
         Set<IOntologyConcept> result = new LinkedHashSet<IOntologyConcept>();
-        for (IOntologyRelation relation : concept.getSubjectRelations(property.getRelatedOntologyConcept())) {
-            result.add(relation.getObject());
+        Set<IOntologyRelation> subjectRelations = concept.getSubjectRelations(property.getRelatedOntologyConcept());
+        if (subjectRelations != null) {
+            for (IOntologyRelation relation : subjectRelations) {
+                result.add(relation.getObject());
+            }
         }
         return result;
     }

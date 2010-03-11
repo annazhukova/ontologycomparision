@@ -40,9 +40,12 @@ public abstract class LabeledOntologyEntity implements ILabeledOntologyEntity {
         return Arrays.asList(getLabels());
     }
 
+    public String getNormalizedMainLabel() {
+        return normalizeString(getMainLabel());
+    }
+
     public String getMainLabel() {
-        String label = getLabels().length > 0 ? getLabels()[0] : EMPTY_STRING;
-        return normalizeString(label);
+        return getLabels().length > 0 ? getLabels()[0] : EMPTY_STRING;
     }
 
     public static String normalizeString(String source) {

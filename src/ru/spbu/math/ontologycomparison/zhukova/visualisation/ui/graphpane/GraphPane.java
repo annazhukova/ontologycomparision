@@ -16,25 +16,23 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class GraphPane extends JPanel implements IGraphPane {
+public class GraphPane extends JPanel implements IGraphPane, GraphModel.Listener {
     private Set<IVertex> selectedVertices = new HashSet<IVertex>();
     private ITool currentTool = SelectingTool.getInstance();
     private GraphModel graphModel = new GraphModel(this);
 
-    private class MyObserver implements Observer {
+    public void update() {
+        repaint();
+    }
 
-        public void update(Observable o, Object arg) {
-            if (arg != null) {
-                IVertex v = (IVertex) arg;
-                for (IVertex selectedVertex : GraphPane.this.selectedVertices) {
-                    if (selectedVertex.equals(v)) {
-                        GraphPane.this.selectedVertices.remove(v);
-                        break;
-                    }
-                }
+    public void update(IVertex vertex) {
+        for (IVertex selectedVertex : GraphPane.this.selectedVertices) {
+            if (selectedVertex.equals(vertex)) {
+                GraphPane.this.selectedVertices.remove(vertex);
+                break;
             }
-            repaint();
         }
+        repaint();
     }
 
     public GraphPane() {
@@ -75,10 +73,10 @@ public class GraphPane extends JPanel implements IGraphPane {
     public void setGraphModel(GraphModel gr) {
         deselectVertices();
         this.graphModel = gr;
-        this.graphModel.addObserver(new MyObserver());
+        this.graphModel.addListener(this);
         Tool.setGraphModel(this);
         revalidate();
-        repaint();
+        update();
     }
 
     public void paintComponent(Graphics g) {
@@ -89,12 +87,12 @@ public class GraphPane extends JPanel implements IGraphPane {
                 arc.paintIfNeeded(g);
             }
             List<SimpleVertex> vertices = new LinkedList<SimpleVertex>(this.graphModel.getSimpleVertices());
-            for (ListIterator<SimpleVertex> it = vertices.listIterator(vertices.size()); it.hasPrevious(); ) {
+            for (ListIterator<SimpleVertex> it = vertices.listIterator(vertices.size()); it.hasPrevious();) {
                 IVertex v = it.previous();
                 v.paintIfNeeded(g, this, this.selectedVertices.contains(v));
             }
-            List<SuperVertex> svertices = new LinkedList<SuperVertex>(this.graphModel.getSuperVertices());
-            for (ListIterator<SuperVertex> it = svertices.listIterator(svertices.size()); it.hasPrevious(); ) {
+            List<SuperVertex> superVertices = new LinkedList<SuperVertex>(this.graphModel.getSuperVertices());
+            for (ListIterator<SuperVertex> it = superVertices.listIterator(superVertices.size()); it.hasPrevious();) {
                 IVertex v = it.previous();
                 v.paintIfNeeded(g, this, this.selectedVertices.contains(v));
             }
@@ -116,6 +114,6 @@ public class GraphPane extends JPanel implements IGraphPane {
         this.currentTool = tool;
         addMouseListener(this.currentTool);
         addMouseMotionListener(this.currentTool);
-        repaint();
+        update();
     }
 }

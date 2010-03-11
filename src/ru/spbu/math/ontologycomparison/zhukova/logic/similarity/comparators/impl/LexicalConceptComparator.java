@@ -15,8 +15,9 @@ public class LexicalConceptComparator extends SameClassComparator<IOntologyConce
     }
 
     public Set<IOntologyConcept> getByProperty(IOntologyConcept concept, WordNetRelation property) {
+        if (property.equals(WordNetRelation.HYPONYM)) {
+            return concept.getAllParents();
+        }
         return LexicalComparisonHelper.getConceptSetByConceptAndProperty(concept, property);
     }
-
-
 }

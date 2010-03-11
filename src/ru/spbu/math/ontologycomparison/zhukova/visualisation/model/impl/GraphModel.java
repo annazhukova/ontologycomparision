@@ -7,21 +7,24 @@ import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.IGraph
 import java.awt.*;
 import java.util.*;
 
-public class GraphModel extends Observable implements IGraphModel {
-    private final Set<IVertex> vertices = new HashSet<IVertex>();
+public class GraphModel implements IGraphModel {
     private final Set<SimpleVertex> simpleVertices = new HashSet<SimpleVertex>();
     private final Set<SuperVertex> superVertices = new HashSet<SuperVertex>();
     private final Set<IArc> arcs = new HashSet<IArc>();
     private Map<String, SuperVertex> nameToSuperVertex = new HashMap<String, SuperVertex>();
     private Map<String, SimpleVertex> nameToSimpleVertex = new HashMap<String, SimpleVertex>();
     private final IGraphPane graphPane;
+    private final Set<Listener> listeners = new LinkedHashSet<Listener>();
 
     public GraphModel(IGraphPane graphPane) {
         this.graphPane = graphPane;
     }
 
+    public void addListener(Listener listener) {
+        this.listeners.add(listener);
+    }
+
     public void addVertex(IVertex v) {
-        this.vertices.add(v);
         v.setHidden(false);
         if (v instanceof SimpleVertex) {
             this.simpleVertices.add((SimpleVertex) v);
@@ -34,7 +37,6 @@ public class GraphModel extends Observable implements IGraphModel {
 
     public LinkedList<IArc> removeVertex(IVertex vertex) {
         LinkedList<IArc> arcs = new LinkedList<IArc>();
-        this.vertices.remove(vertex);
         vertex.setHidden(true);
         if (vertex instanceof SimpleVertex) {
             this.simpleVertices.remove(vertex);
@@ -46,8 +48,9 @@ public class GraphModel extends Observable implements IGraphModel {
                 arcs.add(arc);
             }
         }
-        setChanged();
-        notifyObservers(vertex);
+        for (Listener listener : this.listeners) {
+            listener.update(vertex);
+        }
         return arcs;
     }
 
@@ -59,8 +62,9 @@ public class GraphModel extends Observable implements IGraphModel {
     }
 
     public void update() {
-        setChanged();
-        notifyObservers();
+        for (Listener listener : this.listeners) {
+            listener.update();
+        }
     }
 
     public void addArc(IArc arc) {
@@ -71,10 +75,6 @@ public class GraphModel extends Observable implements IGraphModel {
     public void removeArc(IArc arc) {
         this.arcs.remove(arc);
         update();
-    }
-
-    public Set<IVertex> getVertices() {
-        return Collections.unmodifiableSet(this.vertices);
     }
 
     public Set<SimpleVertex> getSimpleVertices() {
@@ -90,10 +90,10 @@ public class GraphModel extends Observable implements IGraphModel {
     }
 
     public void clear() {
-        this.vertices.clear();
         this.simpleVertices.clear();
         this.superVertices.clear();
         this.arcs.clear();
+        update();
     }
 
     public void setKeyToSuperVertexMap(Map<String, SuperVertex> nameToVertex) {
@@ -110,5 +110,12 @@ public class GraphModel extends Observable implements IGraphModel {
 
     public Map<String, SimpleVertex> getNameToSimpleVertexMap() {
         return Collections.unmodifiableMap(this.nameToSimpleVertex);
+    }
+
+    public static interface Listener {
+
+        void update();
+
+        void update(IVertex vertex);
     }
 }

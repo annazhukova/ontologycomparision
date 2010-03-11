@@ -12,6 +12,8 @@ public interface ILabeledOntologyEntity {
 
     String[] getLabels();
 
+    String getNormalizedMainLabel();
+
     String getMainLabel();
 
     Collection<String> getLabelCollection();
