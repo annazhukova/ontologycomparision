@@ -1,6 +1,7 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.impl;
 
 import edu.smu.tspell.wordnet.Synset;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ILogger;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.impl.LexicalOrSynsetConceptComparator;
@@ -23,13 +24,15 @@ public class OntologyConceptMapper extends Mapper<IOntologyConcept, IOntologyCon
     private Collection<IOntologyConcept> secondConcepts;
     private final IOntologyGraph firstGraph;
     private final IOntologyGraph secondGraph;
+    private final ILogger logger;
 
     public OntologyConceptMapper(Collection<IOntologyConcept> firstConcepts, Collection<IOntologyConcept> secondConcepts,
-                          IOntologyGraph firstGraph, IOntologyGraph secondGraph) {
+                          IOntologyGraph firstGraph, IOntologyGraph secondGraph, ILogger logger) {
         this.firstConcepts = firstConcepts;
         this.secondConcepts = secondConcepts;
         this.firstGraph = firstGraph;
         this.secondGraph = secondGraph;
+        this.logger = logger;
     }
 
     public Collection<IOntologyConcept> map() {
@@ -62,7 +65,7 @@ public class OntologyConceptMapper extends Mapper<IOntologyConcept, IOntologyCon
             }
         }
         firstConcepts.addAll(secondConcepts);
-        System.out.println("binded ontologies");
+        logger.log("binded ontologies");
         return firstConcepts;
     }
 

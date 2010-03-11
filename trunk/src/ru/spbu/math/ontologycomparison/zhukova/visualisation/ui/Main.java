@@ -1,5 +1,6 @@
 package ru.spbu.math.ontologycomparison.zhukova.visualisation.ui;
 
+import ru.spbu.math.ontologycomparison.zhukova.logic.ILogger;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.SimilarityReason;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IGraphModel;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IVertex;
@@ -21,23 +22,25 @@ import java.util.Set;
 /**
  * @author Anna R. Zhukova
  */
-public class Main {
+public class Main implements ILogger {
     private boolean isChanged;
     private JFrame frame;
 
     //panels
     //graph panel
-    private final GraphPane graphPane = new GraphPane();
-    private final JScrollPane graphScrollPane = new JScrollPane(this.graphPane,
-            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    private final JPanel descriptionPanel = new JPanel();
-    private final JLabel descriptionLabel = new JLabel("Press \"Open\" to select ontologies to compare");
+    private final GraphPane graphPane;
+    private final JScrollPane graphScrollPane;
+    private JPanel logPanel;
+    private JLabel logLabel;
     private JCheckBox showSingleSynsetVertexCheckBox;
     private JCheckBox showUnmappedConceptsCheckBox;
     private JFrame progressFrame;
     private JProgressBar progressBar = new JProgressBar();
 
     public Main() {
+        this.graphPane = new GraphPane();
+        this.graphScrollPane = new JScrollPane(this.graphPane,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         FileChoosers.setMain(this);
     }
 
@@ -47,7 +50,7 @@ public class Main {
 
     public JFrame getFrame() {
         if (this.frame == null) {
-            this.frame = new JFrame("Ontology Comparision");
+            this.frame = new JFrame("Ontology Comparison");
             Open.setMain(this);
             this.frame.setSize(1200, 750);
             this.frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -60,13 +63,56 @@ public class Main {
             this.frame.getContentPane().setLayout(new BorderLayout());
             this.frame.getContentPane().add(ToolBar.getToolBar(), BorderLayout.NORTH);
             this.frame.getContentPane().add(this.graphScrollPane, BorderLayout.CENTER);
-            this.frame.getContentPane().add(this.getCheckBoxPanel(), BorderLayout.EAST);
-            this.descriptionPanel.add(this.descriptionLabel);
-            this.frame.getContentPane().add(this.descriptionPanel, BorderLayout.SOUTH);
+            JPanel panel = new JPanel(new GridLayout(3, 1));
+            Dimension dimension = new Dimension(300, -1);
+            panel.add(getStatusPanel(dimension));
+            panel.add(this.getCheckBoxPanel());
+            panel.add(getLogPanel(dimension));
+            panel.setMaximumSize(dimension);
+            panel.setPreferredSize(dimension);
+            this.frame.getContentPane().add(panel, BorderLayout.EAST);
             initSizes();
             this.frame.setVisible(true);
         }
         return this.frame;
+    }
+
+    private JPanel getStatusPanel(Dimension size) {
+        final JPanel descriptionPanel = new JPanel();
+        final JLabel mergedEntityStatisticsLabel = new JLabel("");
+        descriptionPanel.add(mergedEntityStatisticsLabel);
+        this.graphPane.addListener(new GraphPane.SuperVertexSelectionListener() {
+            public void selectionCleared() {
+                updateLabel("<html>", mergedEntityStatisticsLabel, descriptionPanel, true);
+            }
+
+            public void vertexSelected(String message) {
+                updateLabel(message, mergedEntityStatisticsLabel, descriptionPanel, false);
+            }
+        });
+        descriptionPanel.setMaximumSize(size);
+        descriptionPanel.setPreferredSize(size);
+        return descriptionPanel;
+    }
+
+    private JPanel getLogPanel(Dimension size) {
+        if (this.logPanel == null) {
+            this.logPanel = new JPanel();
+            this.logLabel = new JLabel("<html><p>Press \"Open\" to select ontologies to compare<p>");
+            this.logPanel.add(this.logLabel);
+            this.logPanel.setMaximumSize(size);
+            this.logPanel.setPreferredSize(size);
+        }
+        return this.logPanel;
+    }
+
+    private void updateLabel(String message, JLabel label, JPanel panel, boolean clear) {
+        if (clear) {
+            label.setText(message);
+        } else {
+            label.setText(String.format("%s<br>%s", label.getText(), message));
+        }
+        panel.repaint();
     }
 
     private void initSizes() {
@@ -94,8 +140,6 @@ public class Main {
             progressBar.setMinimum(0);
             progressBar.setMaximum(100);
             progressBar.setValue(0);
-            progressBar.setStringPainted(true);
-            progressBar.setString("Loading Ontologies...");
             progressBar.setIndeterminate(true);
             progressFrame.getContentPane().add(progressBar, BorderLayout.CENTER);
             progressFrame.pack();
@@ -115,10 +159,8 @@ public class Main {
         }
     }
 
-    public void updateDescriptionPanel(final String description) {
-        progressBar.setString(description);
-        descriptionLabel.setText(description);
-        descriptionLabel.repaint();
+    public void log(final String description) {
+        updateLabel(String.format("<html><p>%s</p>", description), logLabel, logPanel, true);
     }
 
     public IGraphModel getGraphModel() {

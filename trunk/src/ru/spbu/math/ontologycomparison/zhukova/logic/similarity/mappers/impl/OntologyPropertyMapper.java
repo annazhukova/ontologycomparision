@@ -1,5 +1,6 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.impl;
 
+import ru.spbu.math.ontologycomparison.zhukova.logic.ILogger;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyProperty;
@@ -23,14 +24,17 @@ public class OntologyPropertyMapper extends Mapper<IOntologyProperty, IOntologyP
     private final IOntologyGraph firstGraph;
     private final IOntologyGraph secondGraph;
     private final Collection<IOntologyConcept> mappedConcepts;
+    private final ILogger logger;
 
     public OntologyPropertyMapper(Collection<IOntologyProperty> firstProperties, Collection<IOntologyProperty> secondProperties,
-                                  IOntologyGraph firstGraph, IOntologyGraph secondGraph, Collection<IOntologyConcept> mappedConcepts) {
+                                  IOntologyGraph firstGraph, IOntologyGraph secondGraph, Collection<IOntologyConcept> mappedConcepts,
+                                  ILogger logger) {
         this.firstProperties = firstProperties;
         this.secondProperties = secondProperties;
         this.firstGraph = firstGraph;
         this.secondGraph = secondGraph;
         this.mappedConcepts = mappedConcepts;
+        this.logger = logger;
     }
 
     public Collection<IOntologyProperty> map() {
@@ -55,7 +59,7 @@ public class OntologyPropertyMapper extends Mapper<IOntologyProperty, IOntologyP
             }
         }
         firstProperties.addAll(secondProperties);
-        System.out.println("binded ontologies");
+        logger.log("binded ontologies");
         return firstProperties;
     }
 

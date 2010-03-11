@@ -2,6 +2,7 @@ package ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding;
 
 
 import edu.smu.tspell.wordnet.Synset;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ILogger;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyRelation;
@@ -20,6 +21,7 @@ import java.util.*;
 public class GraphModelBuilder implements IGraphModelBuilder {
     private final IOntologyGraph firstOntologyGraph;
     private final IOntologyGraph secondOntologyGraph;
+    private final ILogger logger;
     private final Collection<IOntologyConcept> mergedConcepts;
     private final int similarity;
     private static final Color firstOntologyColor = Color.BLUE;
@@ -30,11 +32,11 @@ public class GraphModelBuilder implements IGraphModelBuilder {
     private static final int FRAME_WIDTH = 800;
     private static final int LABEL_GAP = 4;
 
-    public GraphModelBuilder(IOntologyGraph firstOntologyGraph, IOntologyGraph secondOntologyGraph) {
+    public GraphModelBuilder(IOntologyGraph firstOntologyGraph, IOntologyGraph secondOntologyGraph, ILogger logger) {
         this.firstOntologyGraph = firstOntologyGraph;
         this.secondOntologyGraph = secondOntologyGraph;
-        IOntologyComparator ontologyComparator = new OntologyComparator(
-                this.firstOntologyGraph, this.secondOntologyGraph);
+        this.logger = logger;
+        IOntologyComparator ontologyComparator = new OntologyComparator(this.firstOntologyGraph, this.secondOntologyGraph, logger);
         this.mergedConcepts = ontologyComparator.mapOntologies().getFirst();
         this.similarity = (int) (ontologyComparator.getSimilarity() * 100);
     }
@@ -143,7 +145,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
     }
 
     private String createToolTip(IOntologyConcept mainConcept, Synset synset) {
-        StringBuilder result = new StringBuilder("<html>");
+        StringBuilder result = new StringBuilder("");
         if (synset == null && !mainConcept.hasMappedConcepts()) {
             return null;
         }

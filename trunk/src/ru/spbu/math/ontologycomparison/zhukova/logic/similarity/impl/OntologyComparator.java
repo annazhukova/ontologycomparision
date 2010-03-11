@@ -1,5 +1,6 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.impl;
 
+import ru.spbu.math.ontologycomparison.zhukova.logic.ILogger;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyProperty;
@@ -19,14 +20,16 @@ import java.util.HashSet;
 public class OntologyComparator implements IOntologyComparator {
     private IOntologyGraph firstGraph;
     private IOntologyGraph secondGraph;
+    private final ILogger logger;
     private Integer conceptIntersectionSize;
     private Integer conceptUnionSize;
     private Integer propertyIntersectionSize;
     private Integer propertyUnionSize;
 
-    public OntologyComparator(IOntologyGraph firstGraph, IOntologyGraph secondGraph) {
+    public OntologyComparator(IOntologyGraph firstGraph, IOntologyGraph secondGraph, ILogger logger) {
         this.firstGraph = firstGraph;
         this.secondGraph = secondGraph;
+        this.logger = logger;
     }
 
     public double getSimilarity() {
@@ -63,14 +66,14 @@ public class OntologyComparator implements IOntologyComparator {
     }
 
     private Collection<IOntologyConcept> mapConcepts() {
-        SynsetMapper firstSynsetMapper = new SynsetMapper(new HashSet<IOntologyConcept>(this.firstGraph.getConcepts()));
+        SynsetMapper firstSynsetMapper = new SynsetMapper(new HashSet<IOntologyConcept>(this.firstGraph.getConcepts()), logger);
         Collection<IOntologyConcept> firstConcepts = firstSynsetMapper.map();
         this.firstGraph.setSynsetToConcept(firstSynsetMapper.getSynsetToConceptTable());
-        SynsetMapper secondSynsetMapper = new SynsetMapper(new HashSet<IOntologyConcept>(this.secondGraph.getConcepts()));
+        SynsetMapper secondSynsetMapper = new SynsetMapper(new HashSet<IOntologyConcept>(this.secondGraph.getConcepts()), logger);
         Collection<IOntologyConcept> secondConcepts = secondSynsetMapper.map();
         this.secondGraph.setSynsetToConcept(secondSynsetMapper.getSynsetToConceptTable());
         int secondConceptsSize = secondConcepts.size();
-        Collection<IOntologyConcept> result = (new OntologyConceptMapper(firstConcepts, secondConcepts, this.firstGraph, this.secondGraph)).map();
+        Collection<IOntologyConcept> result = (new OntologyConceptMapper(firstConcepts, secondConcepts, this.firstGraph, this.secondGraph, logger)).map();
         this.conceptIntersectionSize = secondConceptsSize - secondConcepts.size();
         this.conceptUnionSize = result.size();
         return result;
@@ -81,7 +84,7 @@ public class OntologyComparator implements IOntologyComparator {
         Collection<IOntologyProperty> secondProperties = new HashSet<IOntologyProperty>(this.secondGraph.getProperties());
         int secondPropertiesSize = secondProperties.size();
         Collection<IOntologyProperty> result = (new OntologyPropertyMapper(firstProperties, secondProperties,
-                this.firstGraph, this.secondGraph, mappedConcepts)).map();
+                this.firstGraph, this.secondGraph, mappedConcepts, logger)).map();
         this.propertyIntersectionSize = secondPropertiesSize - secondProperties.size();
         this.propertyUnionSize = result.size();
         return result;
