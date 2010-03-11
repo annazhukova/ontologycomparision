@@ -20,6 +20,11 @@ public class GraphPane extends JPanel implements IGraphPane, GraphModel.Listener
     private Set<IVertex> selectedVertices = new HashSet<IVertex>();
     private ITool currentTool = SelectingTool.getInstance();
     private GraphModel graphModel = new GraphModel(this);
+    private final List<SuperVertexSelectionListener> listeners = new ArrayList<SuperVertexSelectionListener>(1);
+
+    public void addListener(SuperVertexSelectionListener listener) {
+        this.listeners.add(listener);
+    }
 
     public void update() {
         repaint();
@@ -63,11 +68,19 @@ public class GraphPane extends JPanel implements IGraphPane, GraphModel.Listener
     }
 
     public void deselectVertices() {
-        this.selectedVertices = new HashSet<IVertex>();
+        this.selectedVertices.clear();
+        for (SuperVertexSelectionListener listener : this.listeners) {
+            listener.selectionCleared();
+        }
     }
 
     public void selectVertex(IVertex v) {
         this.selectedVertices.add(v);
+        if (v instanceof SuperVertex) {
+            for (SuperVertexSelectionListener listener : this.listeners) {
+                listener.vertexSelected(v.getToolTipText());
+            }
+        }
     }
 
     public void setGraphModel(GraphModel gr) {
@@ -115,5 +128,12 @@ public class GraphPane extends JPanel implements IGraphPane, GraphModel.Listener
         addMouseListener(this.currentTool);
         addMouseMotionListener(this.currentTool);
         update();
+    }
+
+    public static interface SuperVertexSelectionListener {
+
+        void selectionCleared();
+
+        void vertexSelected(String message);
     }
 }

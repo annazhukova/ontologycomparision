@@ -3,7 +3,6 @@
  */
 package ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.menuactions;
 
-import org.apache.log4j.Logger;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.OntologyGraphBuilder;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.GraphModel;
@@ -21,7 +20,6 @@ import java.io.IOException;
 
 public class Open extends AbstractAction {
     private static final Open INSTANCE = new Open();
-    private static final Logger LOG = Logger.getLogger(Open.class);
     private static Main main;
 
     public static Open getInstance() {
@@ -41,13 +39,13 @@ public class Open extends AbstractAction {
         }
         Open.main.getGraphModel().clear();
         Open.main.getGraphModel().update();
-        Open.main.updateDescriptionPanel("Select second ontology");
+        Open.main.log("Select second ontology");
         final File secondOwl = FileChoosers.getOpenFileChooser("Select Second Ontology");
         if (secondOwl == null) {
-            Open.main.updateDescriptionPanel("Press \"Open\" to select ontologies to compare");
+            Open.main.log("Press \"Open\" to select ontologies to compare");
             return;
         }
-        Open.main.updateDescriptionPanel("Loading ontologies");
+        Open.main.log("Loading ontologies");
         Open.main.showProgressBar();
         SwingWorker<Void, Void> wrkr = new SwingWorker<Void, Void>() {
             @Override
@@ -77,25 +75,24 @@ public class Open extends AbstractAction {
             SwingWorker<IOntologyGraph, Void> firstOntologyLoader = new SwingWorker<IOntologyGraph, Void>() {
                 @Override
                 protected IOntologyGraph doInBackground() throws Exception {
-                    Open.main.updateDescriptionPanel(String.format("Loading %s...", firstOwl.getName()));
+                    Open.main.log(String.format("Loading %s...", firstOwl.getName()));
                     return OntologyGraphBuilder.build(firstOwl);
                 }
             };
             firstOntologyLoader.execute();
-            Open.main.updateDescriptionPanel(String.format("Loading %s...", secondOwl.getName()));
+            Open.main.log(String.format("Loading %s...", secondOwl.getName()));
             IOntologyGraph secondGraph = OntologyGraphBuilder.build(secondOwl);
+            Open.main.log("Merging ontologies...");
             final IGraphModelBuilder myGraphModelBuilder =
-                    new GraphModelBuilder(firstOntologyLoader.get(), secondGraph);
-            System.out.printf("Merging\n");
-            Open.main.updateDescriptionPanel("Merging ontologies...");
+                    new GraphModelBuilder(firstOntologyLoader.get(), secondGraph, Open.main);
+            Open.main.log("Visualising ontologies...");
             GraphModel graphModel = myGraphModelBuilder.buildGraphModel(main.getGraphPane(), main.areUnmappedConceptsVisible(), main.areUnmappedConceptsWithSynsetsVisible());
             Open.main.setGraphModel(graphModel);
             int similarityCount = myGraphModelBuilder.getSimilarity();
-            Open.main.updateDescriptionPanel(String.format(
-                    "Comparing ontology %s (blue) to %s (green). (Absolutly equal concepts are colored orange) The similarity is %d %%.",
+            Open.main.log(String.format(
+                    "Comparing ontology %s (blue) to %s (green). (Absolutely equal concepts are colored orange)<br>The similarity is %d %%.",
                     firstOwl.getName(), secondOwl.getName(), similarityCount)
             );
-            System.out.println(similarityCount);
             Open.main.hideProgressBar();
         } catch (Exception e) {
             Open.main.hideProgressBar();

@@ -34,7 +34,7 @@ public class ToolTipMouseMotionListener extends MouseAdapter {
             Collection<SuperVertex> superVertices = gm.getKeyToSuperVertexMap().values();
             for (IVertex vertex : superVertices) {
                 if (vertex.hitTest(mouseLocation) && !vertex.isHidden()) {
-                    this.graphPane.setToolTipText(vertex.getToolTipText());
+                    this.graphPane.setToolTipText(String.format("<html>%s", vertex.getToolTipText()));
                     return;
                 }
             }

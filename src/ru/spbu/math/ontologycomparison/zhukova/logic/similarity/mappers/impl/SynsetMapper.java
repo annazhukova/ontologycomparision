@@ -1,6 +1,7 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.impl;
 
 import edu.smu.tspell.wordnet.Synset;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ILogger;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.impl.ConceptToSynsetComparator;
 import ru.spbu.math.ontologycomparison.zhukova.logic.wordnet.WordNetHelper;
@@ -21,15 +22,17 @@ import static ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.B
  */
 public class SynsetMapper extends Mapper<IOntologyConcept, Synset, WordNetRelation> {
     private final Collection<IOntologyConcept> conceptCollection;
+    private final ILogger logger;
     private final IHashTable<Synset, IOntologyConcept, Set<IOntologyConcept>> synsetToConcept = new SetHashTable<Synset, IOntologyConcept>();
 
-    public SynsetMapper(Collection<IOntologyConcept> conceptCollection) {
+    public SynsetMapper(Collection<IOntologyConcept> conceptCollection, ILogger logger) {
         this.conceptCollection = conceptCollection;
+        this.logger = logger;
     }
 
     public Collection<IOntologyConcept> map() {
         ConceptToSynsetComparator conceptToSynsetComparator = new ConceptToSynsetComparator();
-        /*System.out.printf("SYNSET HELPER FOR GRAPH: %s\n", graph);*/
+        /*logger.log("SYNSET HELPER FOR GRAPH: %s\n", graph);*/
         for (IOntologyConcept concept : conceptCollection) {
             Collection<Synset> synsetCollection = getSynsets(concept);
             for (Synset synset : synsetCollection) {
@@ -38,7 +41,7 @@ public class SynsetMapper extends Mapper<IOntologyConcept, Synset, WordNetRelati
                 }
             }
         }
-        System.out.println("binded synsets");
+        logger.log("binded synsets");
         return conceptCollection;
     }
 
@@ -58,7 +61,7 @@ public class SynsetMapper extends Mapper<IOntologyConcept, Synset, WordNetRelati
     }
 
     public void bind(IOntologyConcept concept, Synset synset, String reason, int count) {
-        /*System.out.printf("\tBINDED %s <-> %s\n", concept, synset);*/
+        /*logger.log("\tBINDED %s <-> %s\n", concept, synset);*/
         concept.addSynset(synset, reason, count);
         synsetToConcept.insert(synset, concept);
     }
