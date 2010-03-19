@@ -214,6 +214,7 @@ public class OntologyLoader implements IOntologyLoader {
                             IOntologyConcept childConcept = loadClass(child, annotationVisitor, concepts, labelToConcept, roots);
                             if (childConcept != null) {
                                 childConcept.addParent(concept);
+                                concept.addChild(childConcept);
                                 roots.remove(childConcept);
                             }
                         }

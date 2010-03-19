@@ -8,12 +8,14 @@ import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.GraphMod
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.SimpleVertex;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.SuperVertex;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.GraphPane;
+import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.tools.SelectingTool;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.menuactions.Open;
+import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.tree.TreeComponent;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
@@ -28,19 +30,34 @@ public class Main implements ILogger {
 
     //panels
     //graph panel
-    private final GraphPane graphPane;
-    private final JScrollPane graphScrollPane;
-    private JPanel logPanel;
+    private final GraphPane graphPane = new GraphPane();
+    private final JScrollPane graphScrollPane = new JScrollPane(this.graphPane,
+            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    private final JPanel infoPanel = new JPanel();
+    private final JScrollPane infoScrollPane = new JScrollPane(this.infoPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    private final JPanel logPanel = new JPanel();
+    private final JSplitPane logSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, logPanel, infoScrollPane);
     private JLabel logLabel;
     private JCheckBox showSingleSynsetVertexCheckBox;
     private JCheckBox showUnmappedConceptsCheckBox;
     private JFrame progressFrame;
     private JProgressBar progressBar = new JProgressBar();
+    private final TreeComponent trees = new TreeComponent();
+    private final JPanel checkBoxPanel = new JPanel();
+    private final JSplitPane visibilitySettingsSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, trees, checkBoxPanel);
+    private final JSplitPane mySplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, visibilitySettingsSplitPane, graphScrollPane);
+    private final JSplitPane general = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mySplitPane, logSplitPane);
+
+
+    public void setTrees(JTree firstTree, JTree secondTree) {
+        trees.setTrees(firstTree, secondTree);
+        frame.getContentPane().repaint();
+    }
+
+
 
     public Main() {
-        this.graphPane = new GraphPane();
-        this.graphScrollPane = new JScrollPane(this.graphPane,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         FileChoosers.setMain(this);
     }
 
@@ -62,48 +79,44 @@ public class Main implements ILogger {
             this.frame.setJMenuBar(Menu.getMenuBar());
             this.frame.getContentPane().setLayout(new BorderLayout());
             this.frame.getContentPane().add(ToolBar.getToolBar(), BorderLayout.NORTH);
-            this.frame.getContentPane().add(this.graphScrollPane, BorderLayout.CENTER);
-            JPanel panel = new JPanel(new GridLayout(3, 1));
-            Dimension dimension = new Dimension(300, -1);
-            panel.add(getStatusPanel(dimension));
-            panel.add(this.getCheckBoxPanel());
-            panel.add(getLogPanel(dimension));
-            panel.setMaximumSize(dimension);
-            panel.setPreferredSize(dimension);
-            this.frame.getContentPane().add(panel, BorderLayout.EAST);
+
+            this.frame.getContentPane().add(general, BorderLayout.CENTER);
+            initLabelsPanel();
+            initCheckBoxPanel();
             initSizes();
+            general.setDividerLocation(0.7);
             this.frame.setVisible(true);
         }
         return this.frame;
     }
 
-    private JPanel getStatusPanel(Dimension size) {
-        final JPanel descriptionPanel = new JPanel();
+    private void initLabelsPanel() {
+        Dimension dimension = new Dimension(300, -1);
+        initInfoPanel(dimension);
+        initLogPanel(dimension);
+    }
+
+    private void initInfoPanel(Dimension size) {
         final JLabel mergedEntityStatisticsLabel = new JLabel("");
-        descriptionPanel.add(mergedEntityStatisticsLabel);
+        infoPanel.add(mergedEntityStatisticsLabel);
         this.graphPane.addListener(new GraphPane.SuperVertexSelectionListener() {
             public void selectionCleared() {
-                updateLabel("<html>", mergedEntityStatisticsLabel, descriptionPanel, true);
+                updateLabel("<html>", mergedEntityStatisticsLabel, infoPanel, true);
             }
 
             public void vertexSelected(String message) {
-                updateLabel(message, mergedEntityStatisticsLabel, descriptionPanel, false);
+                updateLabel(message, mergedEntityStatisticsLabel, infoPanel, false);
             }
         });
-        descriptionPanel.setMaximumSize(size);
-        descriptionPanel.setPreferredSize(size);
-        return descriptionPanel;
+        infoPanel.setMaximumSize(size);
+        infoPanel.setPreferredSize(size);
     }
 
-    private JPanel getLogPanel(Dimension size) {
-        if (this.logPanel == null) {
-            this.logPanel = new JPanel();
-            this.logLabel = new JLabel("<html><p>Press \"Open\" to select ontologies to compare<p>");
-            this.logPanel.add(this.logLabel);
-            this.logPanel.setMaximumSize(size);
-            this.logPanel.setPreferredSize(size);
-        }
-        return this.logPanel;
+    private void initLogPanel(Dimension size) {
+        this.logLabel = new JLabel("<html><p>Press \"Open\" to select ontologies to compare<p>");
+        this.logPanel.add(this.logLabel);
+        this.logPanel.setMaximumSize(size);
+        this.logPanel.setPreferredSize(size);
     }
 
     private void updateLabel(String message, JLabel label, JPanel panel, boolean clear) {
@@ -120,12 +133,23 @@ public class Main implements ILogger {
         this.graphPane.setPreferredSize(this.frame.getPreferredSize());
         this.graphScrollPane.setSize(this.frame.getSize());
         this.graphScrollPane.setPreferredSize(this.frame.getPreferredSize());
+
+        mySplitPane.setSize(frame.getSize());
+        mySplitPane.setPreferredSize(frame.getPreferredSize());
+        mySplitPane.setDividerLocation(0.7);
+        visibilitySettingsSplitPane.setDividerLocation(0.5);
+        logSplitPane.setDividerLocation(0.5);
+        logPanel.setMaximumSize(logPanel.getPreferredSize());
     }
 
     public void setGraphModel(final GraphModel graphModel) {
         //this.progressFrame.setVisible(false);
         graphPane.setGraphModel(graphModel);
-
+        trees.setGraphPane(graphPane);
+        mySplitPane.setDividerLocation(0.7);
+        visibilitySettingsSplitPane.setDividerLocation(0.8);
+        logSplitPane.setDividerLocation(0.2);
+        general.setDividerLocation(0.7);
     }
 
     public void showProgressBar() {
@@ -175,12 +199,13 @@ public class Main implements ILogger {
         this.isChanged = isChanged;
     }
 
-    private JPanel getCheckBoxPanel() {
-        JPanel result = new JPanel(new GridLayout(2, 1));
+    private void initCheckBoxPanel() {
+        this.checkBoxPanel.setLayout(new GridLayout(3, 1));
         this.showUnmappedConceptsCheckBox = new JCheckBox("Show unmapped concepts with no synsets");
         showUnmappedConceptsCheckBox.setSelected(true);
-        showUnmappedConceptsCheckBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        showUnmappedConceptsCheckBox.addChangeListener(new ChangeListener() {
+
+            public void stateChanged(ChangeEvent e) {
                 final boolean showUnmapped = showUnmappedConceptsCheckBox.isSelected();
                 IGraphModel graphModel = Main.this.getGraphModel();
                 if (graphModel != null) {
@@ -193,12 +218,13 @@ public class Main implements ILogger {
                 }
             }
         });
-        result.add(showUnmappedConceptsCheckBox);
+        checkBoxPanel.add(showUnmappedConceptsCheckBox);
 
         this.showSingleSynsetVertexCheckBox = new JCheckBox("Show unmapped concepts with synsets");
         showSingleSynsetVertexCheckBox.setSelected(true);
-        showSingleSynsetVertexCheckBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        showSingleSynsetVertexCheckBox.addChangeListener(new ChangeListener() {
+
+            public void stateChanged(ChangeEvent e) {
                 final boolean showSingleSynsetVertex = showSingleSynsetVertexCheckBox.isSelected();
                 IGraphModel graphModel = Main.this.getGraphModel();
                 if (graphModel != null) {
@@ -217,8 +243,17 @@ public class Main implements ILogger {
                 }
             }
         });
-        result.add(showSingleSynsetVertexCheckBox);
-        return result;
+        checkBoxPanel.add(showSingleSynsetVertexCheckBox);
+
+        final JCheckBox onlyOuterNodesSelection = new JCheckBox("Select only outer nodes", false);
+        onlyOuterNodesSelection.addChangeListener(new ChangeListener() {
+
+            public void stateChanged(ChangeEvent e) {
+                SelectingTool.setOnlySuperVerticesSelection(onlyOuterNodesSelection.isSelected());
+                graphPane.deselectVertices();
+            }
+        });
+        checkBoxPanel.add(onlyOuterNodesSelection);
     }
 
     public boolean areUnmappedConceptsVisible() {
