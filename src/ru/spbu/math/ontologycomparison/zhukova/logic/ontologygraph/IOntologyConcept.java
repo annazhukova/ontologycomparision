@@ -59,4 +59,6 @@ public interface IOntologyConcept extends ILabeledOntologyEntity {
     IOntologyConcept[] getChildren();
 
     void addChild(IOntologyConcept child);
+
+    boolean hasSynsets();
 }

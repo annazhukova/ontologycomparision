@@ -46,6 +46,4 @@ public interface IVertex {
     int getLetterHeight();
 
     Font getFont();
-
-    void setFont(Font font);
 }

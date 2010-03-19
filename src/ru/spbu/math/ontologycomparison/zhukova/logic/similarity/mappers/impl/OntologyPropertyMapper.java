@@ -69,6 +69,7 @@ public class OntologyPropertyMapper extends Mapper<IOntologyProperty, IOntologyP
 
     public void bind(IOntologyProperty first, IOntologyProperty second, String reason, int count) {
         first.addProperty(second, reason, count);
+        second.addProperty(first, reason, count);
         secondProperties.remove(second);
     }
 

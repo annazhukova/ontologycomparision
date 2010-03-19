@@ -14,9 +14,9 @@ public abstract class Vertex implements IVertex {
     private int width;
     private int height;
     private boolean isHidden = false;
-    private int letterHeight = 21;
-    private int letterWidth = 9;
-    private Font font = new Font(Font.MONOSPACED, Font.ITALIC, 15);
+    public static final int LETTER_HEIGHT = 21;
+    public static final int LETTER_WIDTH = 9;
+    public static final Font FONT = new Font(Font.MONOSPACED, Font.ITALIC, 15);
 
     public Vertex(String name) {
         this.name = name;
@@ -94,27 +94,15 @@ public abstract class Vertex implements IVertex {
         return new Point(getAbsoluteLocation());
     }
 
-    public void setLetterWidth(int letterWidth) {
-        this.letterWidth = letterWidth;
-    }
-
-    public void setLetterHeight(int letterHeight) {
-        this.letterHeight = letterHeight;
-    }
-
     public int getLetterWidth() {
-        return this.letterWidth;
+        return LETTER_WIDTH;
     }
 
     public int getLetterHeight() {
-        return this.letterHeight;
-    }
-
-    public void setFont(Font font) {
-        this.font = font;
+        return LETTER_HEIGHT;
     }
 
     public Font getFont() {
-        return this.font;
+        return FONT;
     }
 }

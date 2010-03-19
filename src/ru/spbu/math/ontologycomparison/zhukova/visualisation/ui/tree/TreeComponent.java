@@ -1,5 +1,7 @@
 package ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.tree;
 
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
+import ru.spbu.math.ontologycomparison.zhukova.util.IPair;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IArcFilter;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.tree.popupmenu.PopUpMenu;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.GraphPane;
@@ -10,6 +12,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * @author Anna Zhukova
@@ -31,9 +34,11 @@ public class TreeComponent extends JSplitPane {
         setDividerLocation(0.5);
     }
 
-    public void setTrees(JTree firstTree, JTree secondTree) {
-        left.setTree(firstTree);
-        right.setTree(secondTree);
+    public void setTrees(IPair<JTree, Map<IOntologyConcept, CheckNode>> firstPair, IPair<JTree, Map<IOntologyConcept, CheckNode>> secondPair) {
+        left.setTree(firstPair.getFirst(), secondPair.getSecond());
+        right.setTree(secondPair.getFirst(), firstPair.getSecond());
+        left.popUpMenu.setListener(right.popUpMenu);
+        right.popUpMenu.setListener(left.popUpMenu);
     }
 
     private static class TreePane extends JScrollPane {
@@ -46,13 +51,14 @@ public class TreeComponent extends JSplitPane {
         private JTree tree;
         private PopUpMenu popUpMenu = new PopUpMenu();
 
-        public void setTree(final JTree tree) {
+        public void setTree(final JTree tree, final Map<IOntologyConcept, CheckNode> map) {
             if (this.tree != null) {
                 panel.remove(this.tree);
             }
             this.tree = tree;
             panel.add(this.tree, BorderLayout.CENTER);
             popUpMenu.setTree(this.tree, panel);
+            popUpMenu.setMap(map);
             tree.addMouseListener(new MouseAdapter() {
 
                 public void mousePressed(MouseEvent e) {

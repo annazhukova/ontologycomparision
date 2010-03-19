@@ -1,4 +1,5 @@
 package ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IArc;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IGraphModel;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IVertex;
@@ -15,6 +16,7 @@ public class GraphModel implements IGraphModel {
     private Map<String, SimpleVertex> nameToSimpleVertex = new HashMap<String, SimpleVertex>();
     private final IGraphPane graphPane;
     private final Set<Listener> listeners = new LinkedHashSet<Listener>();
+    private Map<IOntologyConcept, SimpleVertex> conceptToVertexMap;
 
     public GraphModel(IGraphPane graphPane) {
         this.graphPane = graphPane;
@@ -59,6 +61,10 @@ public class GraphModel implements IGraphModel {
         vertex.setLocation(new Point(location.x + dx, location.y + dy));
         this.graphPane.checkPoint(vertex.getMaxPoint());
         update();
+    }
+
+    public SimpleVertex getVertexByConcept(IOntologyConcept concept) {
+        return this.conceptToVertexMap.get(concept);
     }
 
     public void update() {
@@ -110,6 +116,14 @@ public class GraphModel implements IGraphModel {
 
     public Map<String, SimpleVertex> getNameToSimpleVertexMap() {
         return Collections.unmodifiableMap(this.nameToSimpleVertex);
+    }
+
+    public void setConceptToVertexMap(Map<IOntologyConcept, SimpleVertex> conceptToVertexMap) {
+        this.conceptToVertexMap = conceptToVertexMap;
+    }
+
+    public Map<IOntologyConcept, SimpleVertex> getConceptToVertexMap() {
+        return conceptToVertexMap;
     }
 
     public static interface Listener {

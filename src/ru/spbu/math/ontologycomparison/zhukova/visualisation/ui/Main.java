@@ -1,15 +1,14 @@
 package ru.spbu.math.ontologycomparison.zhukova.visualisation.ui;
 
 import ru.spbu.math.ontologycomparison.zhukova.logic.ILogger;
-import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.SimilarityReason;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
+import ru.spbu.math.ontologycomparison.zhukova.util.IPair;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IGraphModel;
-import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IVertex;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.GraphModel;
-import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.SimpleVertex;
-import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.SuperVertex;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.GraphPane;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.tools.SelectingTool;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.menuactions.Open;
+import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.tree.CheckNode;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.tree.TreeComponent;
 
 import javax.swing.*;
@@ -19,7 +18,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * @author Anna R. Zhukova
@@ -39,8 +38,8 @@ public class Main implements ILogger {
     private final JPanel logPanel = new JPanel();
     private final JSplitPane logSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, logPanel, infoScrollPane);
     private JLabel logLabel;
-    private JCheckBox showSingleSynsetVertexCheckBox;
-    private JCheckBox showUnmappedConceptsCheckBox;
+    /*private JCheckBox showSingleSynsetVertexCheckBox;
+    private JCheckBox showUnmappedConceptsCheckBox;*/
     private JFrame progressFrame;
     private JProgressBar progressBar = new JProgressBar();
     private final TreeComponent trees = new TreeComponent();
@@ -50,11 +49,10 @@ public class Main implements ILogger {
     private final JSplitPane general = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mySplitPane, logSplitPane);
 
 
-    public void setTrees(JTree firstTree, JTree secondTree) {
+    public void setTrees(IPair<JTree, Map<IOntologyConcept, CheckNode>> firstTree, IPair<JTree, Map<IOntologyConcept, CheckNode>> secondTree) {
         trees.setTrees(firstTree, secondTree);
         frame.getContentPane().repaint();
     }
-
 
 
     public Main() {
@@ -200,8 +198,8 @@ public class Main implements ILogger {
     }
 
     private void initCheckBoxPanel() {
-        this.checkBoxPanel.setLayout(new GridLayout(3, 1));
-        this.showUnmappedConceptsCheckBox = new JCheckBox("Show unmapped concepts with no synsets");
+        this.checkBoxPanel.setLayout(new GridLayout(1, 1));
+        /*this.showUnmappedConceptsCheckBox = new JCheckBox("Show unmapped concepts with no synsets");
         showUnmappedConceptsCheckBox.setSelected(true);
         showUnmappedConceptsCheckBox.addChangeListener(new ChangeListener() {
 
@@ -233,9 +231,6 @@ public class Main implements ILogger {
                             Set<SimpleVertex> vertexSet = vertex.getSimpleVertices();
                             if (vertexSet != null && vertexSet.size() <= 1) {
                                 vertex.setHidden(!showSingleSynsetVertex);
-                                for (IVertex subVertex : vertexSet) {
-                                    subVertex.setHidden(!showSingleSynsetVertex);
-                                }
                             }
                         }
                     }
@@ -244,7 +239,7 @@ public class Main implements ILogger {
             }
         });
         checkBoxPanel.add(showSingleSynsetVertexCheckBox);
-
+        */
         final JCheckBox onlyOuterNodesSelection = new JCheckBox("Select only outer nodes", false);
         onlyOuterNodesSelection.addChangeListener(new ChangeListener() {
 
@@ -257,10 +252,12 @@ public class Main implements ILogger {
     }
 
     public boolean areUnmappedConceptsVisible() {
-        return showUnmappedConceptsCheckBox.isSelected();
+        return true;
+        //return showUnmappedConceptsCheckBox.isSelected();
     }
 
     public boolean areUnmappedConceptsWithSynsetsVisible() {
-        return showSingleSynsetVertexCheckBox.isSelected();
+        return true;
+        //return showSingleSynsetVertexCheckBox.isSelected();
     }
 }
