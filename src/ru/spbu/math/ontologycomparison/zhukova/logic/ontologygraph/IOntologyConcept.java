@@ -55,4 +55,8 @@ public interface IOntologyConcept extends ILabeledOntologyEntity {
     int getDepth();
 
     void increaseDepth();
+
+    IOntologyConcept[] getChildren();
+
+    void addChild(IOntologyConcept child);
 }

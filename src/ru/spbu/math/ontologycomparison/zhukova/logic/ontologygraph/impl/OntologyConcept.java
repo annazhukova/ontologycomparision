@@ -22,6 +22,7 @@ public class OntologyConcept extends LabeledOntologyEntity implements IOntologyC
     private HashMapTable<Synset, String> synsetToReason = new HashMapTable<Synset, String>();
     private HashMapTable<IOntologyConcept, String> conceptToReason = new HashMapTable<IOntologyConcept, String>();
     private final Set<IOntologyConcept> parents = new HashSet<IOntologyConcept>();
+    private final Set<IOntologyConcept> children = new HashSet<IOntologyConcept>();
     private final IHashTable<String, IOntologyRelation, Set<IOntologyRelation>> labelToSubjectRelation = new SetHashTable<String, IOntologyRelation>();
     private boolean isRoot = true;
     private int depth = 0;
@@ -139,5 +140,13 @@ public class OntologyConcept extends LabeledOntologyEntity implements IOntologyC
 
     public void increaseDepth() {
         this.depth++;
+    }
+
+    public IOntologyConcept[] getChildren() {
+        return children.toArray(new IOntologyConcept[children.size()]);
+    }
+
+    public void addChild(IOntologyConcept child) {
+        this.children.add(child);
     }
 }

@@ -8,6 +8,8 @@ import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGrap
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.GraphModel;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.GraphModelBuilder;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.IGraphModelBuilder;
+import ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.tree.ITreeBuilder;
+import ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.tree.TreeBuilder;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.FileChoosers;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.Main;
 
@@ -83,14 +85,18 @@ public class Open extends AbstractAction {
             Open.main.log(String.format("Loading %s...", secondOwl.getName()));
             IOntologyGraph secondGraph = OntologyGraphBuilder.build(secondOwl);
             Open.main.log("Merging ontologies...");
+            IOntologyGraph firstGraph = firstOntologyLoader.get();
             final IGraphModelBuilder myGraphModelBuilder =
-                    new GraphModelBuilder(firstOntologyLoader.get(), secondGraph, Open.main);
+                    new GraphModelBuilder(firstGraph, secondGraph, Open.main);
             Open.main.log("Visualising ontologies...");
             GraphModel graphModel = myGraphModelBuilder.buildGraphModel(main.getGraphPane(), main.areUnmappedConceptsVisible(), main.areUnmappedConceptsWithSynsetsVisible());
             Open.main.setGraphModel(graphModel);
+            ITreeBuilder firstTreeBuilder = new TreeBuilder(firstOwl.getName(), firstGraph.getRoots());
+            ITreeBuilder secondTreeBuilder = new TreeBuilder(secondOwl.getName(), secondGraph.getRoots());
+            Open.main.setTrees(firstTreeBuilder.buildTree(), secondTreeBuilder.buildTree());
             int similarityCount = myGraphModelBuilder.getSimilarity();
             Open.main.log(String.format(
-                    "Comparing ontology %s (blue) to %s (green). (Absolutely equal concepts are colored orange)<br>The similarity is %d %%.",
+                    "Comparing ontology %s (blue) to %s (green).<br>(Absolutely equal concepts are colored orange)<br>The similarity is %d %%.",
                     firstOwl.getName(), secondOwl.getName(), similarityCount)
             );
             Open.main.hideProgressBar();
