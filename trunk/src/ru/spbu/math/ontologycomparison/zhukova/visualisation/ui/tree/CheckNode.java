@@ -1,6 +1,7 @@
 package ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.tree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -10,18 +11,16 @@ public class CheckNode extends DefaultMutableTreeNode {
     public static final int OUR_DIG_IN_SELECTION = 2;
 
     private boolean myIsSelected = true;
+    private final Color color;
 
-    public CheckNode() {
-        this(null);
-    }
-
-    public CheckNode(Object userObject) {
-        this(userObject, true, true);
-    }
-
-    public CheckNode(Object userObject, boolean allowsChildren, boolean isSelected) {
+    public CheckNode(Object userObject, boolean allowsChildren, boolean isSelected, Color color) {
         super(userObject, allowsChildren);
         myIsSelected = isSelected;
+        this.color = color;
+    }
+
+    public CheckNode(Object userObject, Color color) {
+         this(userObject, true, true, color);
     }
 
     public void setSelected(boolean isSelected, int selectionMode, ArrayList<CheckNode> nodes) {
@@ -42,6 +41,10 @@ public class CheckNode extends DefaultMutableTreeNode {
 
     public void setSelected(boolean b) {
         myIsSelected = b;
+    }
+
+    public Color getColor() {
+        return color;
     }
 }
 

@@ -21,7 +21,6 @@ import java.util.*;
 public class GraphModelBuilder implements IGraphModelBuilder {
     private final IOntologyGraph firstOntologyGraph;
     private final IOntologyGraph secondOntologyGraph;
-    private final ILogger logger;
     private final Collection<IOntologyConcept> mergedConcepts;
     private final int similarity;
     private static final Color firstOntologyColor = Color.BLUE;
@@ -35,7 +34,6 @@ public class GraphModelBuilder implements IGraphModelBuilder {
     public GraphModelBuilder(IOntologyGraph firstOntologyGraph, IOntologyGraph secondOntologyGraph, ILogger logger) {
         this.firstOntologyGraph = firstOntologyGraph;
         this.secondOntologyGraph = secondOntologyGraph;
-        this.logger = logger;
         IOntologyComparator ontologyComparator = new OntologyComparator(this.firstOntologyGraph, this.secondOntologyGraph, logger);
         this.mergedConcepts = ontologyComparator.mapOntologies().getFirst();
         this.similarity = (int) (ontologyComparator.getSimilarity() * 100);
@@ -43,22 +41,24 @@ public class GraphModelBuilder implements IGraphModelBuilder {
 
     public GraphModel buildGraphModel(GraphPane graphPane, boolean showUnmapped, boolean showUnmappedWithSynsets) {
         GraphModel graphModel = new GraphModel(graphPane);
-        Map<String, SuperVertex> keyToSyperVertex = new HashMap<String, SuperVertex>();
-        Map<String, SimpleVertex> conceptNameToVertex = new HashMap<String, SimpleVertex>();
-        buildVertices(graphPane, graphModel, keyToSyperVertex, conceptNameToVertex, showUnmapped, showUnmappedWithSynsets);
-        buildArcs(conceptNameToVertex, graphModel);
-        graphModel.setKeyToSuperVertexMap(keyToSyperVertex);
-        graphModel.setIntToSimpleVertexMap(conceptNameToVertex);
+        Map<String, SuperVertex> keyToSuperVertexMap = new HashMap<String, SuperVertex>();
+        Map<String, SimpleVertex> conceptNameToVertexMap = new HashMap<String, SimpleVertex>();
+        Map<IOntologyConcept, SimpleVertex> conceptToVertexMap = new HashMap<IOntologyConcept, SimpleVertex>();
+        buildVertices(graphPane, graphModel, keyToSuperVertexMap, conceptNameToVertexMap, conceptToVertexMap, showUnmapped, showUnmappedWithSynsets);
+        buildArcs(conceptNameToVertexMap, graphModel);
+        graphModel.setKeyToSuperVertexMap(keyToSuperVertexMap);
+        graphModel.setIntToSimpleVertexMap(conceptNameToVertexMap);
+        graphModel.setConceptToVertexMap(conceptToVertexMap);
         return graphModel;
     }
 
-    private void buildVertices(GraphPane graphPane, IGraphModel graphModel, Map<String, SuperVertex> keyToSuperVertex,
-                               Map<String, SimpleVertex> conceptNameToVertices, boolean showUnmapped, boolean showUnmappedWithSynsets) {
+    private void buildVertices(GraphPane graphPane, IGraphModel graphModel, Map<String, SuperVertex> keyToSuperVertexMap,
+                               Map<String, SimpleVertex> conceptNameToVertexMap, Map<IOntologyConcept, SimpleVertex> conceptToVertexMap,  boolean showUnmapped, boolean showUnmappedWithSynsets) {
         Graphics g = graphPane.getGraphics();
-        Font font = new Font(Font.MONOSPACED, Font.ITALIC, 15);
+        Font font = Vertex.FONT;
         g.setFont(font);
-        int letterWidth = g.getFontMetrics().getWidths()['w'];
-        int letterHeight = g.getFontMetrics().getHeight();
+        int letterWidth = Vertex.LETTER_WIDTH;
+        int letterHeight = Vertex.LETTER_HEIGHT;
         int currentX = X_GAP;
         int currentY = Y_GAP;
         int maxHeight = letterHeight + LABEL_GAP + 2 * Y_GAP;
@@ -91,22 +91,22 @@ public class GraphModelBuilder implements IGraphModelBuilder {
             int superVertexHeight = 0;
             if (!superLabel.equals(SimilarityReason.NO.name())) {
                 superVertexHeight = (Y_GAP + simpleVertexHeight) * simpleVertexNumber + letterHeight + LABEL_GAP + Y_GAP;
-                superVertex = keyToSuperVertex.get(superLabel + conceptSet);
+                superVertex = keyToSuperVertexMap.get(superLabel + conceptSet);
                 if (superVertex != null) {
                     continue;
                 }
-                superVertex = createSuperVertex(graphModel, font, letterWidth, letterHeight, currentX,
+                superVertex = createSuperVertex(graphModel, currentX,
                         currentY, superLabel, superVertexWidth + X_GAP, superVertexHeight, mainConcept, synset);
                 if (hidden) {
                     superVertex.setHidden(true);
                 }
-                keyToSuperVertex.put(superLabel + conceptSet, superVertex);
+                keyToSuperVertexMap.put(superLabel + conceptSet, superVertex);
             }
             int conceptX = X_GAP + currentX;
             int conceptY = LABEL_GAP + letterHeight + currentY;
             int newChildren = 0;
             for (IOntologyConcept concept : conceptSet) {
-                SimpleVertex simpleVertex = conceptNameToVertices.get(concept.getUri().toString());
+                SimpleVertex simpleVertex = conceptNameToVertexMap.get(concept.getUri().toString());
                 if (simpleVertex == null) {
                     String simpleLabel = concept.getLabelCollection().toString();
                     int simpleVertexWidth = letterWidth * simpleLabel.length() + 2 * LABEL_GAP;
@@ -114,9 +114,10 @@ public class GraphModelBuilder implements IGraphModelBuilder {
                         conceptX = currentX + X_GAP;
                         conceptY += simpleVertexHeight + Y_GAP;
                     }
-                    simpleVertex = createSimpleVertex(graphModel, font, letterWidth, letterHeight, simpleVertexHeight, superVertex, conceptX, conceptY, concept, simpleLabel, simpleVertexWidth);
+                    simpleVertex = createSimpleVertex(graphModel, simpleVertexHeight, superVertex, conceptX, conceptY, concept, simpleLabel, simpleVertexWidth);
+                    conceptToVertexMap.put(concept, simpleVertex);
                     simpleVertex.setHidden(hidden);
-                    conceptNameToVertices.put(concept.getUri().toString(), simpleVertex);
+                    conceptNameToVertexMap.put(concept.getUri().toString(), simpleVertex);
                     conceptX += simpleVertex.getWidth() + X_GAP;
                     newChildren++;
                     if (superVertex != null) {
@@ -163,31 +164,28 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         return result.toString();
     }
 
-    private SimpleVertex createSimpleVertex(IGraphModel graphModel, Font font, int letterWidth, int letterHeight, int simpleVertexHeight,
+    private SimpleVertex createSimpleVertex(IGraphModel graphModel, int simpleVertexHeight,
                                             SuperVertex superVertex, int conceptX, int conceptY, IOntologyConcept concept, String simpleLabel, int simpleVertexWidth) {
         SimpleVertex simpleVertex =
                 new SimpleVertex(new Point(conceptX, conceptY), simpleLabel, superVertex,
                         getColorForConcept(concept));
-        initVertex(graphModel, font, letterWidth, letterHeight, simpleVertexHeight, simpleVertexWidth, simpleVertex);
+        initVertex(graphModel, simpleVertexHeight, simpleVertexWidth, simpleVertex);
         return simpleVertex;
     }
 
-    private void initVertex(IGraphModel graphModel, Font font, int letterWidth, int letterHeight,
+    private void initVertex(IGraphModel graphModel,
                             int vertexHeight, int vertexWidth, Vertex vertex) {
-        vertex.setLetterWidth(letterWidth);
-        vertex.setLetterHeight(letterHeight);
-        vertex.setFont(font);
         vertex.setWidth(vertexWidth);
         vertex.setHeight(vertexHeight);
         graphModel.addVertex(vertex);
     }
 
-    private SuperVertex createSuperVertex(IGraphModel graphModel, Font font, int letterWidth, int letterHeight,
+    private SuperVertex createSuperVertex(IGraphModel graphModel,
                                           int currentX, int currentY, String superLabel, int superVertexWidth, int superVertexHeight,
                                           IOntologyConcept mainConcept, Synset synset) {
         String toolTip = createToolTip(mainConcept, synset);
         SuperVertex superVertex = new SuperVertex(new Point(currentX, currentY), superLabel, toolTip);
-        initVertex(graphModel, font, letterWidth, letterHeight, superVertexHeight, superVertexWidth, superVertex);
+        initVertex(graphModel, superVertexHeight, superVertexWidth, superVertex);
         return superVertex;
     }
 

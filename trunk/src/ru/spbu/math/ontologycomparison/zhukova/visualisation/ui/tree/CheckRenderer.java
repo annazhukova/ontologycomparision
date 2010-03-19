@@ -59,12 +59,13 @@ public class CheckRenderer extends JPanel implements TreeCellRenderer {
         String stringValue = tree.convertValueToText(value, isSelected,
                 expanded, leaf, row, hasFocus);
         setEnabled(tree.isEnabled());
-        boolean selected = ((CheckNode) value).isSelected();
+        CheckNode checkNode = (CheckNode) value;
+        boolean selected = checkNode.isSelected();
         myCheckbox.setSelected(selected);
 
         myLabel.setFont(tree.getFont());
         if (selected) {
-            myLabel.setForeground(Color.BLACK);
+            myLabel.setForeground(checkNode.getColor());
         } else {
             myLabel.setForeground(Color.LIGHT_GRAY);
         }

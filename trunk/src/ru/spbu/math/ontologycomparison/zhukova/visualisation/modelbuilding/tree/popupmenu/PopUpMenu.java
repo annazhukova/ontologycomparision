@@ -1,19 +1,22 @@
 package ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.tree.popupmenu;
 
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IGraphModel;
-import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.Vertex;
+import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IVertex;
+import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.SimpleVertex;
+import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.SuperVertex;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.GraphPane;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.tree.CheckNode;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * @author Anna R. Zhukova
  */
-public class PopUpMenu extends JPopupMenu {
+public class PopUpMenu extends JPopupMenu implements IRepaintListener {
     private JPanel treePanel = new JPanel();
     private GraphPane graphPane;
     private JTree tree;
@@ -22,6 +25,8 @@ public class PopUpMenu extends JPopupMenu {
     private final PopUpAction hideAll;
     private final PopUpAction showAll;
     private final PopUpAction hide;
+    private Map<IOntologyConcept, CheckNode> conceptToCheckNodeMap;
+    private IRepaintListener listener;
 
     public PopUpMenu() {
         super();
@@ -98,35 +103,49 @@ public class PopUpMenu extends JPopupMenu {
             CheckNode node = (CheckNode) treePath.getLastPathComponent();
             ArrayList<CheckNode> nodes = new ArrayList<CheckNode>();
             node.setSelected(select, selectionMode, nodes);
-            IGraphModel gm = graphPane.getGraphModel();
+            IGraphModel graphModel = graphPane.getGraphModel();
             for (CheckNode checkNode : nodes) {
-                boolean leaf = checkNode.isLeaf();
-                String name = checkNode.toString();
-                Vertex v;
-                if (leaf) {
-                    if (checkNode.getParent() != null) {
-                        name = checkNode.getParent().toString() + "." + name;
-                    }
-                    v = gm.getNameToSimpleVertexMap().get(name);
-                } else {
-                    v = gm.getKeyToSuperVertexMap().get(name);
+                Object object = checkNode.getUserObject();
+                if (!(object instanceof IOntologyConcept)) {
+                    continue;
                 }
-                if (v != null) {
+                IOntologyConcept ontologyConcept = (IOntologyConcept) object;
+                SimpleVertex simpleVertex = graphModel.getVertexByConcept(ontologyConcept);
+                if (simpleVertex != null) {
+                    SuperVertex superVertex = simpleVertex.getSuperVertex();
+                    IVertex vertex = superVertex == null ? simpleVertex : superVertex;
                     if (hide) {
-                        gm.removeVertex(v);
+                        graphModel.removeVertex(vertex);
                     } else {
-                        gm.addVertex(v);
+                        graphModel.addVertex(vertex);
+                    }
+                    for (IOntologyConcept similarConcept : ontologyConcept.getSimilarConcepts()) {
+                        CheckNode similarNode = conceptToCheckNodeMap.get(similarConcept);
+                        if (similarNode != null) {
+                            similarNode.setSelected(!hide);
+                        }
                     }
                 }
-            }
-            ((DefaultTreeModel) tree.getModel()).nodeChanged(node);
-            // if node is root
-            if (row == 0) {
-                tree.revalidate();
-                tree.repaint();
             }
             getGraphPane().repaint();
             updateTreePanel();
+            if (listener != null) {
+                listener.update();
+            }
         }
+    }
+
+    public void setMap(Map<IOntologyConcept, CheckNode> conceptToCheckNodeMap) {
+        this.conceptToCheckNodeMap = conceptToCheckNodeMap;
+    }
+
+
+    public void setListener(IRepaintListener listener) {
+        this.listener = listener;
+        listener.update();
+    }
+
+    public void update() {
+        updateTreePanel();
     }
 }

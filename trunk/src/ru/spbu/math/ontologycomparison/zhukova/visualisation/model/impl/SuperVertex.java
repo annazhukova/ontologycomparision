@@ -3,8 +3,8 @@ package ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.GraphPane;
 
 import java.awt.*;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Anna R. Zhukova
@@ -72,8 +72,11 @@ public class SuperVertex extends Vertex {
         }
     }
 
-    public boolean isHidden() {
-        return super.isHidden() && this.simpleVertices != null && !this.simpleVertices.isEmpty();
+    public void setHidden(boolean need) {
+        super.setHidden(need);
+        for (SimpleVertex vertex : getSimpleVertices()) {
+            vertex.setHidden(need);
+        }
     }
 
 

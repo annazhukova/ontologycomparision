@@ -1,5 +1,6 @@
 package ru.spbu.math.ontologycomparison.zhukova.visualisation.model;
 
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.SimpleVertex;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.SuperVertex;
 
@@ -38,5 +39,11 @@ public interface IGraphModel {
 
     Map<String, SimpleVertex> getNameToSimpleVertexMap();
 
+    void setConceptToVertexMap(Map<IOntologyConcept, SimpleVertex> conceptToVertexMap);
+
+    Map<IOntologyConcept, SimpleVertex> getConceptToVertexMap();
+
     void update();
+
+    SimpleVertex getVertexByConcept(IOntologyConcept concept);
 }

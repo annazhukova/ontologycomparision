@@ -78,6 +78,7 @@ public class OntologyConceptMapper extends Mapper<IOntologyConcept, IOntologyCon
 
     public void bind(IOntologyConcept first, IOntologyConcept second, String reason, int count) {
         first.addConcept(second, reason, count);
+        second.addConcept(first, reason, count);
         secondConcepts.remove(second);
     }
 

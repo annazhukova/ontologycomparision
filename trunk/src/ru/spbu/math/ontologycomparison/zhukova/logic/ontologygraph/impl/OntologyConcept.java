@@ -146,6 +146,10 @@ public class OntologyConcept extends LabeledOntologyEntity implements IOntologyC
         return children.toArray(new IOntologyConcept[children.size()]);
     }
 
+    public boolean hasSynsets() {
+        return !this.synsetToReason.isEmpty();
+    }
+
     public void addChild(IOntologyConcept child) {
         this.children.add(child);
     }
