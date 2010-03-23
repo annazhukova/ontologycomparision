@@ -62,26 +62,28 @@ public class TreeComponent extends JSplitPane {
             tree.addMouseListener(new MouseAdapter() {
 
                 public void mousePressed(MouseEvent e) {
-                    TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
-                    popUpMenu.setRow(tree.getRowForLocation(e.getX(), e.getY()));
-                    if (treePath != null) {
-                        CheckNode node = (CheckNode) treePath.getLastPathComponent();
-                        boolean leaf = node.isLeaf();
-                        if (!node.isSelected()) {
-                            if (leaf) {
-                                popUpMenu.getLeafShowInstance().show(e.getComponent(),
-                                        e.getX(), e.getY());
+                    if (e.getButton() == MouseEvent.BUTTON3) {
+                        TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
+                        popUpMenu.setRow(tree.getRowForLocation(e.getX(), e.getY()));
+                        if (treePath != null) {
+                            CheckNode node = (CheckNode) treePath.getLastPathComponent();
+                            boolean leaf = node.isLeaf();
+                            if (!node.isSelected()) {
+                                if (leaf) {
+                                    popUpMenu.getLeafShowInstance().show(e.getComponent(),
+                                            e.getX(), e.getY());
+                                } else {
+                                    popUpMenu.getNotLeafShowInstance().show(e.getComponent(),
+                                            e.getX(), e.getY());
+                                }
                             } else {
-                                popUpMenu.getNotLeafShowInstance().show(e.getComponent(),
-                                        e.getX(), e.getY());
-                            }
-                        } else {
-                            if (leaf) {
-                                popUpMenu.getLeafHideInstance().show(e.getComponent(),
-                                        e.getX(), e.getY());
-                            } else {
-                                popUpMenu.getNotLeafHideInstance().show(e.getComponent(),
-                                        e.getX(), e.getY());
+                                if (leaf) {
+                                    popUpMenu.getLeafHideInstance().show(e.getComponent(),
+                                            e.getX(), e.getY());
+                                } else {
+                                    popUpMenu.getNotLeafHideInstance().show(e.getComponent(),
+                                            e.getX(), e.getY());
+                                }
                             }
                         }
                     }

@@ -4,6 +4,7 @@ import edu.smu.tspell.wordnet.Synset;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ILogger;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyGraph;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.comparators.impl.LexicalOrSynsetConceptComparator;
 import ru.spbu.math.ontologycomparison.zhukova.logic.wordnet.WordNetRelation;
 import ru.spbu.math.ontologycomparison.zhukova.util.ITriple;
@@ -12,6 +13,7 @@ import ru.spbu.math.ontologycomparison.zhukova.util.impl.Triple;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Set;
 
 import static ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.BindingReasonConstants.*;
@@ -36,6 +38,10 @@ public class OntologyConceptMapper extends Mapper<IOntologyConcept, IOntologyCon
     }
 
     public Collection<IOntologyConcept> map() {
+        return null;
+    }
+
+    public IOntologyGraph mapp() {
         LexicalOrSynsetConceptComparator conceptComparator = new LexicalOrSynsetConceptComparator();
 
         Set<URI> commonUriSet = SetHelper.INSTANCE.setIntersection(firstGraph.getConceptUris(),
@@ -65,8 +71,14 @@ public class OntologyConceptMapper extends Mapper<IOntologyConcept, IOntologyCon
             }
         }
         firstConcepts.addAll(secondConcepts);
+
         logger.log("binded ontologies");
-        return firstConcepts;
+        Set<IOntologyConcept> roots = SetHelper.INSTANCE.setUnion(firstGraph.getRoots(), SetHelper.INSTANCE.setIntersection(secondGraph.getRoots(), secondConcepts));
+        HashMap<URI, IOntologyConcept> uriToConcept = new HashMap<URI, IOntologyConcept>(firstGraph.getUriToConcept());
+        for (IOntologyConcept second : secondConcepts) {
+            uriToConcept.put(second.getUri(), second);
+        }
+        return new OntologyGraph(roots, uriToConcept, null, null, null);
     }
 
     public ITriple<WordNetRelation, String, String>[] getBindFactors() {

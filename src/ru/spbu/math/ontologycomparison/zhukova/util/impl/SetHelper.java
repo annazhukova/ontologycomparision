@@ -1,8 +1,6 @@
 package ru.spbu.math.ontologycomparison.zhukova.util.impl;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * @author Anna Zhukova
@@ -17,7 +15,7 @@ public class SetHelper {
         if (first == null) {
             return Collections.EMPTY_SET;
         }
-        Set<T> result = new HashSet<T>(first);
+        Set<T> result = new LinkedHashSet<T>(first);
         if (second == null) {
             return result;
         }
@@ -26,18 +24,18 @@ public class SetHelper {
     }
 
     public <T> Set<T> setUnion(Set<T> first, Set<T> second) {
-        Set<T> result = first != null ? new HashSet<T>(first) : new HashSet<T>();
+        Set<T> result = first != null ? new LinkedHashSet<T>(first) : new LinkedHashSet<T>();
         if (second != null) {
             result.addAll(second);
         }
         return result;
     }
 
-    public <T> Set<T> setIntersection(Set<T> first, Set<T> second) {
+    public <T> Set<T> setIntersection(Set<T> first, Collection<T> second) {
         if (first == null || second == null) {
             return Collections.EMPTY_SET;
         }
-        Set<T> result = new HashSet<T>(first);
+        Set<T> result = new LinkedHashSet<T>(first);
         result.retainAll(second);
         return result;
     }

@@ -1,7 +1,6 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph;
 
 import edu.smu.tspell.wordnet.Synset;
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.util.IHashTable;
 
 import java.net.URI;
@@ -25,11 +24,7 @@ public interface IOntologyGraph {
 
     Set<Synset> getSynsets();
 
-    void setUriToConcept(Map<URI, IOntologyConcept> uriToConcept);
-
     IHashTable<String, IOntologyConcept, Set<IOntologyConcept>> getLabelToConcept();
-
-    void setLabelToConcept(IHashTable<String, IOntologyConcept, Set<IOntologyConcept>> labelToConcept);
 
     IHashTable<Synset, IOntologyConcept, Set<IOntologyConcept>> getSynsetToConcept();
 
@@ -37,15 +32,9 @@ public interface IOntologyGraph {
 
     Set<IOntologyConcept> getRoots();
 
-    void setRoots(Set<IOntologyConcept> roots);
-
     Map<URI, IOntologyProperty> getUriToProperty();
 
-    void setUriToProperty(Map<URI, IOntologyProperty> uriToProperty);
-
     IHashTable<String, IOntologyProperty, Set<IOntologyProperty>> getLabelToProperty();
-
-    void setLabelToProperty(IHashTable<String, IOntologyProperty, Set<IOntologyProperty>> labelToProperty);
 
     IOntologyConcept getConceptByURI(URI uri);
 

@@ -1,6 +1,7 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.similarity;
 
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyProperty;
 import ru.spbu.math.ontologycomparison.zhukova.util.IPair;
 
@@ -18,7 +19,7 @@ public interface IOntologyComparator {
 
     double getPropertySimilarity();
 
-    IPair<Collection<IOntologyConcept>, Collection<IOntologyProperty>> mapOntologies();
+    IPair<IOntologyGraph, Collection<IOntologyProperty>> mapOntologies();
 
     Collection<IOntologyProperty> mapProperties(Collection<IOntologyConcept> mappedConcepts);
 }

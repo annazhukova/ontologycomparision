@@ -85,14 +85,6 @@ public class PopUpMenu extends JPopupMenu implements IRepaintListener {
         this.row = row;
     }
 
-    public JTree getTree() {
-        return tree;
-    }
-
-    public int getRow() {
-        return row;
-    }
-
     public void updateTreePanel() {
         treePanel.repaint();
     }

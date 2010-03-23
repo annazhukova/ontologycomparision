@@ -15,9 +15,11 @@ public class SuperVertex extends Vertex {
     private static final Color COLOR = Color.BLACK;
     private static final Color SELECTED_COLOR = new Color(192, 192, 192, 50);
     private final String toolTip;
+    private int width;
+    private final String name;
 
     public SuperVertex(Point location, String name, String toolTip) {
-        super(name);
+        this.name = name;
         setLocation(location);
         this.toolTip = toolTip;
     }
@@ -47,10 +49,10 @@ public class SuperVertex extends Vertex {
         int height = getHeight();
         Point location = getAbsoluteLocation();
         if (isCollapsed()) {
-            width = getLetterWidth() * getName().length();
-            height = getLetterHeight() + 4;
+            width = LETTER_WIDTH * getName().length();
+            height = LETTER_HEIGHT + 4;
         }
-        g.setFont(getFont());
+        g.setFont(FONT);
         g.setColor(SuperVertex.COLOR);
         g.drawRect(location.x, location.y,
                 width, height);
@@ -84,17 +86,21 @@ public class SuperVertex extends Vertex {
         return toolTip;
     }
 
-    /*public boolean equals(Object obj) {
-        if (!(obj instanceof SuperVertex)) {
-            return false;
-        }
-        SuperVertex v = (SuperVertex) obj;
-        return this == v || getLabels().equals(v.getLabels());
+    public int getWidth() {
+        return this.width;
     }
 
-    public int hashCode() {
-        return getLabels().hashCode();
-    }*/
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return SuperVertex.getVertexHeight();
+    }
+
+    public static int getVertexHeight() {
+        return Vertex.LETTER_HEIGHT + LABEL_GAP + Y_GAP + SimpleVertex.getVertexHeight();
+    }
 
     public boolean leftBorderTest(Point p) {
         int x = getAbsoluteLocation().x;
@@ -135,7 +141,7 @@ public class SuperVertex extends Vertex {
     }
 
     private int getMinWidth() {
-        int minWidth = 3 * getLetterWidth() + 6;
+        int minWidth = 3 * LETTER_WIDTH + 6;
         for (SimpleVertex vertex : this.simpleVertices) {
             if (!vertex.isHidden()) {
                 minWidth = Math.max(minWidth, vertex.getWidth() + 4);
@@ -145,7 +151,7 @@ public class SuperVertex extends Vertex {
     }
 
     private int getMinHeight() {
-        int minHeight = getLetterHeight();
+        int minHeight = LETTER_HEIGHT;
         for (SimpleVertex vertex : this.simpleVertices) {
             if (!vertex.isHidden()) {
                 minHeight = Math.max(minHeight, vertex.getHeight() + 4);
@@ -172,19 +178,23 @@ public class SuperVertex extends Vertex {
     }
 
     public void moveTopBorder(int dy) {
-        int height = getHeight();
+        /*int height = getHeight();
         if (dy > 0) {
             dy = Math.min(Math.abs(height - getMinHeight()), dy);
         }
         setHeight(height - dy);
-        setLocation(new Point(getAbsoluteLocation().x, getAbsoluteLocation().y + dy));
+        setLocation(new Point(getAbsoluteLocation().x, getAbsoluteLocation().y + dy));*/
     }
 
     public void moveBottomBorder(int dy) {
-        int height = getHeight();
+        /*int height = getHeight();
         if (dy < 0) {
             dy = -Math.min(Math.abs(height - getMinHeight()), -dy);
         }
-        setHeight(height + dy);
+        setHeight(height + dy);*/
+    }
+    
+    public String getName() {
+        return this.name;
     }
 }

@@ -24,7 +24,7 @@ public class CheckNode extends DefaultMutableTreeNode {
     }
 
     public void setSelected(boolean isSelected, int selectionMode, ArrayList<CheckNode> nodes) {
-        myIsSelected = isSelected;
+        setSelected(isSelected);
         nodes.add(this);
         if ((selectionMode == OUR_DIG_IN_SELECTION) && (children != null)) {
             Enumeration en = children.elements();

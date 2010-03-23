@@ -30,14 +30,8 @@ public class GraphPane extends JPanel implements IGraphPane, GraphModel.Listener
         repaint();
     }
 
-    public void update(IVertex vertex) {
-        for (IVertex selectedVertex : GraphPane.this.selectedVertices) {
-            if (selectedVertex.equals(vertex)) {
-                GraphPane.this.selectedVertices.remove(vertex);
-                break;
-            }
-        }
-        repaint();
+    public void vertexRemoved(IVertex vertex) {
+        GraphPane.this.selectedVertices.remove(vertex);
     }
 
     public GraphPane() {

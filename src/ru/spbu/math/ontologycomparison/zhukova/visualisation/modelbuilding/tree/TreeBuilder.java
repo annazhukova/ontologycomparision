@@ -1,8 +1,10 @@
 package ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.tree;
 
+import com.sun.istack.internal.NotNull;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.util.IPair;
 import ru.spbu.math.ontologycomparison.zhukova.util.impl.Pair;
+import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.SimpleVertex;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.tree.CheckNode;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.tree.CheckRenderer;
 

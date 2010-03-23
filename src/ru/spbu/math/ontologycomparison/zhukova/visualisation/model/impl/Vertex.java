@@ -9,45 +9,24 @@ import java.awt.*;
  * @author Anna R. Zhukova
  */
 public abstract class Vertex implements IVertex {
-    private Point location;
-    private final String name;
-    private int width;
-    private int height;
+    private int x;
+    private int y;
     private boolean isHidden = false;
-    public static final int LETTER_HEIGHT = 21;
-    public static final int LETTER_WIDTH = 9;
-    public static final Font FONT = new Font(Font.MONOSPACED, Font.ITALIC, 15);
-
-    public Vertex(String name) {
-        this.name = name;
-    }
 
     public Point getLocation() {
-        return new Point(this.location);
+        return new Point(x, y);
     }
 
     public void setLocation(Point p) {
-        this.location = new Point(p);
+        setLocation(p.x, p.y);
     }
 
-    public int getWidth() {
-        return this.width;
+    public void setLocation(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return this.height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-
-    public void paintIfNeeded(Graphics g, GraphPane graphPane, boolean isSelected) {           
+    public void paintIfNeeded(Graphics g, GraphPane graphPane, boolean isSelected) {
         if (!isHidden()) {
             paint(g, graphPane, isSelected);
         }
@@ -70,10 +49,6 @@ public abstract class Vertex implements IVertex {
                 && (p.y <= (getAbsoluteLocation().y + getHeight()));
     }
 
-    public String getName() {
-        return this.name;
-    }
-
     public boolean isInRectangleTest(Point left, Point right) {
         int x = getAbsoluteLocation().x;
         int y = getAbsoluteLocation().y;
@@ -94,15 +69,19 @@ public abstract class Vertex implements IVertex {
         return new Point(getAbsoluteLocation());
     }
 
-    public int getLetterWidth() {
-        return LETTER_WIDTH;
+    public void setY(int y) {
+        this.y = y;
+    }    
+
+    public int getY() {
+        return this.y;
     }
 
-    public int getLetterHeight() {
-        return LETTER_HEIGHT;
+    public void setX(int x) {
+        this.x = x;
     }
 
-    public Font getFont() {
-        return FONT;
+    public int getX() {
+        return this.x;
     }
 }

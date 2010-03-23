@@ -7,43 +7,50 @@ import java.awt.*;
 /**
  * @author Anna R. Zhukova
  */
-public interface IVertex {
+public interface IVertex {       
+    static final int LETTER_HEIGHT = 17;
+    static final int LETTER_WIDTH = 7;
+    static final Font FONT = new Font(Font.MONOSPACED, Font.ITALIC, 12);
+    static final int LABEL_GAP = 3;
+    static final int Y_GAP = 1;
 
-    public Point getAbsoluteLocation() ;
+    Point getAbsoluteLocation() ;
 
-    public Point getLocation();
+    Point getLocation();
     
-    public void setLocation(Point loc);
+    void setLocation(int x, int y);
+
+    void setLocation(Point p);
     
-    public int getWidth();
+    int getWidth();
 
-    public void setWidth(int width);
+    int getHeight();
 
-    public int getHeight();
+    void paintIfNeeded(Graphics g, GraphPane graphPane, boolean isSelected);
 
-    public void setHeight(int height);
+    abstract void paint(Graphics g, GraphPane graphPane, boolean isSelected);
 
-    public void paintIfNeeded(Graphics g, GraphPane graphPane, boolean isSelected);
+    void setHidden(boolean need);
 
-    public abstract void paint(Graphics g, GraphPane graphPane, boolean isSelected);
+    boolean isHidden();
 
-    public void setHidden(boolean need);
+    boolean hitTest(Point p);
 
-    public boolean isHidden();
+    String getName();
 
-    public boolean hitTest(Point p);
+    boolean isInRectangleTest(Point left, Point right);
 
-    public String getName();
+    Point getMaxPoint();
 
-    public boolean isInRectangleTest(Point left, Point right);
+    Point getMinPoint();
 
-    public Point getMaxPoint();
+    String getToolTipText();
 
-    public String getToolTipText();
+    void setY(int y);
 
-    int getLetterWidth();
+    int getY();
 
-    int getLetterHeight();
+    void setX(int x);
 
-    Font getFont();
+    int getX();
 }

@@ -4,7 +4,6 @@ import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConc
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.SimpleVertex;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.SuperVertex;
 
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,7 +14,7 @@ public interface IGraphModel {
 
     void addVertex(IVertex v);
 
-    LinkedList<IArc> removeVertex(IVertex v);
+    void removeVertex(IVertex v);
 
     void moveVertex(IVertex v, int dx, int dy);
 
@@ -31,13 +30,13 @@ public interface IGraphModel {
 
     void clear();
 
-    void setKeyToSuperVertexMap(Map<String, SuperVertex> nameToVertex);
+    void setKeyToSuperVertexMap(Map<?, SuperVertex> nameToVertex);
 
-    Map<String, SuperVertex> getKeyToSuperVertexMap();
+    Map<?, SuperVertex> getKeyToSuperVertexMap();
 
-    void setIntToSimpleVertexMap(Map<String, SimpleVertex> nameToVertex);
+    void setKeyToSimpleVertexMap(Map<?, SimpleVertex> nameToVertex);
 
-    Map<String, SimpleVertex> getNameToSimpleVertexMap();
+    Map<?, SimpleVertex> getNameToSimpleVertexMap();
 
     void setConceptToVertexMap(Map<IOntologyConcept, SimpleVertex> conceptToVertexMap);
 
@@ -46,4 +45,8 @@ public interface IGraphModel {
     void update();
 
     SimpleVertex getVertexByConcept(IOntologyConcept concept);
+
+    void showNoParentVertices(boolean show);
+
+    void showSingleVerticesWithSuchNamedParent(boolean show, String name);
 }
