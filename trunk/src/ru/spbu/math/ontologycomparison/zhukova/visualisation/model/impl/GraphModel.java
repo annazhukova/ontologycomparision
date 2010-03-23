@@ -1,4 +1,5 @@
 package ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl;
+
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IArc;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IGraphModel;
@@ -12,8 +13,8 @@ public class GraphModel implements IGraphModel {
     private final Set<SimpleVertex> simpleVertices = new HashSet<SimpleVertex>();
     private final Set<SuperVertex> superVertices = new HashSet<SuperVertex>();
     private final Set<IArc> arcs = new HashSet<IArc>();
-    private Map<String, SuperVertex> nameToSuperVertex = new HashMap<String, SuperVertex>();
-    private Map<String, SimpleVertex> nameToSimpleVertex = new HashMap<String, SimpleVertex>();
+    private Map<?, SuperVertex> nameToSuperVertex;
+    private Map<?, SimpleVertex> nameToSimpleVertex;
     private final IGraphPane graphPane;
     private final Set<Listener> listeners = new LinkedHashSet<Listener>();
     private Map<IOntologyConcept, SimpleVertex> conceptToVertexMap;
@@ -37,23 +38,17 @@ public class GraphModel implements IGraphModel {
         update();
     }
 
-    public LinkedList<IArc> removeVertex(IVertex vertex) {
-        LinkedList<IArc> arcs = new LinkedList<IArc>();
+    public void removeVertex(IVertex vertex) {
         vertex.setHidden(true);
         if (vertex instanceof SimpleVertex) {
             this.simpleVertices.remove(vertex);
         } else if (vertex instanceof SuperVertex) {
             this.superVertices.remove(vertex);
         }
-        for (IArc arc : this.arcs) {
-            if (vertex.equals(arc.getFromVertex()) || vertex.equals(arc.getToVertex())) {
-                arcs.add(arc);
-            }
-        }
         for (Listener listener : this.listeners) {
-            listener.update(vertex);
+            listener.vertexRemoved(vertex);
+            listener.update();
         }
-        return arcs;
     }
 
     public void moveVertex(IVertex vertex, int dx, int dy) {
@@ -102,19 +97,19 @@ public class GraphModel implements IGraphModel {
         update();
     }
 
-    public void setKeyToSuperVertexMap(Map<String, SuperVertex> nameToVertex) {
+    public void setKeyToSuperVertexMap(Map<?, SuperVertex> nameToVertex) {
         this.nameToSuperVertex = nameToVertex;
     }
 
-    public Map<String, SuperVertex> getKeyToSuperVertexMap() {
+    public Map<?, SuperVertex> getKeyToSuperVertexMap() {
         return Collections.unmodifiableMap(this.nameToSuperVertex);
     }
 
-    public void setIntToSimpleVertexMap(Map<String, SimpleVertex> nameToVertex) {
+    public void setKeyToSimpleVertexMap(Map<?, SimpleVertex> nameToVertex) {
         this.nameToSimpleVertex = nameToVertex;
     }
 
-    public Map<String, SimpleVertex> getNameToSimpleVertexMap() {
+    public Map<?, SimpleVertex> getNameToSimpleVertexMap() {
         return Collections.unmodifiableMap(this.nameToSimpleVertex);
     }
 
@@ -126,10 +121,45 @@ public class GraphModel implements IGraphModel {
         return conceptToVertexMap;
     }
 
+    public void showNoParentVertices(boolean show) {
+        for (SimpleVertex vertex : getSimpleVertices()) {
+            if (vertex.getSuperVertex() == null) {
+                vertex.setHidden(!show);
+                if (!show) {
+                    for (Listener listener : this.listeners) {
+                        listener.vertexRemoved(vertex);
+                    }
+                } else {
+                    this.graphPane.checkPoint(vertex.getMaxPoint());
+                }
+            }
+        }
+        update();
+    }
+
+    public void showSingleVerticesWithSuchNamedParent(boolean show, String name) {
+        for (SuperVertex vertex : getSuperVertices()) {
+            if (vertex.getName().equals(name)) {
+                Set<SimpleVertex> vertexSet = vertex.getSimpleVertices();
+                if (vertexSet != null && vertexSet.size() <= 1) {
+                    vertex.setHidden(!show);
+                    if (!show) {
+                        for (Listener listener : this.listeners) {
+                            listener.vertexRemoved(vertex);
+                        }
+                    } else {
+                        this.graphPane.checkPoint(vertex.getMaxPoint());
+                    }
+                }
+            }
+        }
+        update();
+    }
+
     public static interface Listener {
 
         void update();
 
-        void update(IVertex vertex);
+        void vertexRemoved(IVertex vertex);
     }
 }

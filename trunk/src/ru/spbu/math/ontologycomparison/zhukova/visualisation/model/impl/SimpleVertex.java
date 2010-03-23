@@ -3,27 +3,19 @@ package ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.GraphPane;
 
 import java.awt.*;
-import java.util.*;
 
 
-public class SimpleVertex extends Vertex {
-    private final Set<Arc> arcs = new HashSet<Arc>();
+public abstract class SimpleVertex extends Vertex {
     private final SuperVertex superVertex;
     private final Color color;
 
-    public SimpleVertex(Point location, String name, SuperVertex superVertex, Color color) {
-        super(name);
+    public SimpleVertex(SuperVertex superVertex, Color color) {
         this.superVertex = superVertex;
-        setLocation(location);
         this.color = color;
     }
 
-    public Set<Arc> getArcs() {
-        return this.arcs;
-    }
-
     public void paint(Graphics g, GraphPane graphPane, boolean isSelected) {
-        g.setFont(getFont());
+        g.setFont(FONT);
         int width = getWidth();
         int height = getHeight();
         g.setColor(this.color);
@@ -45,24 +37,16 @@ public class SimpleVertex extends Vertex {
         return getSurname();
     }
 
-    /*public boolean equals(Object obj) {
-        if (!(obj instanceof SimpleVertex)) {
-            return false;
-        }
-        SimpleVertex v = (SimpleVertex) obj;
-        return this == v || getLabels().equals(v.getLabels()) && getSurname().equals(v.getSurname());
+    public int getWidth() {
+        return Vertex.LETTER_WIDTH * getName().length() + 2 * LABEL_GAP;
     }
 
-    public int hashCode() {
-        return getLabels().hashCode() + 7 * getSurname().hashCode();
-    }  */
+    public int getHeight() {
+        return SimpleVertex.getVertexHeight();
+    }
 
     public String getSurname() {
         return this.superVertex.getName();
-    }
-
-    public void addArc(Arc arc) {
-        this.arcs.add(arc);
     }
 
     public void setLocation(Point p) {
@@ -106,5 +90,9 @@ public class SimpleVertex extends Vertex {
 
     public String toString() {
         return this.getName();
+    }
+
+    public static int getVertexHeight() {
+        return Vertex.LETTER_HEIGHT + 2 * LABEL_GAP + 2 * Y_GAP;
     }
 }

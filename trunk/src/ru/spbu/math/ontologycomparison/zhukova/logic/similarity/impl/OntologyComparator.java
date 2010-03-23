@@ -60,12 +60,12 @@ public class OntologyComparator implements IOntologyComparator {
         return propertyIntersectionSize / (double) propertyUnionSize;
     }
 
-    public IPair<Collection<IOntologyConcept>, Collection<IOntologyProperty>> mapOntologies() {
-        Collection<IOntologyConcept> mappedConcepts = mapConcepts();
-        return new Pair<Collection<IOntologyConcept>, Collection<IOntologyProperty>>(mappedConcepts, mapProperties(mappedConcepts));
+    public IPair<IOntologyGraph, Collection<IOntologyProperty>> mapOntologies() {
+        IOntologyGraph mappedConcepts = mapConcepts();
+        return new Pair<IOntologyGraph, Collection<IOntologyProperty>>(mappedConcepts, mapProperties(mappedConcepts.getConcepts()));
     }
 
-    private Collection<IOntologyConcept> mapConcepts() {
+    private IOntologyGraph mapConcepts() {
         SynsetMapper firstSynsetMapper = new SynsetMapper(new HashSet<IOntologyConcept>(this.firstGraph.getConcepts()), logger);
         Collection<IOntologyConcept> firstConcepts = firstSynsetMapper.map();
         this.firstGraph.setSynsetToConcept(firstSynsetMapper.getSynsetToConceptTable());
@@ -73,9 +73,9 @@ public class OntologyComparator implements IOntologyComparator {
         Collection<IOntologyConcept> secondConcepts = secondSynsetMapper.map();
         this.secondGraph.setSynsetToConcept(secondSynsetMapper.getSynsetToConceptTable());
         int secondConceptsSize = secondConcepts.size();
-        Collection<IOntologyConcept> result = (new OntologyConceptMapper(firstConcepts, secondConcepts, this.firstGraph, this.secondGraph, logger)).map();
+        IOntologyGraph result = (new OntologyConceptMapper(firstConcepts, secondConcepts, this.firstGraph, this.secondGraph, logger)).mapp();
         this.conceptIntersectionSize = secondConceptsSize - secondConcepts.size();
-        this.conceptUnionSize = result.size();
+        this.conceptUnionSize = result.getConcepts().size();
         return result;
     }
 
