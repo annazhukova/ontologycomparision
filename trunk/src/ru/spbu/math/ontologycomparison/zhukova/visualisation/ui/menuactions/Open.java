@@ -3,7 +3,11 @@
  */
 package ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.menuactions;
 
+import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyManager;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.OntologyGraphBuilder;
+import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.OntologyManager;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.GraphModel;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.GraphModelBuilder;
@@ -19,19 +23,21 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class Open extends AbstractAction {
-    private static final Open INSTANCE = new Open();
-    private static Main main;
+    private Main main;
+    private Set<IListener> listeners = new LinkedHashSet<IListener>();
 
-    public static Open getInstance() {
-        return Open.INSTANCE;
-    }
-
-    private Open() {
+    public Open() {
         super("Open...");
         putValue(Action.MNEMONIC_KEY, Integer.valueOf('o'));
         putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
+    }
+
+    public void addListener(IListener listener) {
+        listeners.add(listener);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -39,30 +45,33 @@ public class Open extends AbstractAction {
         if (firstOwl == null) {
             return;
         }
-        Open.main.getGraphModel().clear();
-        Open.main.getGraphModel().update();
-        Open.main.log("Select second ontology");
+        this.main.getGraphModel().clear();
+        this.main.getGraphModel().update();
+        this.main.log("Select second ontology");
         final File secondOwl = FileChoosers.getOpenFileChooser("Select Second Ontology");
         if (secondOwl == null) {
-            Open.main.log("Press \"Open\" to select ontologies to compare");
+            this.main.log("Press \"Open\" to select ontologies to compare");
             return;
         }
-        Open.main.log("Loading ontologies");
-        Open.main.showProgressBar();
+        this.main.log("Loading ontologies");
+        for (IListener listener : listeners) {
+            listener.openCalled();
+        }
+        this.main.showProgressBar();
         SwingWorker<Void, Void> wrkr = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
                 try {
                     buildGraph(firstOwl, secondOwl);
-                    Open.main.setIsChanged(true);
+                    Open.this.main.setIsChanged(true);
                 } catch (IOException e1) {
-                    Open.main.hideProgressBar();
-                    JOptionPane.showMessageDialog(Open.main.getFrame(), "Cannot open file",
+                    Open.this.main.hideProgressBar();
+                    JOptionPane.showMessageDialog(Open.this.main.getFrame(), "Cannot open file",
                             "Cannot open file", JOptionPane.ERROR_MESSAGE);
                     e1.printStackTrace();
                 } catch (Exception e1) {
-                    Open.main.hideProgressBar();
-                    JOptionPane.showMessageDialog(Open.main.getFrame(), e1.getMessage(),
+                    Open.this.main.hideProgressBar();
+                    JOptionPane.showMessageDialog(Open.this.main.getFrame(), e1.getMessage(),
                             "Cannot load ontology", JOptionPane.ERROR_MESSAGE);
                     e1.printStackTrace();
                 }
@@ -74,40 +83,54 @@ public class Open extends AbstractAction {
 
     private void buildGraph(final File firstOwl, final File secondOwl) throws IOException {
         try {
+            final OntologyGraphBuilder firstBuilder = new OntologyGraphBuilder();
             SwingWorker<IOntologyGraph, Void> firstOntologyLoader = new SwingWorker<IOntologyGraph, Void>() {
                 @Override
                 protected IOntologyGraph doInBackground() throws Exception {
-                    Open.main.log(String.format("Loading %s...", firstOwl.getName()));
-                    return OntologyGraphBuilder.build(firstOwl);
+                    Open.this.main.log(String.format("Loading %s...", firstOwl.getName()));
+                    return firstBuilder.build(firstOwl);
                 }
             };
             firstOntologyLoader.execute();
-            Open.main.log(String.format("Loading %s...", secondOwl.getName()));
-            IOntologyGraph secondGraph = OntologyGraphBuilder.build(secondOwl);
-            Open.main.log("Merging ontologies...");
+            this.main.log(String.format("Loading %s...", secondOwl.getName()));
+            OntologyGraphBuilder secondBuilder = new OntologyGraphBuilder();
+            IOntologyGraph secondGraph = secondBuilder.build(secondOwl);
+            this.main.log("Merging ontologies...");
             IOntologyGraph firstGraph = firstOntologyLoader.get();
             final IGraphModelBuilder myGraphModelBuilder =
-                    new GraphModelBuilder(firstGraph, secondGraph, Open.main);
-            Open.main.log("Visualising ontologies...");
+                    new GraphModelBuilder(firstGraph, secondGraph, this.main);
+            this.main.log("Visualising ontologies...");
             GraphModel graphModel = myGraphModelBuilder.buildGraphModel(main.getGraphPane(), main.areUnmappedConceptsVisible(), main.areUnmappedConceptsWithSynsetsVisible());
-            Open.main.setGraphModel(graphModel);
+            OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+            OWLOntology result = OntologyManager.saveOntologies(manager, firstBuilder.getOntology(), secondBuilder.getOntology());
+            for (IListener listener : listeners) {
+                listener.openDone(manager, result);
+            }
+            this.main.setGraphModel(graphModel);
             ITreeBuilder firstTreeBuilder = new TreeBuilder(firstOwl.getName(), firstGraph.getRoots());
             ITreeBuilder secondTreeBuilder = new TreeBuilder(secondOwl.getName(), secondGraph.getRoots());
-            Open.main.setTrees(firstTreeBuilder.buildTree(), secondTreeBuilder.buildTree());
+            this.main.setTrees(firstTreeBuilder.buildTree(), secondTreeBuilder.buildTree());
             int similarityCount = myGraphModelBuilder.getSimilarity();
-            Open.main.log(String.format(
+            this.main.log(String.format(
                     "Comparing ontology %s (blue) to %s (green).<br>(Absolutely equal concepts are colored orange)<br>The similarity is %d %%.",
                     firstOwl.getName(), secondOwl.getName(), similarityCount)
             );
-            Open.main.hideProgressBar();
+            this.main.hideProgressBar();
         } catch (Exception e) {
-            Open.main.hideProgressBar();
+            this.main.hideProgressBar();
             e.printStackTrace();
-            JOptionPane.showMessageDialog(Open.main.getFrame(), e.getMessage(), "Cannot load ontologies", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this.main.getFrame(), e.getMessage(), "Cannot load ontologies", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public static void setMain(Main main) {
-        Open.main = main;
+    public void setMain(Main main) {
+        this.main = main;
+    }
+
+    public static interface IListener {
+
+        void openCalled();
+
+        void openDone(OWLOntologyManager manager, OWLOntology ontology);
     }
 }

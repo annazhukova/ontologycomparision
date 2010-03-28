@@ -1,7 +1,5 @@
 package ru.spbu.math.ontologycomparison.zhukova.visualisation.ui;
 
-import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.menuactions.*;
-
 import javax.swing.*;
 
 /**
@@ -11,10 +9,13 @@ import javax.swing.*;
     private static JToolBar toolBar;
 
     /*package*/
-    static JToolBar getToolBar() {
+
+    static JToolBar getToolBar(AbstractAction... actions) {
         if (ToolBar.toolBar == null) {
             ToolBar.toolBar = new JToolBar();
-            ToolBar.toolBar.add(Open.getInstance());
+            for (AbstractAction action : actions) {
+                ToolBar.toolBar.add(action);
+            }
         }
         return ToolBar.toolBar;
     }

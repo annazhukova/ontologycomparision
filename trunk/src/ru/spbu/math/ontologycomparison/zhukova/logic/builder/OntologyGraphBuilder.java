@@ -1,8 +1,9 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.builder;
 
-import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.IOntologyLoader;
+import org.semanticweb.owl.model.OWLOntology;
+import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.IOntologyManager;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.ClassAnnotationVisitor;
-import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.OntologyLoader;
+import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.OntologyManager;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.PropertyVisitor;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
 
@@ -14,17 +15,22 @@ import java.io.FileNotFoundException;
  * @author Anna Zhukova
  */
 public class OntologyGraphBuilder {
+    private IOntologyManager ontologyManager;
 
-    public static IOntologyGraph build(String ontologyPath)
+    public IOntologyGraph build(String ontologyPath)
             throws FileNotFoundException {
-        IOntologyLoader ontologyLoader = new OntologyLoader(new FileInputStream(ontologyPath));
-        return ontologyLoader.load(new ClassAnnotationVisitor(), new PropertyVisitor());
+        ontologyManager = new OntologyManager(new FileInputStream(ontologyPath));
+        return ontologyManager.load(new ClassAnnotationVisitor(), new PropertyVisitor());
     }
 
-    public static IOntologyGraph build(File ontologyFile)
+    public IOntologyGraph build(File ontologyFile)
             throws FileNotFoundException {
-        IOntologyLoader ontologyLoader = new OntologyLoader(ontologyFile);
-        return ontologyLoader.load(new ClassAnnotationVisitor(), new PropertyVisitor());
+        ontologyManager = new OntologyManager(ontologyFile);
+        return ontologyManager.load(new ClassAnnotationVisitor(), new PropertyVisitor());
+    }
+
+    public OWLOntology getOntology() {
+        return ontologyManager == null ? null : ontologyManager.getOntology();
     }
 
 }

@@ -12,17 +12,17 @@ import java.io.FileNotFoundException;
  */
 public class TestGraphBuilder extends TestCase {
 
-    public void testItBuldsAnything() throws FileNotFoundException {
-        OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
+    public void testItBuildsAnything() throws FileNotFoundException {
+        new OntologyGraphBuilder().build(OntologyTestConstants.ONTOPL_URL);
     }
 
     public void testConceptsNumber() throws FileNotFoundException {
-        IOntologyGraph graph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
+        IOntologyGraph graph = new OntologyGraphBuilder().build(OntologyTestConstants.ONTOPL_URL);
         assertEquals(OntologyTestConstants.ONTO_PL_CONCEPTS_COUNT, graph.getConcepts().size());
     }
 
     public void testConceptsContent() throws FileNotFoundException {
-        IOntologyGraph graph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
+        IOntologyGraph graph = new OntologyGraphBuilder().build(OntologyTestConstants.ONTOPL_URL);
         for (IOntologyConcept concept : graph.getConcepts()) {
             if (concept.getLabelCollection().contains(OntologyTestConstants.JAVA)) {
                 return;
@@ -32,7 +32,7 @@ public class TestGraphBuilder extends TestCase {
     }
 
     public void testChildParentRelation() throws FileNotFoundException {
-        IOntologyGraph graph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
+        IOntologyGraph graph = new OntologyGraphBuilder().build(OntologyTestConstants.ONTOPL_URL);
         for (IOntologyConcept concept : graph.getConcepts()) {
             if (concept.getLabelCollection().contains(OntologyTestConstants.JAVA)) {
                 for (IOntologyConcept parent : concept.getParents()) {

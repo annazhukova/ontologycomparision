@@ -15,6 +15,11 @@ public class ClassAnnotationVisitor implements IClassAnnotationVisitor<IOntology
     private String label;
     private String comment;
 
+    public void start() {
+        label = null;
+        comment = null;
+    }
+
     public IOntologyConcept getOntologyConcept(URI uri) {
         return new OntologyConcept(uri, this.getLabel());
     }
