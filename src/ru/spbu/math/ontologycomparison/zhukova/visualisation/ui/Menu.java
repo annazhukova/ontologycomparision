@@ -3,8 +3,6 @@
  */
 package ru.spbu.math.ontologycomparison.zhukova.visualisation.ui;
 
-import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.menuactions.*;
-
 import javax.swing.*;
 
 /*package*/ class Menu {
@@ -14,19 +12,21 @@ import javax.swing.*;
     private static JMenu menuEdit;
 
     /*package*/
-    static JMenuBar getMenuBar() {
+    static JMenuBar getMenuBar(AbstractAction... actions) {
         if (Menu.menuBar == null) {
             Menu.menuBar = new JMenuBar();
-            Menu.menuBar.add(getMenuFile());
+            Menu.menuBar.add(getMenuFile(actions));
         }
         return Menu.menuBar;
     }
 
-    private static JMenu getMenuFile() {
+    private static JMenu getMenuFile(AbstractAction... actions) {
         if (Menu.menuFile == null) {
             Menu.menuFile = new JMenu("File");
             Menu.menuFile.setMnemonic('f');
-            Menu.menuFile.add(Open.getInstance());
+            for (AbstractAction action : actions) {
+                Menu.menuFile.add(action);
+            }
         }
         return Menu.menuFile;
     }

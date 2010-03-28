@@ -9,6 +9,7 @@ import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.GraphMod
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.GraphPane;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.tools.SelectingTool;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.menuactions.Open;
+import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.menuactions.Save;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.tree.CheckNode;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.tree.TreeComponent;
 
@@ -67,7 +68,6 @@ public class Main implements ILogger {
     public JFrame getFrame() {
         if (this.frame == null) {
             this.frame = new JFrame("Ontology Comparison");
-            Open.setMain(this);
             this.frame.setSize(1200, 750);
             this.frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
             this.frame.addWindowListener(new WindowAdapter() {
@@ -75,9 +75,10 @@ public class Main implements ILogger {
                     System.exit(0);
                 }
             });
-            this.frame.setJMenuBar(Menu.getMenuBar());
+            AbstractAction[] actions = getActions();
+            this.frame.setJMenuBar(Menu.getMenuBar(actions));
             this.frame.getContentPane().setLayout(new BorderLayout());
-            this.frame.getContentPane().add(ToolBar.getToolBar(), BorderLayout.NORTH);
+            this.frame.getContentPane().add(ToolBar.getToolBar(actions), BorderLayout.NORTH);
 
             this.frame.getContentPane().add(general, BorderLayout.CENTER);
             initLabelsPanel();
@@ -244,5 +245,14 @@ public class Main implements ILogger {
 
     public boolean areUnmappedConceptsWithSynsetsVisible() {
         return showSingleSynsetVertexCheckBox.isSelected();
+    }
+
+    public AbstractAction[] getActions() {
+        Open open = new Open();
+        open.setMain(this);
+        Save save = new Save();
+        save.setMain(this);
+        open.addListener(save);
+        return new AbstractAction[]{open, save};
     }
 }

@@ -1,10 +1,9 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader;
 
 import org.semanticweb.owl.model.OWLAnnotationVisitor;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 
 import java.net.URI;
-
-import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 
 /**
  * @author Anna Zhukova
@@ -18,5 +17,7 @@ public interface IClassAnnotationVisitor<C extends IOntologyConcept> extends OWL
      * @return IOntologyConcept constructed.
      */
     C getOntologyConcept(URI uri);
+
+    void start();
 }
 

@@ -25,11 +25,12 @@ public class TestOntologyComparator extends TestCase {
     private IOntologyGraph ontoDrinkGraph;
 
     public void setUp() throws FileNotFoundException {
-        this.ontoPLGraph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPL_URL);
-        this.ontoDrinkGraph = OntologyGraphBuilder.build(OntologyTestConstants.ONTODRINK_URL);
-        this.ontoPLFull = OntologyGraphBuilder.build(OntologyTestConstants.ONTOPLFULL_URL);
-        this.ontoJavaCSharpGraph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOJAVASHARP_URL);
-        this.ontoJavaGraph = OntologyGraphBuilder.build(OntologyTestConstants.ONTOJAVA_URL);
+        OntologyGraphBuilder builder = new OntologyGraphBuilder();
+        this.ontoPLGraph = builder.build(OntologyTestConstants.ONTOPL_URL);
+        this.ontoDrinkGraph = builder.build(OntologyTestConstants.ONTODRINK_URL);
+        this.ontoPLFull = builder.build(OntologyTestConstants.ONTOPLFULL_URL);
+        this.ontoJavaCSharpGraph = builder.build(OntologyTestConstants.ONTOJAVASHARP_URL);
+        this.ontoJavaGraph = builder.build(OntologyTestConstants.ONTOJAVA_URL);
     }
 
     public void testSimilarityOfTotallyDifferentOntologies() {

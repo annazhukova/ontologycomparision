@@ -1,6 +1,7 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl;
 
 import edu.smu.tspell.wordnet.Synset;
+import org.semanticweb.owl.model.OWLClass;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyRelation;
 import ru.spbu.math.ontologycomparison.zhukova.util.IHashMapTable;
@@ -34,6 +35,7 @@ public class OntologyConcept extends LabeledOntologyEntity implements IOntologyC
     };
     private static final int MAX_RECURSIVE_LEVEL = 5;
     private static final int MAX_RECURSIVE_SIZE = 20;
+    private OWLClass clazz;
     /*private static final URI SUBCLASS_URI;
 
     static {
@@ -146,11 +148,19 @@ public class OntologyConcept extends LabeledOntologyEntity implements IOntologyC
         return children.toArray(new IOntologyConcept[children.size()]);
     }
 
+    public void setOWLClass(OWLClass clazz) {
+        this.clazz = clazz;
+    }
+
     public boolean hasSynsets() {
         return !this.synsetToReason.isEmpty();
     }
 
     public void addChild(IOntologyConcept child) {
         this.children.add(child);
+    }
+
+    public OWLClass getOWLClass() {
+        return clazz;
     }
 }

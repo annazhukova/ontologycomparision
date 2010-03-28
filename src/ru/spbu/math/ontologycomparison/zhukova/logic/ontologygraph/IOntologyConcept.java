@@ -1,6 +1,7 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph;
 
 import edu.smu.tspell.wordnet.Synset;
+import org.semanticweb.owl.model.OWLClass;
 import ru.spbu.math.ontologycomparison.zhukova.util.IHashMapTable;
 
 import java.util.Collection;
@@ -61,4 +62,8 @@ public interface IOntologyConcept extends ILabeledOntologyEntity {
     void addChild(IOntologyConcept child);
 
     boolean hasSynsets();
+
+    void setOWLClass(OWLClass clazz);
+
+    OWLClass getOWLClass();
 }
