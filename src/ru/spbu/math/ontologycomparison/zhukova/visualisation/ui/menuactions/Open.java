@@ -57,10 +57,11 @@ public class Open extends AbstractAction {
         for (IListener listener : listeners) {
             listener.openCalled();
         }
-        this.main.showProgressBar();
-        SwingWorker<Void, Void> wrkr = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
+
+
+        main.showProgressBar();
+        new Thread(new Runnable() {
+            public void run() {
                 try {
                     buildGraph(firstOwl, secondOwl);
                     Open.this.main.setIsChanged(true);
@@ -75,28 +76,27 @@ public class Open extends AbstractAction {
                             "Cannot load ontology", JOptionPane.ERROR_MESSAGE);
                     e1.printStackTrace();
                 }
-                return null;
             }
-        };
-        wrkr.execute();
+        }).start();
     }
 
     private void buildGraph(final File firstOwl, final File secondOwl) throws IOException {
         try {
             final OntologyGraphBuilder firstBuilder = new OntologyGraphBuilder();
-            SwingWorker<IOntologyGraph, Void> firstOntologyLoader = new SwingWorker<IOntologyGraph, Void>() {
+            /*SwingWorker<IOntologyGraph, Void> firstOntologyLoader = new SwingWorker<IOntologyGraph, Void>() {
                 @Override
                 protected IOntologyGraph doInBackground() throws Exception {
                     Open.this.main.log(String.format("Loading %s...", firstOwl.getName()));
                     return firstBuilder.build(firstOwl);
                 }
             };
-            firstOntologyLoader.execute();
+            firstOntologyLoader.execute();*/
+            Open.this.main.log(String.format("Loading %s...", firstOwl.getName()));
+            IOntologyGraph firstGraph = firstBuilder.build(firstOwl);//firstOntologyLoader.get();
             this.main.log(String.format("Loading %s...", secondOwl.getName()));
             OntologyGraphBuilder secondBuilder = new OntologyGraphBuilder();
             IOntologyGraph secondGraph = secondBuilder.build(secondOwl);
             this.main.log("Merging ontologies...");
-            IOntologyGraph firstGraph = firstOntologyLoader.get();
             final IGraphModelBuilder myGraphModelBuilder =
                     new GraphModelBuilder(firstGraph, secondGraph, this.main);
             this.main.log("Visualising ontologies...");
@@ -109,7 +109,7 @@ public class Open extends AbstractAction {
             this.main.setGraphModel(graphModel);
             ITreeBuilder firstTreeBuilder = new TreeBuilder(firstOwl.getName(), firstGraph.getRoots());
             ITreeBuilder secondTreeBuilder = new TreeBuilder(secondOwl.getName(), secondGraph.getRoots());
-            this.main.setTrees(firstTreeBuilder.buildTree(), secondTreeBuilder.buildTree());
+            this.main.setTrees(firstTreeBuilder.buildTree(main.areUnmappedConceptsVisible(), main.areUnmappedConceptsWithSynsetsVisible()), secondTreeBuilder.buildTree(main.areUnmappedConceptsVisible(), main.areUnmappedConceptsWithSynsetsVisible()));
             int similarityCount = myGraphModelBuilder.getSimilarity();
             this.main.log(String.format(
                     "Comparing ontology %s (blue) to %s (green).<br>(Absolutely equal concepts are colored orange)<br>The similarity is %d %%.",

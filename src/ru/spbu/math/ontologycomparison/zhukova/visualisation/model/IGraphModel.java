@@ -12,6 +12,8 @@ import java.util.Set;
  */
 public interface IGraphModel {
 
+    void addListener(IVertexListener listener);
+
     void addVertex(IVertex v);
 
     void removeVertex(IVertex v);
@@ -49,4 +51,16 @@ public interface IGraphModel {
     void showNoParentVertices(boolean show);
 
     void showSingleVerticesWithSuchNamedParent(boolean show, String name);
+
+    void removeSuperVertex(SuperVertex vertex);
+
+
+    public static interface IVertexListener {
+
+        void update();
+
+        void vertexRemoved(IVertex... vertex);
+
+        void vertexAdded(IVertex... vertex);
+    }
 }

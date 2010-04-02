@@ -8,6 +8,7 @@ import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.IGraph
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class GraphModel implements IGraphModel {
     private final Set<SimpleVertex> simpleVertices = new HashSet<SimpleVertex>();
@@ -16,14 +17,14 @@ public class GraphModel implements IGraphModel {
     private Map<?, SuperVertex> nameToSuperVertex;
     private Map<?, SimpleVertex> nameToSimpleVertex;
     private final IGraphPane graphPane;
-    private final Set<Listener> listeners = new LinkedHashSet<Listener>();
+    private final Set<IVertexListener> listeners = new LinkedHashSet<IVertexListener>();
     private Map<IOntologyConcept, SimpleVertex> conceptToVertexMap;
 
     public GraphModel(IGraphPane graphPane) {
         this.graphPane = graphPane;
     }
 
-    public void addListener(Listener listener) {
+    public void addListener(IVertexListener listener) {
         this.listeners.add(listener);
     }
 
@@ -35,19 +36,24 @@ public class GraphModel implements IGraphModel {
             this.superVertices.add((SuperVertex) v);
         }
         this.graphPane.checkPoint(v.getMaxPoint());
-        update();
+        for (IVertexListener listener : this.listeners) {
+            listener.vertexAdded(v);
+        }
     }
 
     public void removeVertex(IVertex vertex) {
         vertex.setHidden(true);
+        List<IVertex> toRemove = new ArrayList<IVertex>();
         if (vertex instanceof SimpleVertex) {
             this.simpleVertices.remove(vertex);
+            toRemove.add(vertex);
         } else if (vertex instanceof SuperVertex) {
             this.superVertices.remove(vertex);
+            toRemove.add(vertex);
+            toRemove.addAll(((SuperVertex) vertex).getSimpleVertices());
         }
-        for (Listener listener : this.listeners) {
-            listener.vertexRemoved(vertex);
-            listener.update();
+        for (IVertexListener listener : this.listeners) {
+            listener.vertexRemoved(toRemove.toArray(new IVertex[toRemove.size()]));
         }
     }
 
@@ -63,7 +69,7 @@ public class GraphModel implements IGraphModel {
     }
 
     public void update() {
-        for (Listener listener : this.listeners) {
+        for (IVertexListener listener : this.listeners) {
             listener.update();
         }
     }
@@ -126,15 +132,17 @@ public class GraphModel implements IGraphModel {
             if (vertex.getSuperVertex() == null) {
                 vertex.setHidden(!show);
                 if (!show) {
-                    for (Listener listener : this.listeners) {
+                    for (IVertexListener listener : this.listeners) {
                         listener.vertexRemoved(vertex);
                     }
                 } else {
                     this.graphPane.checkPoint(vertex.getMaxPoint());
+                    for (IVertexListener listener : this.listeners) {
+                        listener.vertexAdded(vertex);
+                    }
                 }
             }
         }
-        update();
     }
 
     public void showSingleVerticesWithSuchNamedParent(boolean show, String name) {
@@ -144,22 +152,29 @@ public class GraphModel implements IGraphModel {
                 if (vertexSet != null && vertexSet.size() <= 1) {
                     vertex.setHidden(!show);
                     if (!show) {
-                        for (Listener listener : this.listeners) {
-                            listener.vertexRemoved(vertex);
+                        for (IVertexListener listener : this.listeners) {
+                            List<IVertex> removed = new ArrayList<IVertex>(vertex.getSimpleVertices());
+                            removed.add(vertex);
+                            listener.vertexRemoved(removed.toArray(new IVertex[removed.size()]));
                         }
                     } else {
                         this.graphPane.checkPoint(vertex.getMaxPoint());
+                        for (IVertexListener listener : this.listeners) {
+                            List<IVertex> added = new ArrayList<IVertex>(vertex.getSimpleVertices());
+                            added.add(vertex);
+                            listener.vertexAdded(added.toArray(new IVertex[added.size()]));
+                        }
                     }
                 }
             }
         }
-        update();
     }
 
-    public static interface Listener {
-
-        void update();
-
-        void vertexRemoved(IVertex vertex);
+    public void removeSuperVertex(SuperVertex vertex) {
+        for (SimpleVertex simple : vertex.getSimpleVertices()) {
+            simple.removeSuperVertex();
+        }
+        this.superVertices.remove(vertex);
+        update();
     }
 }

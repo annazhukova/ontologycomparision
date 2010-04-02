@@ -4,6 +4,7 @@ import ru.spbu.math.ontologycomparison.zhukova.logic.ILogger;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.SimilarityReason;
 import ru.spbu.math.ontologycomparison.zhukova.util.IPair;
+import ru.spbu.math.ontologycomparison.zhukova.util.impl.SetHashTable;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IGraphModel;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.GraphModel;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.GraphPane;
@@ -20,7 +21,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
-import java.util.Map;
 
 /**
  * @author Anna R. Zhukova
@@ -34,10 +34,10 @@ public class Main implements ILogger {
     private final GraphPane graphPane = new GraphPane();
     private final JScrollPane graphScrollPane = new JScrollPane(this.graphPane,
             ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    private final JPanel infoPanel = new JPanel();
+    private final JPanel infoPanel = new JPanel(new BorderLayout());
     private final JScrollPane infoScrollPane = new JScrollPane(this.infoPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    private final JPanel logPanel = new JPanel();
+    private final JPanel logPanel = new JPanel(new BorderLayout());
     private final JSplitPane logSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, logPanel, infoScrollPane);
     private JLabel logLabel;
     private JCheckBox showSingleSynsetVertexCheckBox;
@@ -47,13 +47,12 @@ public class Main implements ILogger {
     private final TreeComponent trees = new TreeComponent();
     private final JPanel checkBoxPanel = new JPanel();
     private final JSplitPane visibilitySettingsSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, trees, checkBoxPanel);
-    private final JSplitPane mySplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, visibilitySettingsSplitPane, graphScrollPane);
-    private final JSplitPane general = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mySplitPane, logSplitPane);
+    private final JSplitPane componentSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, visibilitySettingsSplitPane, graphScrollPane);
+    private final JSplitPane general = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, componentSplitPane, logSplitPane);
 
 
-    public void setTrees(IPair<JTree, Map<IOntologyConcept, CheckNode>> firstTree, IPair<JTree, Map<IOntologyConcept, CheckNode>> secondTree) {
+    public void setTrees(IPair<JTree, SetHashTable<IOntologyConcept, CheckNode>> firstTree, IPair<JTree, SetHashTable<IOntologyConcept, CheckNode>> secondTree) {
         trees.setTrees(firstTree, secondTree);
-        frame.getContentPane().repaint();
     }
 
 
@@ -98,7 +97,7 @@ public class Main implements ILogger {
 
     private void initInfoPanel(Dimension size) {
         final JLabel mergedEntityStatisticsLabel = new JLabel("");
-        infoPanel.add(mergedEntityStatisticsLabel);
+        infoPanel.add(mergedEntityStatisticsLabel, BorderLayout.CENTER);
         this.graphPane.addListener(new GraphPane.SuperVertexSelectionListener() {
             public void selectionCleared() {
                 updateLabel("<html>", mergedEntityStatisticsLabel, infoPanel, true);
@@ -114,9 +113,8 @@ public class Main implements ILogger {
 
     private void initLogPanel(Dimension size) {
         this.logLabel = new JLabel("<html><p>Press \"Open\" to select ontologies to compare<p>");
-        this.logPanel.add(this.logLabel);
+        this.logPanel.add(this.logLabel, BorderLayout.CENTER);
         this.logPanel.setMaximumSize(size);
-        this.logPanel.setPreferredSize(size);
     }
 
     private void updateLabel(String message, JLabel label, JPanel panel, boolean clear) {
@@ -134,9 +132,9 @@ public class Main implements ILogger {
         this.graphScrollPane.setSize(this.frame.getSize());
         this.graphScrollPane.setPreferredSize(this.frame.getPreferredSize());
 
-        mySplitPane.setSize(frame.getSize());
-        mySplitPane.setPreferredSize(frame.getPreferredSize());
-        mySplitPane.setDividerLocation(0.7);
+        componentSplitPane.setSize(frame.getSize());
+        componentSplitPane.setPreferredSize(frame.getPreferredSize());
+        componentSplitPane.setDividerLocation(0.7);
         visibilitySettingsSplitPane.setDividerLocation(0.5);
         logSplitPane.setDividerLocation(0.5);
         logPanel.setMaximumSize(logPanel.getPreferredSize());
@@ -146,7 +144,7 @@ public class Main implements ILogger {
         //this.progressFrame.setVisible(false);
         graphPane.setGraphModel(graphModel);
         trees.setGraphPane(graphPane);
-        mySplitPane.setDividerLocation(0.7);
+        componentSplitPane.setDividerLocation(0.7);
         visibilitySettingsSplitPane.setDividerLocation(0.8);
         logSplitPane.setDividerLocation(0.2);
         general.setDividerLocation(0.7);
@@ -201,8 +199,8 @@ public class Main implements ILogger {
 
     private void initCheckBoxPanel() {
         this.checkBoxPanel.setLayout(new GridLayout(3, 1));
-        this.showUnmappedConceptsCheckBox = new JCheckBox("Show unmapped concepts with no synsets");
-        showUnmappedConceptsCheckBox.setSelected(true);
+        this.showUnmappedConceptsCheckBox = new JCheckBox("Show unmapped concepts");
+        showUnmappedConceptsCheckBox.setSelected(false);
         showUnmappedConceptsCheckBox.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -215,8 +213,8 @@ public class Main implements ILogger {
         });
         checkBoxPanel.add(showUnmappedConceptsCheckBox);
 
-        this.showSingleSynsetVertexCheckBox = new JCheckBox("Show unmapped concepts with synsets");
-        showSingleSynsetVertexCheckBox.setSelected(true);
+        this.showSingleSynsetVertexCheckBox = new JCheckBox("Show concepts mapped to WordNet only");
+        showSingleSynsetVertexCheckBox.setSelected(false);
         showSingleSynsetVertexCheckBox.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
