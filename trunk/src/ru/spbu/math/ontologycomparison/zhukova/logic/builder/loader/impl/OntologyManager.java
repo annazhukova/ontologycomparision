@@ -236,7 +236,9 @@ public class OntologyManager implements IOntologyManager {
     }
 
     public static void saveResult(OWLOntologyManager manager, OWLOntology ontology, File file) throws OWLOntologyStorageException, URISyntaxException {
-        manager.saveOntology(ontology, getOntologyFormatByFile(file), getURIForFile(file));
+        File temp = new File(ontology.getURI().getPath());
+        temp.delete();
+        manager.saveOntology(ontology, getOntologyFormatByFile(file), getURIForFile(file));         
     }
 
     private static OWLOntologyFormat getOntologyFormatByFile(File file) {

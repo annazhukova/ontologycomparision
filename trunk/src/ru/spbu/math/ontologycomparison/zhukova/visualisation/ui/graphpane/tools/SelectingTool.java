@@ -8,6 +8,7 @@ import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IVertex;
 
 import java.awt.event.MouseEvent;
 import java.awt.*;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -21,6 +22,7 @@ public class SelectingTool extends Tool {
     private static int rectangleWidth;
     private static int rectangleHeight;
     private static final SelectingTool INSTANCE = new SelectingTool();
+    private PopUpMenu popUpMenu = new PopUpMenu();
 
     private SelectingTool() {
         super();
@@ -72,7 +74,59 @@ public class SelectingTool extends Tool {
                 }
             }
             SelectingTool.left = mouseLocation;
+        } else if (e.getButton() == MouseEvent.BUTTON3) {
+            IGraphPane graphPane = Tool.getGraphPane();
+            Point mouseLocation = e.getPoint();
+            Set<IVertex> vertices = graphPane.getSelectedVertices();
+            boolean show = false;
+            Set<SuperVertex> forPopUp = new HashSet<SuperVertex>();
+            for (IVertex vertex : vertices) {
+                if (vertex instanceof SuperVertex) {
+                    forPopUp.add((SuperVertex) vertex);
+                } else if (vertex instanceof SimpleVertex) {
+                    SimpleVertex simple = (SimpleVertex) vertex;
+                    if (simple.getSuperVertex() != null) {
+                        forPopUp.add(simple.getSuperVertex());
+                    }
+                }
+                if (vertex.hitTest(mouseLocation)) {
+                    show = true;
+                }
+            }
+            if (show) {
+                showPopUp(mouseLocation, forPopUp.toArray(new SuperVertex[forPopUp.size()]));
+                return;
+            }
+            if (!SelectingTool.isOnlySuperVerticesSelection) {
+                Set<SimpleVertex> simpleVertices = graphPane.getGraphModel().getSimpleVertices();
+                for (SimpleVertex v : simpleVertices) {
+                    if (v.hitTest(mouseLocation) && v.getSuperVertex() != null) {
+                        showPopUp(mouseLocation, v.getSuperVertex());
+                        return;
+                    }
+                }
+            }
+            Set<SuperVertex> superVertices = graphPane.getGraphModel().getSuperVertices();
+            for (SuperVertex v : superVertices) {
+                /*boolean leftX = v.leftBorderTest(mouseLocation);
+                boolean rightX = v.rightBorderTest(mouseLocation);
+                boolean topY = v.topBorderTest(mouseLocation);
+                boolean bottomY = v.bottomBorderTest(mouseLocation);
+                if (leftX || rightX || topY || bottomY) {
+                    resizeOn(mouseLocation, v, leftX, rightX, topY, bottomY);
+                } else*/
+                if (v.hitTest(mouseLocation)) {
+                    showPopUp(mouseLocation, v);
+                    return;
+                }
+            }
         }
+    }
+
+    private void showPopUp(Point mouseLocation, SuperVertex... vertices) {
+        popUpMenu.setGraphPane(getGraphPane());
+        popUpMenu.setVertices(vertices);
+        popUpMenu.show(getGraphPane(), mouseLocation.x, mouseLocation.y);
     }
 
     private void resizeOn(Point mouseLocation, SuperVertex v,

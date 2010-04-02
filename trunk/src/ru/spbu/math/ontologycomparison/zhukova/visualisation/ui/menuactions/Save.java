@@ -38,19 +38,16 @@ public class Save extends AbstractAction implements Open.IListener {
         }
         this.main.log("Saving ontology");
         this.main.showProgressBar();
-        SwingWorker<Void, Void> wrkr = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
+        new Thread(new Runnable() {
+            public void run() {
                 try {
                     for (SuperVertex vertex : main.getGraphModel().getSuperVertices()) {
-                        if (!vertex.isHidden()) {
                             Set<OWLClass> owlClasses = new HashSet<OWLClass>();
                             for (SimpleVertex simple : vertex.getSimpleVertices()) {
                                 ConceptVertex conceptVertex = (ConceptVertex) simple;
                                 owlClasses.add(conceptVertex.getConcept().getOWLClass());
                             }
                             OntologyManager.addEquivalentClasses(manager, ontology, owlClasses);
-                        }
                     }
                     OntologyManager.saveResult(manager, ontology, file);
                     Save.this.main.log("Ontology saved");
@@ -71,10 +68,8 @@ public class Save extends AbstractAction implements Open.IListener {
                             "Cannot save ontology", JOptionPane.ERROR_MESSAGE);
                     e1.printStackTrace();
                 }
-                return null;
             }
-        };
-        wrkr.execute();
+        }).start();
     }
 
     public void setMain(Main main) {

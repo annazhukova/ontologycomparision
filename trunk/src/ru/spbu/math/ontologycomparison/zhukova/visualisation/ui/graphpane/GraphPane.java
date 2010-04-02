@@ -16,7 +16,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class GraphPane extends JPanel implements IGraphPane, GraphModel.Listener {
+public class GraphPane extends JPanel implements IGraphPane, IGraphModel.IVertexListener {
     private Set<IVertex> selectedVertices = new HashSet<IVertex>();
     private ITool currentTool = SelectingTool.getInstance();
     private GraphModel graphModel = new GraphModel(this);
@@ -30,8 +30,13 @@ public class GraphPane extends JPanel implements IGraphPane, GraphModel.Listener
         repaint();
     }
 
-    public void vertexRemoved(IVertex vertex) {
-        GraphPane.this.selectedVertices.remove(vertex);
+    public void vertexAdded(IVertex... vertex) {
+        repaint();
+    }
+
+    public void vertexRemoved(IVertex... vertex) {
+        GraphPane.this.selectedVertices.removeAll(Arrays.asList(vertex));
+        repaint();
     }
 
     public GraphPane() {
@@ -70,7 +75,7 @@ public class GraphPane extends JPanel implements IGraphPane, GraphModel.Listener
 
     public void selectVertex(IVertex v) {
         this.selectedVertices.add(v);
-        if (v instanceof SuperVertex) {
+        if (v instanceof SuperVertex && !v.isHidden()) {
             for (SuperVertexSelectionListener listener : this.listeners) {
                 listener.vertexSelected(v.getToolTipText());
             }

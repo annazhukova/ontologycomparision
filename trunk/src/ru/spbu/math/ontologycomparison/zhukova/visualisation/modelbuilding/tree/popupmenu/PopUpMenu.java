@@ -1,8 +1,10 @@
 package ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.tree.popupmenu;
 
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
+import ru.spbu.math.ontologycomparison.zhukova.util.impl.SetHashTable;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IGraphModel;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IVertex;
+import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.ConceptVertex;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.SimpleVertex;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.SuperVertex;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.GraphPane;
@@ -11,12 +13,12 @@ import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.tree.CheckNode;
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Anna R. Zhukova
  */
-public class PopUpMenu extends JPopupMenu implements IRepaintListener {
+public class PopUpMenu extends JPopupMenu implements IRepaintListener, IGraphModel.IVertexListener {
     private JPanel treePanel = new JPanel();
     private GraphPane graphPane;
     private JTree tree;
@@ -25,7 +27,7 @@ public class PopUpMenu extends JPopupMenu implements IRepaintListener {
     private final PopUpAction hideAll;
     private final PopUpAction showAll;
     private final PopUpAction hide;
-    private Map<IOntologyConcept, CheckNode> conceptToCheckNodeMap;
+    private SetHashTable<IOntologyConcept, CheckNode> conceptToCheckNodeMap;
     private IRepaintListener listener;
 
     public PopUpMenu() {
@@ -43,6 +45,7 @@ public class PopUpMenu extends JPopupMenu implements IRepaintListener {
 
     public void setGraphPane(GraphPane graphPane) {
         this.graphPane = graphPane;
+        graphPane.getGraphModel().addListener(this);
     }
 
     public GraphPane getGraphPane() {
@@ -112,9 +115,11 @@ public class PopUpMenu extends JPopupMenu implements IRepaintListener {
                         graphModel.addVertex(vertex);
                     }
                     for (IOntologyConcept similarConcept : ontologyConcept.getSimilarConcepts()) {
-                        CheckNode similarNode = conceptToCheckNodeMap.get(similarConcept);
-                        if (similarNode != null) {
-                            similarNode.setSelected(!hide);
+                        Set<CheckNode> similarNodes = conceptToCheckNodeMap.get(similarConcept);
+                        if (similarNodes != null) {
+                            for (CheckNode similar : similarNodes) {
+                                similar.setSelected(!hide);
+                            }
                         }
                     }
                 }
@@ -127,7 +132,7 @@ public class PopUpMenu extends JPopupMenu implements IRepaintListener {
         }
     }
 
-    public void setMap(Map<IOntologyConcept, CheckNode> conceptToCheckNodeMap) {
+    public void setTable(SetHashTable<IOntologyConcept, CheckNode> conceptToCheckNodeMap) {
         this.conceptToCheckNodeMap = conceptToCheckNodeMap;
     }
 
@@ -139,5 +144,39 @@ public class PopUpMenu extends JPopupMenu implements IRepaintListener {
 
     public void update() {
         updateTreePanel();
+    }
+
+    public void vertexAdded(IVertex... vertices) {
+        for (IVertex vertex : vertices) {
+            if (vertex instanceof ConceptVertex) {
+                IOntologyConcept ontologyConcept = ((ConceptVertex) vertex).getConcept();
+                Set<CheckNode> checkNodes = conceptToCheckNodeMap.get(ontologyConcept);
+                if (checkNodes != null) {
+                    for (CheckNode node : checkNodes) {
+                        node.setSelected(true);
+                        if (listener != null) {
+                            listener.update();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void vertexRemoved(IVertex... vertices) {
+        for (IVertex vertex : vertices) {
+            if (vertex instanceof ConceptVertex) {
+                IOntologyConcept ontologyConcept = ((ConceptVertex) vertex).getConcept();
+                Set<CheckNode> checkNodes = conceptToCheckNodeMap.get(ontologyConcept);
+                if (checkNodes != null) {
+                    for (CheckNode node : checkNodes) {
+                        node.setSelected(false);
+                        if (listener != null) {
+                            listener.update();
+                        }
+                    }
+                }
+            }
+        }
     }
 }

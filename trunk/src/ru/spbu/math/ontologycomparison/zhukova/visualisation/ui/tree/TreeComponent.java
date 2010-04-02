@@ -2,6 +2,7 @@ package ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.tree;
 
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.util.IPair;
+import ru.spbu.math.ontologycomparison.zhukova.util.impl.SetHashTable;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IArcFilter;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.tree.popupmenu.PopUpMenu;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.GraphPane;
@@ -12,7 +13,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
-import java.util.Map;
 
 /**
  * @author Anna Zhukova
@@ -34,11 +34,12 @@ public class TreeComponent extends JSplitPane {
         setDividerLocation(0.5);
     }
 
-    public void setTrees(IPair<JTree, Map<IOntologyConcept, CheckNode>> firstPair, IPair<JTree, Map<IOntologyConcept, CheckNode>> secondPair) {
+    public void setTrees(IPair<JTree, SetHashTable<IOntologyConcept, CheckNode>> firstPair, IPair<JTree, SetHashTable<IOntologyConcept, CheckNode>> secondPair) {
         left.setTree(firstPair.getFirst(), secondPair.getSecond());
         right.setTree(secondPair.getFirst(), firstPair.getSecond());
         left.popUpMenu.setListener(right.popUpMenu);
         right.popUpMenu.setListener(left.popUpMenu);
+        repaint();
     }
 
     private static class TreePane extends JScrollPane {
@@ -51,14 +52,14 @@ public class TreeComponent extends JSplitPane {
         private JTree tree;
         private PopUpMenu popUpMenu = new PopUpMenu();
 
-        public void setTree(final JTree tree, final Map<IOntologyConcept, CheckNode> map) {
+        public void setTree(final JTree tree, final SetHashTable<IOntologyConcept, CheckNode> table) {
             if (this.tree != null) {
                 panel.remove(this.tree);
             }
             this.tree = tree;
             panel.add(this.tree, BorderLayout.CENTER);
             popUpMenu.setTree(this.tree, panel);
-            popUpMenu.setMap(map);
+            popUpMenu.setTable(table);
             tree.addMouseListener(new MouseAdapter() {
 
                 public void mousePressed(MouseEvent e) {
@@ -90,6 +91,7 @@ public class TreeComponent extends JSplitPane {
                 }
             });
             panel.repaint();
+            scrollPane.repaint();
         }
 
         public void setGraphPane(final GraphPane graphPane) {

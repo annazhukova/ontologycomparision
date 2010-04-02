@@ -43,7 +43,7 @@ public abstract class Vertex implements IVertex {
     }
 
     public boolean hitTest(Point p) {
-        return (p.x >= (getAbsoluteLocation().x))
+        return (!isHidden() && p.x >= (getAbsoluteLocation().x))
                 && (p.x <= (getAbsoluteLocation().x + getWidth()))
                 && (p.y >= (getAbsoluteLocation().y))
                 && (p.y <= (getAbsoluteLocation().y + getHeight()));

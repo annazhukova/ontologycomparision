@@ -6,7 +6,7 @@ import java.awt.*;
 
 
 public abstract class SimpleVertex extends Vertex {
-    private final SuperVertex superVertex;
+    private SuperVertex superVertex;
     private final Color color;
 
     public SimpleVertex(SuperVertex superVertex, Color color) {
@@ -94,5 +94,10 @@ public abstract class SimpleVertex extends Vertex {
 
     public static int getVertexHeight() {
         return Vertex.LETTER_HEIGHT + 2 * LABEL_GAP + 2 * Y_GAP;
+    }
+
+    public void removeSuperVertex() {
+        setLocation(getX() + superVertex.getX(), getY() + superVertex.getY());
+        this.superVertex = null;
     }
 }

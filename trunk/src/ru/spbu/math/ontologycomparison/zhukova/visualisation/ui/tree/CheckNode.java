@@ -19,8 +19,8 @@ public class CheckNode extends DefaultMutableTreeNode {
         this.color = color;
     }
 
-    public CheckNode(Object userObject, Color color) {
-         this(userObject, true, true, color);
+    public CheckNode(Object userObject, boolean isSelected, Color color) {
+         this(userObject, true, isSelected, color);
     }
 
     public void setSelected(boolean isSelected, int selectionMode, ArrayList<CheckNode> nodes) {
