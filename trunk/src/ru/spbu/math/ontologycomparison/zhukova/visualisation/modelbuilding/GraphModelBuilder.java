@@ -79,6 +79,10 @@ public class GraphModelBuilder implements IGraphModelBuilder {
                            Map<URI, SimpleVertex> conceptNameToVertexMap, Map<IOntologyConcept, SimpleVertex> conceptToVertexMap, boolean showUnmapped, boolean showUnmappedWithSynsets, int y) {
         int currentX = 0;
         for (IOntologyConcept mainConcept : layer) {
+            if (currentX > FRAME_WIDTH) {
+                y += SuperVertex.getVertexHeight() + 4 * Y_GAP;
+                currentX = 0;
+            }
             Set<IOntologyConcept> conceptSet = new HashSet<IOntologyConcept>(mainConcept.getConceptToReason().keySet());
             conceptSet.add(mainConcept);
             SuperVertex superVertex = keyToSuperVertexMap.get(conceptSet);
@@ -101,7 +105,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
             superVertexWidth = Math.max(superVertexWidth, superLabel.length() * Vertex.LETTER_WIDTH + 2 * X_GAP);
             boolean hidden = isHidden(showUnmapped, showUnmappedWithSynsets, mainConcept, superLabel);
             if (!superLabel.equals(SimilarityReason.NO.name())) {
-                superVertex = createSuperVertex(graphModel, currentX, y, superLabel, superVertexWidth + X_GAP, mainConcept, synset);
+                superVertex = createSuperVertex(graphModel, currentX, y, superLabel, superVertexWidth + X_GAP, mainConcept, conceptSet, synset);
                 if (hidden) {
                     superVertex.setHidden(true);
                 }
@@ -142,18 +146,22 @@ public class GraphModelBuilder implements IGraphModelBuilder {
                 !showUnmappedWithSynsets && superLabel.equals(SimilarityReason.WORDNET.name()) && !mainConcept.hasMappedConcepts();
     }
 
-    private String createToolTip(IOntologyConcept mainConcept, Synset synset) {
+    private String createToolTip(IOntologyConcept mainConcept, Set<IOntologyConcept> conceptSet, Synset synset) {
         StringBuilder result = new StringBuilder("");
         if (synset == null && !mainConcept.hasMappedConcepts()) {
             return null;
         }
+        result.append("CONCEPTS: <ul>");
+        for (IOntologyConcept concept : conceptSet) {
+            result.append("<li>").append(concept.getMainLabel()).append("</li>");
+        }
+        result.append("</ul>");
         if (synset != null) {
-            result.append("<p>").append(synset.getDefinition()).append("</p>");
+            result.append("<p>SYNSET: ").append(synset.getDefinition()).append("</p>");
         }
         if (mainConcept.hasMappedConcepts()) {
-            result.append("<ul>");
-            for (Map.Entry<String, Integer> reason :
-                    mainConcept.getConceptToReason().values().iterator().next().entrySet()) {
+            result.append("MAPPING REASONS: <ul>");
+            for (Map.Entry<String, Integer> reason : mainConcept.getConceptToReason().values().iterator().next().entrySet()) {
                 result.append("<li>").append(reason.getKey()).append(" (").append(reason.getValue()).append(")");
             }
             result.append("</ul>");
@@ -174,8 +182,8 @@ public class GraphModelBuilder implements IGraphModelBuilder {
 
     private SuperVertex createSuperVertex(IGraphModel graphModel,
                                           int currentX, int currentY, String superLabel, int superVertexWidth,
-                                          IOntologyConcept mainConcept, Synset synset) {
-        String toolTip = createToolTip(mainConcept, synset);
+                                          IOntologyConcept mainConcept, Set<IOntologyConcept> conceptSet, Synset synset) {
+        String toolTip = createToolTip(mainConcept, conceptSet, synset);
         SuperVertex superVertex = new SuperVertex(new Point(currentX, currentY), superLabel, toolTip);
         initVertex(graphModel, superVertex);
         superVertex.setWidth(superVertexWidth);
