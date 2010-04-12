@@ -74,7 +74,6 @@ public class OntologyManager implements IOntologyManager {
     public static synchronized OWLOntology saveOntologies(OWLOntologyManager manager, OWLOntology... ontologies) throws OWLOntologyChangeException, OWLOntologyCreationException, OWLOntologyStorageException, IOException, URISyntaxException {
         Set<OWLOntology> ontologySet = new HashSet<OWLOntology>((Arrays.asList(ontologies)));
         File temp = File.createTempFile("ontology", ".owl");
-        System.out.println(temp.getAbsolutePath());
         return manager.createOntology(getURIForFile(temp), ontologySet);
     }
 
@@ -90,7 +89,7 @@ public class OntologyManager implements IOntologyManager {
      * @param propertyVisitors  To visit properties.
      * @return Map ontology's been loaded into.
      */
-    public IOntologyGraph load(IClassAnnotationVisitor<IOntologyConcept> annotationVisitor, IPropertyVisitor<IOntologyConcept>... propertyVisitors) {
+    public IOntologyGraph load(IClassAnnotationVisitor<IOntologyConcept> annotationVisitor, IPropertyVisitor<IOntologyConcept>... propertyVisitors) throws OWLReasonerException, OWLTransformationException {
         Map<URI, IOntologyConcept> uriToConcept = new HashMap<URI, IOntologyConcept>();
         Map<URI, IOntologyProperty> uriToProperty = new HashMap<URI, IOntologyProperty>();
         IHashTable<String, IOntologyConcept, Set<IOntologyConcept>> labelToConcept = new SetHashTable<String, IOntologyConcept>();
@@ -108,8 +107,6 @@ public class OntologyManager implements IOntologyManager {
             for (IPropertyVisitor<IOntologyConcept> visitor : propertyVisitors) {
                 loadProperties(visitor, uriToConcept);
             }
-        } catch (OWLReasonerException e) {
-            throw new RuntimeException(e);
         } finally {
             session.releaseSession();
         }
@@ -163,23 +160,19 @@ public class OntologyManager implements IOntologyManager {
      * and gives them to the visitor
      */
 
-    private void loadProperties(IPropertyVisitor<IOntologyConcept> visitor, Map<URI, IOntologyConcept> concepts) {
+    private void loadProperties(IPropertyVisitor<IOntologyConcept> visitor, Map<URI, IOntologyConcept> concepts) throws OWLTransformationException {
 
         for (OWLClass clazz : this.getOntology().getReferencedClasses()) {
             URI uri = clazz.getURI();
             IOntologyConcept concept = concepts.get(uri);
             Set<OWLRestriction> owlRestrictions;
-            try {
-                owlRestrictions = OWLUtils.keep(this.getOntology(), clazz);
-                for (OWLRestriction restriction : owlRestrictions) {
-                    OWLPropertyExpression property = restriction.getProperty();
-                    for (OWLClass friend : restriction.getClassesInSignature()) {
-                        URI friendId = friend.getURI();
-                        visitor.inRelationship(concept, concepts.get(friendId), property);
-                    }
+            owlRestrictions = OWLUtils.keep(this.getOntology(), clazz);
+            for (OWLRestriction restriction : owlRestrictions) {
+                OWLPropertyExpression property = restriction.getProperty();
+                for (OWLClass friend : restriction.getClassesInSignature()) {
+                    URI friendId = friend.getURI();
+                    visitor.inRelationship(concept, concepts.get(friendId), property);
                 }
-            } catch (OWLTransformationException e1) {
-                e1.printStackTrace();
             }
         }
     }
@@ -238,7 +231,7 @@ public class OntologyManager implements IOntologyManager {
     public static void saveResult(OWLOntologyManager manager, OWLOntology ontology, File file) throws OWLOntologyStorageException, URISyntaxException {
         File temp = new File(ontology.getURI().getPath());
         temp.delete();
-        manager.saveOntology(ontology, getOntologyFormatByFile(file), getURIForFile(file));         
+        manager.saveOntology(ontology, getOntologyFormatByFile(file), getURIForFile(file));
     }
 
     private static OWLOntologyFormat getOntologyFormatByFile(File file) {

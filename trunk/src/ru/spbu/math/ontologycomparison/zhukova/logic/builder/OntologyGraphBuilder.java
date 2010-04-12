@@ -1,5 +1,7 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.builder;
 
+import net.sourceforge.fluxion.utils.OWLTransformationException;
+import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.model.OWLOntology;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.IOntologyManager;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.ClassAnnotationVisitor;
@@ -18,13 +20,13 @@ public class OntologyGraphBuilder {
     private IOntologyManager ontologyManager;
 
     public IOntologyGraph build(String ontologyPath)
-            throws FileNotFoundException {
+            throws FileNotFoundException, OWLTransformationException, OWLReasonerException {
         ontologyManager = new OntologyManager(new FileInputStream(ontologyPath));
         return ontologyManager.load(new ClassAnnotationVisitor(), new PropertyVisitor());
     }
 
     public IOntologyGraph build(File ontologyFile)
-            throws FileNotFoundException {
+            throws FileNotFoundException, OWLTransformationException, OWLReasonerException {
         ontologyManager = new OntologyManager(ontologyFile);
         return ontologyManager.load(new ClassAnnotationVisitor(), new PropertyVisitor());
     }
