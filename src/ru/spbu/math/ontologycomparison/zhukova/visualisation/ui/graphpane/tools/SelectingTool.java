@@ -108,13 +108,6 @@ public class SelectingTool extends Tool {
             }
             Set<SuperVertex> superVertices = graphPane.getGraphModel().getSuperVertices();
             for (SuperVertex v : superVertices) {
-                /*boolean leftX = v.leftBorderTest(mouseLocation);
-                boolean rightX = v.rightBorderTest(mouseLocation);
-                boolean topY = v.topBorderTest(mouseLocation);
-                boolean bottomY = v.bottomBorderTest(mouseLocation);
-                if (leftX || rightX || topY || bottomY) {
-                    resizeOn(mouseLocation, v, leftX, rightX, topY, bottomY);
-                } else*/
                 if (v.hitTest(mouseLocation)) {
                     showPopUp(mouseLocation, v);
                     return;
