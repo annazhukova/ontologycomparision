@@ -57,69 +57,74 @@ public class Open extends AbstractAction {
         for (IListener listener : listeners) {
             listener.openCalled();
         }
-
-
         main.showProgressBar();
         new Thread(new Runnable() {
             public void run() {
                 try {
                     buildGraph(firstOwl, secondOwl);
                     Open.this.main.setIsChanged(true);
-                } catch (IOException e1) {
-                    Open.this.main.hideProgressBar();
-                    JOptionPane.showMessageDialog(Open.this.main.getFrame(), "Cannot open file",
-                            "Cannot open file", JOptionPane.ERROR_MESSAGE);
-                    e1.printStackTrace();
-                } catch (Exception e1) {
-                    Open.this.main.hideProgressBar();
-                    JOptionPane.showMessageDialog(Open.this.main.getFrame(), e1.getMessage(),
-                            "Cannot load ontology", JOptionPane.ERROR_MESSAGE);
-                    e1.printStackTrace();
+                } catch (Throwable e1) {
+                    handleException(e1);
                 }
             }
         }).start();
     }
 
-    private void buildGraph(final File firstOwl, final File secondOwl) throws IOException {
+    private void handleException(Throwable e1) {
+        this.main.hideProgressBar();
+        JOptionPane.showMessageDialog(this.main.getFrame(), String.format("Cannot open file: %s", e1.getMessage()),
+                "Cannot open file", JOptionPane.ERROR_MESSAGE);
+        e1.printStackTrace();
+    }
+
+    private void buildGraph(final File firstFile, final File secondFile) throws IOException {
         try {
-            final OntologyGraphBuilder firstBuilder = new OntologyGraphBuilder();
-            /*SwingWorker<IOntologyGraph, Void> firstOntologyLoader = new SwingWorker<IOntologyGraph, Void>() {
-                @Override
-                protected IOntologyGraph doInBackground() throws Exception {
-                    Open.this.main.log(String.format("Loading %s...", firstOwl.getName()));
-                    return firstBuilder.build(firstOwl);
+            this.main.log(String.format("Loading %s...", firstFile.getName()));
+            final OntologyGraphBuilder firstGraphBuilder = new OntologyGraphBuilder();
+            final IOntologyGraph[] firstOntologyGraph = {null};
+            Thread firstGraphThread = new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        firstOntologyGraph[0] = firstGraphBuilder.build(firstFile);
+                    } catch (Throwable e1) {
+                        handleException(e1);
+                    }
                 }
-            };
-            firstOntologyLoader.execute();*/
-            Open.this.main.log(String.format("Loading %s...", firstOwl.getName()));
-            IOntologyGraph firstGraph = firstBuilder.build(firstOwl);//firstOntologyLoader.get();
-            this.main.log(String.format("Loading %s...", secondOwl.getName()));
-            OntologyGraphBuilder secondBuilder = new OntologyGraphBuilder();
-            IOntologyGraph secondGraph = secondBuilder.build(secondOwl);
+            });
+            firstGraphThread.start();
+            final OntologyGraphBuilder secondGraphBuilder = new OntologyGraphBuilder();
+            Open.this.main.log(String.format("Loading %s...", secondFile.getName()));
+            IOntologyGraph secondOntologyGraph = secondGraphBuilder.build(secondFile);
+            try {
+                firstGraphThread.join();
+            } catch (InterruptedException e) {
+                // ignore;
+            }
+            if (firstOntologyGraph[0] == null) {
+                return;
+            }
             this.main.log("Merging ontologies...");
             final IGraphModelBuilder myGraphModelBuilder =
-                    new GraphModelBuilder(firstGraph, secondGraph, this.main);
+                    new GraphModelBuilder(firstOntologyGraph[0], secondOntologyGraph, this.main);
             this.main.log("Visualising ontologies...");
             GraphModel graphModel = myGraphModelBuilder.buildGraphModel(main.getGraphPane(), main.areUnmappedConceptsVisible(), main.areUnmappedConceptsWithSynsetsVisible());
             OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-            OWLOntology result = OntologyManager.saveOntologies(manager, firstBuilder.getOntology(), secondBuilder.getOntology());
+            OWLOntology result = OntologyManager.saveOntologies(manager, firstGraphBuilder.getOntology(), secondGraphBuilder.getOntology());
             for (IListener listener : listeners) {
                 listener.openDone(manager, result);
             }
             this.main.setGraphModel(graphModel);
-            ITreeBuilder firstTreeBuilder = new TreeBuilder(firstOwl.getName(), firstGraph.getRoots());
-            ITreeBuilder secondTreeBuilder = new TreeBuilder(secondOwl.getName(), secondGraph.getRoots());
+            ITreeBuilder firstTreeBuilder = new TreeBuilder(firstFile.getName(), firstOntologyGraph[0].getRoots());
+            ITreeBuilder secondTreeBuilder = new TreeBuilder(secondFile.getName(), secondOntologyGraph.getRoots());
             this.main.setTrees(firstTreeBuilder.buildTree(main.areUnmappedConceptsVisible(), main.areUnmappedConceptsWithSynsetsVisible()), secondTreeBuilder.buildTree(main.areUnmappedConceptsVisible(), main.areUnmappedConceptsWithSynsetsVisible()));
             int similarityCount = myGraphModelBuilder.getSimilarity();
             this.main.log(String.format(
                     "Comparing ontology %s (blue) to %s (green).<br>(Absolutely equal concepts are colored orange)<br>The similarity is %d %%.",
-                    firstOwl.getName(), secondOwl.getName(), similarityCount)
+                    firstFile.getName(), secondFile.getName(), similarityCount)
             );
             this.main.hideProgressBar();
-        } catch (Exception e) {
-            this.main.hideProgressBar();
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this.main.getFrame(), e.getMessage(), "Cannot load ontologies", JOptionPane.ERROR_MESSAGE);
+        } catch (Throwable e) {
+            handleException(e);
         }
     }
 

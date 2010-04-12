@@ -1,6 +1,8 @@
 package ru.spbu.math.ontologycomparison.zhukova;
 
 import junit.framework.TestCase;
+import net.sourceforge.fluxion.utils.OWLTransformationException;
+import org.semanticweb.owl.inference.OWLReasonerException;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.IOntologyManager;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.OntologyManager;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.ClassAnnotationVisitor;
@@ -20,16 +22,16 @@ public class TestOwl extends TestCase {
         this.loader = new OntologyManager(new FileInputStream(OntologyTestConstants.ONTOPL_URL));
     }
 
-    public void testItLoadsAnything() {
+    public void testItLoadsAnything() throws OWLTransformationException, OWLReasonerException {
         loader.load(new ClassAnnotationVisitor());
     }
 
-    public void testLoadedConceptCount() {
+    public void testLoadedConceptCount() throws OWLTransformationException, OWLReasonerException {
         Collection<IOntologyConcept> result = loader.load(new ClassAnnotationVisitor()).getConcepts();
         assertEquals(OntologyTestConstants.ONTO_PL_CONCEPTS_COUNT, result.size());
     }
 
-    public void testLoadedContent() {
+    public void testLoadedContent() throws OWLTransformationException, OWLReasonerException {
         Collection<IOntologyConcept> result = loader.load(new ClassAnnotationVisitor()).getConcepts();
         for (IOntologyConcept concept : result) {
             if (concept.getLabelCollection().contains(OntologyTestConstants.JAVA)) {
