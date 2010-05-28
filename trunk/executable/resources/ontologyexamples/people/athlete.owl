@@ -1,0 +1,46 @@
+<rdf:RDF xmlns="http://www.mindswap.org/2004/terrorOnt.owl#"
+xmlns:owl="http://www.w3.org/2002/07/owl#" 
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+
+<owl:DatatypeProperty rdf:ID="weight">
+<rdfs:domain rdf:resource="#Person"/></owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:ID="eyeColor">
+<rdfs:domain rdf:resource="#Person"/></owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:ID="height">
+<rdfs:domain rdf:resource="#Person"/></owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:ID="hairColor">
+<rdfs:domain rdf:resource="#Person"/></owl:DatatypeProperty>
+
+<owl:ObjectProperty rdf:ID="plays">
+<rdfs:range rdf:resource="#Sport"/>
+<rdfs:domain rdf:resource="#Person"/></owl:ObjectProperty>
+
+<owl:Class rdf:ID="Athlete"/>
+<owl:Class rdf:ID="MaleAthlete">
+<rdfs:subClassOf rdf:resource="#Athlete"/>
+<rdfs:subClassOf rdf:resource="#Male"/></owl:Class>
+
+<owl:Class rdf:ID="FemaleAthlete">
+<rdfs:subClassOf rdf:resource="#Female"/>
+
+<rdfs:subClassOf rdf:resource="#Athlete"/></owl:Class>
+
+<owl:Class rdf:ID="Baseball">
+<rdfs:subClassOf rdf:resource="#Sport"/></owl:Class>
+<owl:Class rdf:ID="Football">
+<rdfs:subClassOf rdf:resource="#Sport"/></owl:Class>
+<owl:Class rdf:ID="Sport"/>
+<owl:Class rdf:ID="Male">
+<rdfs:subClassOf rdf:resource="#Person"/></owl:Class>
+<owl:Class rdf:ID="Female">
+<rdfs:subClassOf rdf:resource="#Person"/></owl:Class>
+<owl:Class rdf:ID="Person"/>
+
+
+</rdf:RDF>
+
