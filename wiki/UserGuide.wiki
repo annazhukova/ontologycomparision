@@ -1,7 +1,6 @@
-#User Guide
-  
+ 
   # Press Open button and select ontologies to compare
-  [http://code.google.com/p/ontologycomparision/source/browse/trunk/screenshots/open.png]
+  [http://code.google.com/p/ontologycomparision/source/browse/trunk/screenshots/open.png http://code.google.com/p/ontologycomparision/source/browse/trunk/screenshots/open.png]
   [http://code.google.com/p/ontologycomparision/source/browse/trunk/screenshots/select.png]
   # Select classes to show in the ontology trees in the left
   [http://code.google.com/p/ontologycomparision/source/browse/trunk/screenshots/tool.png]
