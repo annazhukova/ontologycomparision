@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog id="file:/C:/Users/sony/Documents/MM/Онтологии/svn/resources/ontologyexamples/programming/" prefer="public" xml:base="file:/C:/Users/sony/Documents/MM/Онтологии/svn/resources/ontologyexamples/programming/" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <uri name="http://www.owl-ontologies.com/OntologyPL.owl" uri="OntoJava.owl"/>
+    <uri name="http://www.owl-ontologies.com/Ontology1265394254.owl" uri="OntoJavaCSharp.owl"/>
+    <uri name="http://www.owl-ontologies.com/Ontology1265393898.owl" uri="OntoPL.owl"/>
+    <uri name="http://www.owl-ontologies.com/Ontology1265394087.owl" uri="OntoPLFull.owl"/>
+</catalog>

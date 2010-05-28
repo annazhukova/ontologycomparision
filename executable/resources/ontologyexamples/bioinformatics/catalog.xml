@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog id="file:/C:/Users/sony/Documents/MM/Онтологии/svn/resources/ontologyexamples/bioinformatics/" prefer="public" xml:base="file:/C:/Users/sony/Documents/MM/Онтологии/svn/resources/ontologyexamples/bioinformatics/" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <uri name="http://mouse.brain-map.org/atlas/index.html" uri="ABA_v1.0.owl"/>
+    <uri name="http://www.ifomis.org/bfo/1.1" uri="bfo-1.1.owl"/>
+    <uri name="http://bioinfo.icapture.ubc.ca/Resources/BioLinks/" uri="BioLinks.owl"/>
+    <uri name="http://www.ebi.ac.uk/efo/efo.owl#" uri="EFO_inferred_v1.5.owl"/>
+    <uri name="http://www.ebi.ac.uk/efo/" uri="EFO_inferred_v101.owl"/>
+</catalog>

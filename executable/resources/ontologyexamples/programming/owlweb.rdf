@@ -1,0 +1,502 @@
+
+<!-- Processed by Id: cwm.py,v 1.132 2003/07/18 20:33:02 timbl Exp -->
+<!--     using base file:/data/users/www/html/owl/2003/ont/owlweb.n3-->
+
+
+<rdf:RDF xmlns="http://owl.mindswap.org/2003/ont/owlweb.rdf#"
+    xmlns:daml="http://www.daml.org/2001/03/daml+oil#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:log="http://www.w3.org/2000/10/swap/log#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2000/10/XMLSchema#">
+
+    <softwareStatusType rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#Alpha">
+        <rdfs:label>Alpha</rdfs:label>
+    </softwareStatusType>
+
+
+    <softwareStatusType rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#Beta">
+        <rdfs:label>Beta</rdfs:label>
+    </softwareStatusType>
+
+    <owl:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#Bookmark">
+        <rdfs:label>Bookmark</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#linkTypeItem"/>
+    </owl:Class>
+
+    <proceduralLanguage rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#C">
+        <rdfs:label>C</rdfs:label>
+    </proceduralLanguage>
+
+    <lispBasedLanguage rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#CommonLisp">
+        <rdfs:label>Common Lisp</rdfs:label>
+    </lispBasedLanguage>
+
+    <objectOrientedLanguage rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#Cpp">
+        <rdfs:label>C++</rdfs:label>
+    </objectOrientedLanguage>
+
+    <lispBasedLanguage rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#ELisp">
+        <rdfs:label>Emacs Lisp</rdfs:label>
+    </lispBasedLanguage>
+
+    <objectOrientedLanguage rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#Java">
+        <languageLogo rdf:resource="http://www.mindswap.org/images/javalogo52x88.gif"/>
+        <rdfs:label>Java</rdfs:label>
+    </objectOrientedLanguage>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#Paper">
+        <rdfs:label>Papers</rdfs:label>
+    </daml:Class>
+
+    <proceduralLanguage rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#Perl">
+        <languageLogo rdf:resource="http://oreilly.com/animals/camel_s_flip.gif"/>
+        <rdfs:label>Perl</rdfs:label>
+    </proceduralLanguage>
+
+    <softwareStatusType rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#PreAlpha">
+        <rdfs:label>Pre-Alpha</rdfs:label>
+    </softwareStatusType>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#Project">
+        <rdfs:label>Projects</rdfs:label>
+    </daml:Class>
+
+    <logicalLanguage rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#Prolog">
+        <rdfs:label>Prolog</rdfs:label>
+    </logicalLanguage>
+
+    <objectOrientedLanguage rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#Python">
+        <languageLogo rdf:resource="http://starship.python.net/crew/mhammond/pics/kick_camels_but.gif"/>
+        <rdfs:label>Python</rdfs:label>
+    </objectOrientedLanguage>
+
+    <softwareStatusType rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#Release">
+        <rdfs:label>Release</rdfs:label>
+    </softwareStatusType>
+
+    <lispBasedLanguage rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#Scheme">
+        <rdfs:label>Scheme</rdfs:label>
+    </lispBasedLanguage>
+
+    <objectOrientedLanguage rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#SmallTalk">
+        <rdfs:label>Smalltalk</rdfs:label>
+    </objectOrientedLanguage>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#Software">
+        <rdfs:label>Software</rdfs:label>
+    </daml:Class>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#SoftwareVersion">
+        <rdfs:label>Software Version</rdfs:label>
+    </daml:Class>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#Wiki">
+        <rdfs:label>Wiki</rdfs:label>
+    </daml:Class>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#WikiRestrictionClass">
+        <rdfs:label>Restriction on Wiki</rdfs:label>
+    </daml:Class>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#WikiStatusClass">
+        <rdfs:label>Wiki Status Class</rdfs:label>
+    </daml:Class>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#addedProperty">
+        <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Property"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#advisee">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Faculty"/>
+        <rdfs:label>Advisee</rdfs:label>
+        <rdfs:range rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Student"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#advisor">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Student"/>
+        <rdfs:label>Advisor</rdfs:label>
+        <rdfs:range rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Faculty"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#affiliation">
+        <rdfs:label>Affiliated With</rdfs:label>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#almaMater">
+        <rdfs:label>Alma Mater</rdfs:label>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#authored">
+        <rdfs:label>Authored</rdfs:label>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#authoredPaper">
+        <rdfs:label>Authored Paper</rdfs:label>
+        <rdfs:range rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Paper"/>
+        <rdfs:subPropertyOf rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#authored"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#authoredSoftware">
+        <rdfs:label>Authored Software</rdfs:label>
+        <rdfs:range rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Software"/>
+        <rdfs:subPropertyOf rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#authored"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#authors">
+        <rdfs:label>Authors</rdfs:label>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/10/XMLSchema#String"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#bachelorsFrom">
+        <rdfs:label>Bachelors Degree</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#degreeFrom"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#created">
+        <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Property"/>
+        <owl:samePropertyAs rdf:resource="http://xmlns.com/foaf/0.1/made"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#creator">
+        <owl:inverseOf rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#created"/>
+        <owl:samePropertyAs rdf:resource="http://xmlns.com/foaf/0.1/maker"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#degreeFrom">
+        <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Thing"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#email">
+        <rdfs:label>Email Address</rdfs:label>
+        <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource"/>
+    </daml:Property>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#functionalLanguage">
+        <daml:subClassOf rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#programmingLanguage"/>
+        <rdfs:label>Functional Programming Language</rdfs:label>
+    </daml:Class>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#hasVersion">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Software"/>
+        <rdfs:range rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#SoftwareVersion"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#homepage">
+        <rdfs:label>Home Page</rdfs:label>
+        <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource"/>
+    </daml:Property>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#imageTypeItem">
+        <rdfs:label>Image Type Item</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#linkTypeItem"/>
+    </daml:Class>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#languageLogo">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#programmingLanguage"/>
+        <rdfs:label>logo</rdfs:label>
+        <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#link">
+        <rdfs:label>Link</rdfs:label>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/10/XMLSchema#String"/>
+    </daml:Property>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#linkTypeItem">
+        <rdfs:label>Link Type Item</rdfs:label>
+    </daml:Class>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#lispBasedLanguage">
+        <daml:subClassOf rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#functionalLanguage"/>
+        <rdfs:label>Lisp based Language</rdfs:label>
+    </daml:Class>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#logicalLanguage">
+        <daml:subClassOf rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#programmingLanguage"/>
+        <rdfs:label>Logical Programming Language</rdfs:label>
+    </daml:Class>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#mainMenuItem">
+        <rdfs:label>Main Menu Item</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#linkTypeItem"/>
+    </daml:Class>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#mastersFrom">
+        <rdfs:label>Masters Degree</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#degreeFrom"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#mindswapHomepage">
+        <rdfs:label>Mindswap Homepage</rdfs:label>
+        <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource"/>
+        <rdfs:subPropertyOf rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#homepage"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#name">
+        <rdfs:label>Name</rdfs:label>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/10/XMLSchema#String"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#newsDescription">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#newsItem"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/10/XMLSchema#String"/>
+    </daml:Property>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#newsItem">
+        <rdfs:label>News Item</rdfs:label>
+    </daml:Class>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#newsRelatesTo">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#newsItem"/>
+        <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource"/>
+    </daml:Property>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#objectOrientedLanguage">
+        <daml:subClassOf rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#programmingLanguage"/>
+        <rdfs:label>Object Oriented Programming Language</rdfs:label>
+    </daml:Class>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#officeLocation">
+        <rdfs:label>Office Location</rdfs:label>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#paperAbstract">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Paper"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#paperAuthor">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Paper"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#paperFundedBy">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Paper"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#paperPresentedAt">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Paper"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#paperProject">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Paper"/>
+        <rdfs:range rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Project"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#paperPublicationDate">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Paper"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#paperPublishedIn">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Paper"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#paperTitle">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Paper"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#paperUrl">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Paper"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#personalHomepage">
+        <rdfs:label>Personal Homepage</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#homepage"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#phdFrom">
+        <rdfs:label>PHD</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#degreeFrom"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#phone">
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#position">
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#priority">
+    </daml:Property>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#proceduralLanguage">
+        <daml:subClassOf rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#programmingLanguage"/>
+        <rdfs:label>Procedural Programming Language</rdfs:label>
+    </daml:Class>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#programmingLanguage">
+        <rdfs:label>Programming Language</rdfs:label>
+    </daml:Class>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#project">
+        <rdfs:range rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Project"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#projectDescription">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Project"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#projectEndDate">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Project"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#projectHomepage">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Project"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#projectLeader">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Project"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#projectMember">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Project"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#projectName">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Project"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#projectPaper">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Project"/>
+        <rdfs:range rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Paper"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#projectSoftware">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Project"/>
+        <rdfs:range rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Paper"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#projectStartDate">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Project"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#projectUrl">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Project"/>
+        <rdfs:range rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Paper"/>
+    </daml:Property>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#rdfSnippit">
+    </daml:Class>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#researchInterest">
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#researchproject">
+        <rdfs:range rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Project"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#softwareAuthor">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Software"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#softwareCurrentVersion">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Software"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#softwareDescription">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Software"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#softwareDescriptionUrl">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Software"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#softwareDownloadUrl">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Software"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#softwareFundedBy">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Software"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#softwareLanguage">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Software"/>
+        <rdfs:range rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#programmingLanguage"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#softwareLicense">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Software"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#softwareName">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Software"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#softwarePresentedAt">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Software"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#softwarePrimaryAuthor">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Software"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#softwareProject">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Software"/>
+        <rdfs:range rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Project"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#softwareReleaseDate">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#SoftwareVersion"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#softwareStatus">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#SoftwareVersion"/>
+        <rdfs:range rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#softwareStatusType"/>
+    </daml:Property>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#softwareStatusType">
+    </daml:Class>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#tenured">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Faculty"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#title">
+        <rdfs:label>Title</rdfs:label>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/10/XMLSchema#String"/>
+    </daml:Property>
+
+    <daml:Class rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#userCreation">
+        <rdfs:label>User Creation</rdfs:label>
+    </daml:Class>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#versionNumber">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#SoftwareVersion"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/10/XMLSchema#String"/>
+    </daml:Property>
+
+    <WikiStatusClass rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#wikiActive">
+        <rdfs:label>active</rdfs:label>
+    </WikiStatusClass>
+
+    <WikiStatusClass rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#wikiFrozen">
+        <rdfs:label>frozen</rdfs:label>
+    </WikiStatusClass>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#wikiName">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Wiki"/>
+        <rdfs:label>Wiki Name</rdfs:label>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/10/XMLSchema#String"/>
+    </daml:Property>
+
+    <WikiRestrictionClass rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#wikiPassworded">
+        <rdfs:label>password protected</rdfs:label>
+    </WikiRestrictionClass>
+
+    <WikiRestrictionClass rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#wikiPublic">
+        <rdfs:label>public</rdfs:label>
+    </WikiRestrictionClass>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#wikiRestriction">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Wiki"/>
+        <rdfs:label>Wiki restriction</rdfs:label>
+        <rdfs:range rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#WikiRestrictionClass"/>
+    </daml:Property>
+
+    <daml:Property rdf:about="http://owl.mindswap.org/2003/ont/owlweb.rdf#wikiStatus">
+        <rdfs:domain rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#Wiki"/>
+        <rdfs:label>Wiki Status</rdfs:label>
+        <rdfs:range rdf:resource="http://owl.mindswap.org/2003/ont/owlweb.rdf#WikiStatusClass"/>
+    </daml:Property>
+</rdf:RDF>
