@@ -1,0 +1,11 @@
+#User Guide
+  
+  # Press Open button and select ontologies to compare
+http://code.google.com/p/ontologycomparision/source/browse/trunk/screenshots/open.png
+http://code.google.com/p/ontologycomparision/source/browse/trunk/screenshots/select.png
+  # Select classes to show in the ontology trees in the left
+http://code.google.com/p/ontologycomparision/source/browse/trunk/screenshots/tool.png
+  # To remove mapping between classes right-click on the node
+http://code.google.com/p/ontologycomparision/source/browse/trunk/screenshots/remove.png
+  # To save merged ontology press Save button
+http://code.google.com/p/ontologycomparision/source/browse/trunk/screenshots/save.png
