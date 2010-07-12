@@ -53,6 +53,7 @@ public class SuperVertex extends Vertex {
             height = LETTER_HEIGHT + 4;
         }
         g.setFont(FONT);
+        g.setColor(SuperVertex.COLOR);
         g.drawRect(location.x, location.y,
                 width, height);
         if (isSelected) {

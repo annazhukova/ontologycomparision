@@ -94,7 +94,7 @@ public class PopUpMenu extends JPopupMenu implements IRepaintListener, IGraphMod
 
     public void visitRow(boolean select, int selectionMode, boolean hide) {
         TreePath treePath = tree.getPathForRow(row);
-        if (treePath != null) {
+        if (treePath != null && graphPane != null) {
             CheckNode node = (CheckNode) treePath.getLastPathComponent();
             ArrayList<CheckNode> nodes = new ArrayList<CheckNode>();
             node.setSelected(select, selectionMode, nodes);

@@ -45,23 +45,25 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         Map<Set<IOntologyConcept>, SuperVertex> keyToSuperVertexMap = new HashMap<Set<IOntologyConcept>, SuperVertex>();
         Map<URI, SimpleVertex> keyToSimpleVertexMap = new HashMap<URI, SimpleVertex>();
         Map<IOntologyConcept, SimpleVertex> conceptToVertexMap = new HashMap<IOntologyConcept, SimpleVertex>();
-        buildVertices(graphPane, graphModel, keyToSuperVertexMap, keyToSimpleVertexMap, conceptToVertexMap, showUnmapped, showUnmappedWithSynsets);
+        int height = buildVertices(graphPane, graphModel, keyToSuperVertexMap, keyToSimpleVertexMap, conceptToVertexMap, showUnmapped, showUnmappedWithSynsets);
         buildArcs(keyToSimpleVertexMap, graphModel);
         graphModel.setKeyToSuperVertexMap(keyToSuperVertexMap);
         graphModel.setKeyToSimpleVertexMap(keyToSimpleVertexMap);
         graphModel.setConceptToVertexMap(conceptToVertexMap);
+        graphModel.setWidth(FRAME_WIDTH);
+        graphModel.setHeight(height);
         return graphModel;
     }
 
-    private void buildVertices(GraphPane graphPane, IGraphModel graphModel, Map<Set<IOntologyConcept>, SuperVertex> keyToSuperVertexMap,
+    private int buildVertices(GraphPane graphPane, IGraphModel graphModel, Map<Set<IOntologyConcept>, SuperVertex> keyToSuperVertexMap,
                                 Map<URI, SimpleVertex> keyToSimpleVertexMap, Map<IOntologyConcept, SimpleVertex> conceptToVertexMap, boolean showUnmapped, boolean showUnmappedWithSynsets) {
         Graphics g = graphPane.getGraphics();
         Font font = Vertex.FONT;
         g.setFont(font);
-        buildLayers(this.ontologyGraph.getRoots(), Y_GAP, graphModel, keyToSuperVertexMap, keyToSimpleVertexMap, conceptToVertexMap, showUnmapped, showUnmappedWithSynsets);
+        return buildLayers(this.ontologyGraph.getRoots(), Y_GAP, graphModel, keyToSuperVertexMap, keyToSimpleVertexMap, conceptToVertexMap, showUnmapped, showUnmappedWithSynsets);
     }
 
-    private void buildLayers(Set<IOntologyConcept> concepts, int currentY, IGraphModel graphModel, Map<Set<IOntologyConcept>, SuperVertex> keyToSuperVertexMap, Map<URI, SimpleVertex> keyToSimpleVertexMap, Map<IOntologyConcept, SimpleVertex> conceptToVertexMap, boolean showUnmapped, boolean showUnmappedWithSynsets) {
+    private int buildLayers(Set<IOntologyConcept> concepts, int currentY, IGraphModel graphModel, Map<Set<IOntologyConcept>, SuperVertex> keyToSuperVertexMap, Map<URI, SimpleVertex> keyToSimpleVertexMap, Map<IOntologyConcept, SimpleVertex> conceptToVertexMap, boolean showUnmapped, boolean showUnmappedWithSynsets) {
         int nextY = buildLayer(concepts, graphModel, keyToSuperVertexMap, keyToSimpleVertexMap, conceptToVertexMap, showUnmapped, showUnmappedWithSynsets, currentY);
         Set<IOntologyConcept> nextLayer = new LinkedHashSet<IOntologyConcept>();
         for (IOntologyConcept current : concepts) {
@@ -73,6 +75,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         if (!nextLayer.isEmpty()) {
             buildLayers(nextLayer, nextY, graphModel, keyToSuperVertexMap, keyToSimpleVertexMap, conceptToVertexMap, showUnmapped, showUnmappedWithSynsets);
         }
+        return nextY;
     }
 
     private int buildLayer(Collection<IOntologyConcept> layer, IGraphModel graphModel, Map<Set<IOntologyConcept>, SuperVertex> keyToSuperVertexMap,
@@ -207,7 +210,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
             for (IOntologyConcept child : parent.getParents()) {
                 SimpleVertex childVertex = nameToVertex.get(child.getUri());
                 if (childVertex != null) {
-                    graphModel.addArc(new Arc(parentVertex, childVertex, Collections.EMPTY_LIST, Color.DARK_GRAY));
+                    graphModel.addArc(new Arc(parentVertex, childVertex, Collections.<String>emptyList()/*Arrays.asList(WordNetRelation.HYPONYM.getRelatedOntologyConcept())*/, Color.DARK_GRAY));
                 }
             }
 

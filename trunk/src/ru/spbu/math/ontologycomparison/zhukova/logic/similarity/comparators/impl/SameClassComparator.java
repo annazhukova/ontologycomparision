@@ -9,11 +9,11 @@ import java.util.Set;
  */
 public abstract class SameClassComparator<C, P> extends Comparator<C, C, P> implements ISameClassComparator<C, P> {
 
-    public Set<C> getByFirstProperty(C concept, P property) {
+    public Set<C> getFirstByProperty(C concept, P property) {
         return getByProperty(concept, property);
     }
 
-    public Set<C> getBySecondProperty(C concept, P property) {
+    public Set<C> getSecondByProperty(C concept, P property) {
         return getByProperty(concept, property);
     }
 }

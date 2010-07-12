@@ -18,7 +18,7 @@ import static ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.B
 /**
  * @author Anna Zhukova
  */
-public class OntologyPropertyMapper extends Mapper<IOntologyProperty, IOntologyProperty, Object> {
+public class OntologyPropertyMapper extends Mapper<IOntologyProperty, IOntologyProperty, Object, Collection<IOntologyProperty>> {
     private Collection<IOntologyProperty> firstProperties;
     private Collection<IOntologyProperty> secondProperties;
     private final IOntologyGraph firstGraph;

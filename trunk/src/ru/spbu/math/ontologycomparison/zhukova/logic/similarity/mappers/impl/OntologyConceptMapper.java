@@ -21,7 +21,7 @@ import static ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.B
 /**
  * @author Anna Zhukova
  */
-public class OntologyConceptMapper extends Mapper<IOntologyConcept, IOntologyConcept, WordNetRelation> {
+public class OntologyConceptMapper extends Mapper<IOntologyConcept, IOntologyConcept, WordNetRelation, IOntologyGraph> {
     private Collection<IOntologyConcept> firstConcepts;
     private Collection<IOntologyConcept> secondConcepts;
     private final IOntologyGraph firstGraph;
@@ -37,13 +37,7 @@ public class OntologyConceptMapper extends Mapper<IOntologyConcept, IOntologyCon
         this.logger = logger;
     }
 
-    public Collection<IOntologyConcept> map() {
-        return null;
-    }
-
-    public IOntologyGraph mapp() {
-        LexicalOrSynsetConceptComparator conceptComparator = new LexicalOrSynsetConceptComparator();
-
+    public IOntologyGraph map() {
         Set<URI> commonUriSet = SetHelper.INSTANCE.setIntersection(firstGraph.getConceptUris(),
                 secondGraph.getConceptUris());
         for (URI uri : commonUriSet) {
@@ -61,6 +55,8 @@ public class OntologyConceptMapper extends Mapper<IOntologyConcept, IOntologyCon
         }
         Set<String> commonLabelSet = SetHelper.INSTANCE.setIntersection(firstGraph.getConceptLabels(),
                 secondGraph.getConceptLabels());
+
+        LexicalOrSynsetConceptComparator conceptComparator = new LexicalOrSynsetConceptComparator();
         for (String label : commonLabelSet) {
             for (IOntologyConcept first : firstGraph.getLabelToConcept().get(label)) {
                 for (IOntologyConcept second : secondGraph.getLabelToConcept().get(label)) {

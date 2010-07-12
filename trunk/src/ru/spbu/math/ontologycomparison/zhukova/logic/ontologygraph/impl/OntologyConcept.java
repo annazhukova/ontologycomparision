@@ -80,14 +80,10 @@ public class OntologyConcept extends LabeledOntologyEntity implements IOntologyC
         /*this.labelToSubjectRelation.insert(WordNetRelation.HYPONYM.getRelatedOntologyConcept(), new OntologyRelation(SUBCLASS_URI, WordNetRelation.HYPONYM.getRelatedOntologyConcept(), true, this, parent));*/
     }
 
-    public Set<IOntologyConcept> getAllParents() {
+    public Set<IOntologyConcept> getParentsRecursively() {
         Set<IOntologyConcept> result = new LinkedHashSet<IOntologyConcept>(getParents());
         RECURSIVE_ADD_HELPER.addRecursively(result, getParents(), EXTRACTOR, MAX_RECURSIVE_LEVEL, MAX_RECURSIVE_SIZE);
         return result;
-    }
-
-    public boolean isRoot() {
-        return this.isRoot;
     }
 
     public Collection<IOntologyConcept> getSimilarConcepts() {
@@ -128,20 +124,8 @@ public class OntologyConcept extends LabeledOntologyEntity implements IOntologyC
         this.conceptToReason.insert(concept, reason, count);
     }
 
-    public void setIsRoot(boolean root) {
-        isRoot = root;
-    }
-
     public boolean hasMappedConcepts() {
         return !this.conceptToReason.isEmpty();
-    }
-
-    public int getDepth() {
-        return depth;
-    }
-
-    public void increaseDepth() {
-        this.depth++;
     }
 
     public IOntologyConcept[] getChildren() {

@@ -13,14 +13,14 @@ import java.util.Set;
  * @author Anna Zhukova
  */
 public class ConceptToSynsetComparator extends Comparator<IOntologyConcept, Synset, WordNetRelation> {
-    public Set<IOntologyConcept> getByFirstProperty(IOntologyConcept concept, WordNetRelation property) {
+    public Set<IOntologyConcept> getFirstByProperty(IOntologyConcept concept, WordNetRelation property) {
         if (property.equals(WordNetRelation.HYPONYM)) {
-            return concept.getAllParents();
+            return concept.getParentsRecursively();
         }
         return LexicalComparisonHelper.getConceptSetByConceptAndProperty(concept, property);
     }
 
-    public Set<Synset> getBySecondProperty(Synset synset, WordNetRelation property) {
+    public Set<Synset> getSecondByProperty(Synset synset, WordNetRelation property) {
         switch (property) {
             case HYPONYM:
                 return new LinkedHashSet<Synset>(WordNetHelper.getHypernymsForSynsetRecursively(synset));

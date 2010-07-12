@@ -118,8 +118,8 @@ public class Open extends AbstractAction {
             ITreeBuilder secondTreeBuilder = new TreeBuilder(secondFile.getName(), secondOntologyGraph.getRoots());
             this.main.setTrees(firstTreeBuilder.buildTree(main.areUnmappedConceptsVisible(), main.areUnmappedConceptsWithSynsetsVisible()), secondTreeBuilder.buildTree(main.areUnmappedConceptsVisible(), main.areUnmappedConceptsWithSynsetsVisible()));
             int similarityCount = myGraphModelBuilder.getSimilarity();
-            this.main.log(String.format(
-                    "Comparing ontology %s (blue) to %s (green).<br>(Absolutely equal concepts are colored orange)<br>The similarity is %d %%.",
+            this.main.info(String.format(
+                    "Comparing ontology %s (blue) to %s (green). (Absolutely equal concepts are colored orange) The similarity is %d %%.",
                     firstFile.getName(), secondFile.getName(), similarityCount)
             );
             this.main.hideProgressBar();

@@ -7,7 +7,7 @@ import ru.spbu.math.ontologycomparison.zhukova.util.ITriple;
 /**
  * @author Anna Zhukova
  */
-public abstract class Mapper<C1, C2, P> implements IMapper<C1, C2, P> {
+public abstract class Mapper<C1, C2, P, R> implements IMapper<C1, C2, P, R> {
 
     protected boolean tryToBind(IComparator<C1, C2, P> comparator, C1 first, C2 second, ITriple<P, String, String>... bindFactors) {
         for (ITriple<P, String, String> bind : bindFactors) {

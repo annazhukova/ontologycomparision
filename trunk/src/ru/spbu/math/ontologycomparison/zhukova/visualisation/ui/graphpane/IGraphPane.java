@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public interface IGraphPane {
 
-    void checkPoint(Point p);
+    Point checkPoint(Point p);
 
     void deselectVertices();
 

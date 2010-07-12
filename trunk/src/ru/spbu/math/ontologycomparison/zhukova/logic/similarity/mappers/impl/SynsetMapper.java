@@ -20,7 +20,7 @@ import static ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.B
 /**
  * @author Anna Zhukova
  */
-public class SynsetMapper extends Mapper<IOntologyConcept, Synset, WordNetRelation> {
+public class SynsetMapper extends Mapper<IOntologyConcept, Synset, WordNetRelation, Collection<IOntologyConcept>> {
     private final Collection<IOntologyConcept> conceptCollection;
     private final ILogger logger;
     private final IHashTable<Synset, IOntologyConcept, Set<IOntologyConcept>> synsetToConcept = new SetHashTable<Synset, IOntologyConcept>();

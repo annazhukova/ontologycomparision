@@ -54,6 +54,13 @@ public interface IGraphModel {
 
     void removeSuperVertex(SuperVertex vertex);
 
+    void setHeight(int height);
+
+    void setWidth(int width);
+
+    int getHeight();
+
+    int getWidth();
 
     public static interface IVertexListener {
 
