@@ -9,6 +9,8 @@ import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.tree.CheckRender
 
 import javax.swing.*;
 import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 import java.util.Set;
 
@@ -24,7 +26,7 @@ public class TreeBuilder implements ITreeBuilder {
         this.roots = roots;
     }
 
-    public IPair<JTree, SetHashTable<IOntologyConcept,CheckNode>> buildTree(boolean unmappedNoSynsetVisible, boolean unmappedWithSynsetVisible) {
+    public IPair<TreeModel, SetHashTable<IOntologyConcept,CheckNode>> buildTree(boolean unmappedNoSynsetVisible, boolean unmappedWithSynsetVisible) {
         CheckNode root = new CheckNode(title, true, Color.BLACK);
         SetHashTable<IOntologyConcept, CheckNode> conceptToNodeMap = new SetHashTable<IOntologyConcept, CheckNode>();
         for (IOntologyConcept parent : this.roots) {
@@ -33,10 +35,8 @@ public class TreeBuilder implements ITreeBuilder {
             addChildrenRecursively(parent, parentNode, conceptToNodeMap, unmappedNoSynsetVisible, unmappedWithSynsetVisible);
             root.add(parentNode);
         }
-        final JTree tree = new JTree(root);
-        tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-        tree.setCellRenderer(new CheckRenderer());         
-        return new Pair<JTree, SetHashTable<IOntologyConcept, CheckNode>>(tree, conceptToNodeMap);
+        final TreeModel tree = new DefaultTreeModel(root);
+        return new Pair<TreeModel, SetHashTable<IOntologyConcept, CheckNode>>(tree, conceptToNodeMap);
     }
 
     private boolean isSelected(boolean isMapped, boolean hasSynsets, boolean unmappedNoSynsetVisible, boolean unmappedWithSynsetVisible) {

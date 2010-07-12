@@ -15,11 +15,9 @@ import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.tree.CheckNode;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.tree.TreeComponent;
 
 import javax.swing.*;
+import javax.swing.tree.TreeModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.FileNotFoundException;
 
 /**
@@ -38,21 +36,23 @@ public class Main implements ILogger {
     private final JScrollPane infoScrollPane = new JScrollPane(this.infoPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     private final JPanel logPanel = new JPanel(new BorderLayout());
-    private final JSplitPane logSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, logPanel, infoScrollPane);
-    private JLabel logLabel;
+    private JLabel logLabel = new JLabel();
     private JCheckBox showSingleSynsetVertexCheckBox;
     private JCheckBox showUnmappedConceptsCheckBox;
-    private JFrame progressFrame;
     private JProgressBar progressBar = new JProgressBar();
     private final TreeComponent trees = new TreeComponent();
     private final JPanel checkBoxPanel = new JPanel();
     private final JSplitPane visibilitySettingsSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, trees, checkBoxPanel);
     private final JSplitPane componentSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, visibilitySettingsSplitPane, graphScrollPane);
-    private final JSplitPane general = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, componentSplitPane, logSplitPane);
+    private final JSplitPane general = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, componentSplitPane, infoScrollPane);
 
 
-    public void setTrees(IPair<JTree, SetHashTable<IOntologyConcept, CheckNode>> firstTree, IPair<JTree, SetHashTable<IOntologyConcept, CheckNode>> secondTree) {
+    public void setTrees(IPair<TreeModel, SetHashTable<IOntologyConcept, CheckNode>> firstTree, IPair<TreeModel, SetHashTable<IOntologyConcept, CheckNode>> secondTree) {
         trees.setTrees(firstTree, secondTree);
+        visibilitySettingsSplitPane.getTopComponent().repaint();
+        componentSplitPane.repaint();
+        componentSplitPane.getLeftComponent().repaint();
+        general.repaint();
     }
 
 
@@ -77,9 +77,16 @@ public class Main implements ILogger {
             AbstractAction[] actions = getActions();
             this.frame.setJMenuBar(Menu.getMenuBar(actions));
             this.frame.getContentPane().setLayout(new BorderLayout());
-            this.frame.getContentPane().add(ToolBar.getToolBar(actions), BorderLayout.NORTH);
 
             this.frame.getContentPane().add(general, BorderLayout.CENTER);
+
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.add(progressBar, BorderLayout.SOUTH);
+            panel.add(logPanel, BorderLayout.CENTER);
+            panel.add(ToolBar.getToolBar(actions), BorderLayout.NORTH);
+            
+            this.frame.getContentPane().add(panel, BorderLayout.NORTH);
+            initProgressBar();
             initLabelsPanel();
             initCheckBoxPanel();
             initSizes();
@@ -112,9 +119,9 @@ public class Main implements ILogger {
     }
 
     private void initLogPanel(Dimension size) {
-        this.logLabel = new JLabel("<html><p>Press \"Open\" to select ontologies to compare<p>");
         this.logPanel.add(this.logLabel, BorderLayout.CENTER);
         this.logPanel.setMaximumSize(size);
+        info("Press \"Open\" to select ontologies to compare");
     }
 
     private void updateLabel(String message, JLabel label, JPanel panel, boolean clear) {
@@ -129,14 +136,22 @@ public class Main implements ILogger {
     private void initSizes() {
         this.graphPane.setSize(this.frame.getSize());
         this.graphPane.setPreferredSize(this.frame.getPreferredSize());
-        this.graphScrollPane.setSize(this.frame.getSize());
-        this.graphScrollPane.setPreferredSize(this.frame.getPreferredSize());
+        this.graphPane.addMouseWheelListener(new MouseWheelListener() {
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                Rectangle rect = graphScrollPane.getVisibleRect();
+                int unitsToScroll = e.getUnitsToScroll() * 10;
+                rect.setLocation((int) rect.getX() + unitsToScroll, (int) rect.getY());
+                graphPane.scrollRectToVisible(rect);
+            }
+        });
+
+        /*this.graphScrollPane.setSize(this.frame.getSize());
+        this.graphScrollPane.setPreferredSize(this.frame.getPreferredSize());*/
 
         componentSplitPane.setSize(frame.getSize());
         componentSplitPane.setPreferredSize(frame.getPreferredSize());
         componentSplitPane.setDividerLocation(0.7);
         visibilitySettingsSplitPane.setDividerLocation(0.5);
-        logSplitPane.setDividerLocation(0.5);
         logPanel.setMaximumSize(logPanel.getPreferredSize());
     }
 
@@ -146,43 +161,40 @@ public class Main implements ILogger {
         trees.setGraphPane(graphPane);
         componentSplitPane.setDividerLocation(0.7);
         visibilitySettingsSplitPane.setDividerLocation(0.8);
-        logSplitPane.setDividerLocation(0.2);
         general.setDividerLocation(0.7);
     }
 
     public void showProgressBar() {
-        if (progressFrame == null) {
-            progressFrame = new JFrame();
-            progressFrame.setUndecorated(true);
-            progressFrame.getContentPane().setLayout(new BorderLayout());
-            Dimension d = new Dimension(200, 20);
-            progressBar.setPreferredSize(d);
-            progressBar.setSize(d);
-            progressBar.setBorderPainted(true);
-            progressBar.setMinimum(0);
-            progressBar.setMaximum(100);
-            progressBar.setValue(0);
-            progressBar.setIndeterminate(true);
-            progressFrame.getContentPane().add(progressBar, BorderLayout.CENTER);
-            progressFrame.pack();
-            progressFrame.setResizable(false);
-            progressFrame.setLocation((int) getFrame().getLocation().getX() + getFrame().getWidth() / 2,
-                    (int) getFrame().getLocation().getY() + getFrame().getHeight() / 2);
-            //progressFrame.setLocationRelativeTo(this.getFrame());
-            progressFrame.setAlwaysOnTop(true);
-        }
-        progressFrame.setVisible(true);
-        progressFrame.requestFocus();
+        progressBar.setVisible(true);
+        logPanel.setVisible(false);
+    }
+
+    private void initProgressBar() {
+        progressBar.setVisible(false);
+        progressBar.setBorderPainted(true);
+        progressBar.setMinimum(0);
+        progressBar.setMaximum(100);
+        progressBar.setValue(0);
+        progressBar.setIndeterminate(true);
+        progressBar.setStringPainted(true);
+        progressBar.setString("");
     }
 
     public void hideProgressBar() {
-        if (this.progressFrame != null) {
-            this.progressFrame.setVisible(false);
-        }
+        progressBar.setVisible(false);
+        logPanel.setVisible(true);
     }
 
     public void log(final String description) {
-        updateLabel(String.format("<html><p>%s</p>", description), logLabel, logPanel, true);
+        progressBar.setString(description);
+    }
+
+    public void info(final String description) {
+        updateLabel(formatInfoLabel(description), logLabel, logPanel, true);
+    }
+
+    private String formatInfoLabel(String description) {
+        return String.format("<html><p style=\"background-color: #ffff00; text-align: center; font-size: small;\">%s</p>", description);
     }
 
     public IGraphModel getGraphModel() {
@@ -200,7 +212,7 @@ public class Main implements ILogger {
     private void initCheckBoxPanel() {
         this.checkBoxPanel.setLayout(new GridLayout(3, 1));
         this.showUnmappedConceptsCheckBox = new JCheckBox("Show unmapped concepts");
-        showUnmappedConceptsCheckBox.setSelected(false);
+        showUnmappedConceptsCheckBox.setSelected(true);
         showUnmappedConceptsCheckBox.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -214,7 +226,7 @@ public class Main implements ILogger {
         checkBoxPanel.add(showUnmappedConceptsCheckBox);
 
         this.showSingleSynsetVertexCheckBox = new JCheckBox("Show concepts mapped to WordNet only");
-        showSingleSynsetVertexCheckBox.setSelected(false);
+        showSingleSynsetVertexCheckBox.setSelected(true);
         showSingleSynsetVertexCheckBox.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {

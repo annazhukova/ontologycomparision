@@ -19,6 +19,10 @@ public class TestOntologyComparator extends TestCase {
         public void log(String log) {
             System.out.println(log);
         }
+
+        public void info(String log) {
+            System.out.println(log);
+        }
     };
     private IOntologyGraph ontoPLGraph;
     private IOntologyGraph ontoJavaGraph;

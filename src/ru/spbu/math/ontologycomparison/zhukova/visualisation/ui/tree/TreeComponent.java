@@ -8,7 +8,11 @@ import ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.tree.
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.GraphPane;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -34,11 +38,13 @@ public class TreeComponent extends JSplitPane {
         setDividerLocation(0.5);
     }
 
-    public void setTrees(IPair<JTree, SetHashTable<IOntologyConcept, CheckNode>> firstPair, IPair<JTree, SetHashTable<IOntologyConcept, CheckNode>> secondPair) {
+    public void setTrees(IPair<TreeModel, SetHashTable<IOntologyConcept, CheckNode>> firstPair, IPair<TreeModel, SetHashTable<IOntologyConcept, CheckNode>> secondPair) {
         left.setTree(firstPair.getFirst(), secondPair.getSecond());
         right.setTree(secondPair.getFirst(), firstPair.getSecond());
         left.popUpMenu.setListener(right.popUpMenu);
         right.popUpMenu.setListener(left.popUpMenu);
+        getLeftComponent().repaint();
+        getRightComponent().repaint();
         repaint();
     }
 
@@ -49,21 +55,20 @@ public class TreeComponent extends JSplitPane {
         private final JScrollPane scrollPane = new JScrollPane(panel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         // tree
-        private JTree tree;
+        private JTree tree = new JTree();
         private PopUpMenu popUpMenu = new PopUpMenu();
 
-        public void setTree(final JTree tree, final SetHashTable<IOntologyConcept, CheckNode> table) {
-            if (this.tree != null) {
-                panel.remove(this.tree);
-            }
-            this.tree = tree;
+        public TreePane() {
+            tree.setModel(new DefaultTreeModel(new CheckNode("", false, Color.WHITE)));
+            tree.setVisible(false);
             panel.add(this.tree, BorderLayout.CENTER);
+            this.tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+            tree.setCellRenderer(new CheckRenderer());
             popUpMenu.setTree(this.tree, panel);
-            popUpMenu.setTable(table);
-            tree.addMouseListener(new MouseAdapter() {
+            this.tree.addMouseListener(new MouseAdapter() {
 
                 public void mousePressed(MouseEvent e) {
-                    if (e.getButton() == MouseEvent.BUTTON3) {
+                    if (e.getButton() == MouseEvent.BUTTON1) {
                         TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
                         popUpMenu.setRow(tree.getRowForLocation(e.getX(), e.getY()));
                         if (treePath != null) {
@@ -90,7 +95,14 @@ public class TreeComponent extends JSplitPane {
                     }
                 }
             });
+        }
+
+        public void setTree(final TreeModel tree, final SetHashTable<IOntologyConcept, CheckNode> table) {
+            this.tree.setModel(tree);
+            this.tree.setVisible(true);
+            popUpMenu.setTable(table);
             panel.repaint();
+            this.tree.repaint();
             scrollPane.repaint();
         }
 

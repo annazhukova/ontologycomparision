@@ -5,4 +5,6 @@ package ru.spbu.math.ontologycomparison.zhukova.logic;
  */
 public interface ILogger {
     void log(String log);
+
+    void info(String log);
 }

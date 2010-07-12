@@ -20,6 +20,9 @@ public class GraphModel implements IGraphModel {
     private final Set<IVertexListener> listeners = new LinkedHashSet<IVertexListener>();
     private Map<IOntologyConcept, SimpleVertex> conceptToVertexMap;
 
+    private int height;
+    private int width;
+
     public GraphModel(IGraphPane graphPane) {
         this.graphPane = graphPane;
     }
@@ -59,8 +62,14 @@ public class GraphModel implements IGraphModel {
 
     public void moveVertex(IVertex vertex, int dx, int dy) {
         Point location = vertex.getAbsoluteLocation();
-        vertex.setLocation(new Point(location.x + dx, location.y + dy));
-        this.graphPane.checkPoint(vertex.getMaxPoint());
+        Point topLeft = new Point(location.x + dx, location.y + dy);
+        topLeft = this.graphPane.checkPoint(topLeft);
+        vertex.setLocation(topLeft);
+        Point bottomRight = vertex.getMaxPoint();
+        Point realBottomRight = this.graphPane.checkPoint(bottomRight);
+        if (!bottomRight.equals(realBottomRight)) {
+            vertex.setLocation(new Point(topLeft.x + realBottomRight.x - bottomRight.x, topLeft.y + realBottomRight.y - bottomRight.y));
+        }
         update();
     }
 
@@ -176,5 +185,21 @@ public class GraphModel implements IGraphModel {
         }
         this.superVertices.remove(vertex);
         update();
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
     }
 }

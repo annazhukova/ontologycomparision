@@ -18,7 +18,7 @@ public interface IOntologyConcept extends ILabeledOntologyEntity {
      */
     Set<IOntologyConcept> getParents();
 
-    Set<IOntologyConcept> getAllParents();
+    Set<IOntologyConcept> getParentsRecursively();
 
     void addParent(IOntologyConcept parent);
 
@@ -39,10 +39,6 @@ public interface IOntologyConcept extends ILabeledOntologyEntity {
 
     Collection<IOntologyConcept> getSimilarConcepts();
 
-    boolean isRoot();
-
-    void setIsRoot(boolean root);
-
     IHashMapTable<Synset, String> getSynsetToReason();
 
     void addSynset(Synset synset, String reason, int count);
@@ -52,10 +48,6 @@ public interface IOntologyConcept extends ILabeledOntologyEntity {
     void addConcept(IOntologyConcept concept, String reason, int count);
 
     boolean hasMappedConcepts();
-
-    int getDepth();
-
-    void increaseDepth();
 
     IOntologyConcept[] getChildren();
 

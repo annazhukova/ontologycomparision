@@ -52,18 +52,16 @@ public class GraphPane extends JPanel implements IGraphPane, IGraphModel.IVertex
         addMouseMotionListener(this.currentTool);
     }
 
-    public void checkPoint(Point p) {
+    public Point checkPoint(Point p) {
         int width = getWidth();
         int height = getHeight();
-        if (p.x >= width) {
-            width = p.x + 10;
-        }
-        if (p.y >= height) {
-            height = p.y + 10;
-        }
-        Dimension d = new Dimension(width, height);
-        setSize(d);
-        setPreferredSize(d);
+        int x = (p.x <= width) ? p.x : width;
+        x = x > 0 ? x : 0;
+        int y = (p.y <= height) ? p.y : height;
+        y = y > 0 ? y : 0;
+        Point result = new Point(x, y);
+        scrollRectToVisible(new Rectangle(result));
+        return result;
     }
 
     public void deselectVertices() {
@@ -87,6 +85,9 @@ public class GraphPane extends JPanel implements IGraphPane, IGraphModel.IVertex
         this.graphModel = gr;
         this.graphModel.addListener(this);
         Tool.setGraphModel(this);
+        Dimension d = new Dimension(gr.getWidth(), gr.getHeight());
+        setSize(d);
+        setPreferredSize(d);
         revalidate();
         update();
     }

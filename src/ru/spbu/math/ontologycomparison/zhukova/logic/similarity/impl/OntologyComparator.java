@@ -73,7 +73,7 @@ public class OntologyComparator implements IOntologyComparator {
         Collection<IOntologyConcept> secondConcepts = secondSynsetMapper.map();
         this.secondGraph.setSynsetToConcept(secondSynsetMapper.getSynsetToConceptTable());
         int secondConceptsSize = secondConcepts.size();
-        IOntologyGraph result = (new OntologyConceptMapper(firstConcepts, secondConcepts, this.firstGraph, this.secondGraph, logger)).mapp();
+        IOntologyGraph result = (new OntologyConceptMapper(firstConcepts, secondConcepts, this.firstGraph, this.secondGraph, logger)).map();
         this.conceptIntersectionSize = secondConceptsSize - secondConcepts.size();
         this.conceptUnionSize = result.getConcepts().size();
         return result;
