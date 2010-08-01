@@ -1,8 +1,8 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl;
 
+import org.semanticweb.owlapi.model.IRI;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.ILabeledOntologyEntity;
 
-import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -13,10 +13,10 @@ import java.util.Set;
  */
 public abstract class LabeledOntologyEntity implements ILabeledOntologyEntity {
     private static final String EMPTY_STRING = "";
-    private final URI uri;
+    private final IRI uri;
     private final String[] labels;
 
-    public LabeledOntologyEntity(URI uri, String label) {
+    public LabeledOntologyEntity(IRI uri, String label) {
         this.uri = uri;
         Set<String> labels = new LinkedHashSet<String>();
         if (label != null && !label.isEmpty()) {
@@ -28,7 +28,7 @@ public abstract class LabeledOntologyEntity implements ILabeledOntologyEntity {
         this.labels = labels.toArray(new String[labels.size()]);
     }
 
-    public URI getUri() {
+    public IRI getUri() {
         return this.uri;
     }
 

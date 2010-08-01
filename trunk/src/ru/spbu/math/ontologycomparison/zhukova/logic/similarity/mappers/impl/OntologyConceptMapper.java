@@ -1,6 +1,7 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.impl;
 
 import edu.smu.tspell.wordnet.Synset;
+import org.semanticweb.owlapi.model.IRI;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ILogger;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
@@ -11,7 +12,6 @@ import ru.spbu.math.ontologycomparison.zhukova.util.ITriple;
 import ru.spbu.math.ontologycomparison.zhukova.util.impl.SetHelper;
 import ru.spbu.math.ontologycomparison.zhukova.util.impl.Triple;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
@@ -38,9 +38,9 @@ public class OntologyConceptMapper extends Mapper<IOntologyConcept, IOntologyCon
     }
 
     public IOntologyGraph map() {
-        Set<URI> commonUriSet = SetHelper.INSTANCE.setIntersection(firstGraph.getConceptUris(),
+        Set<IRI> commonIRISet = SetHelper.INSTANCE.setIntersection(firstGraph.getConceptUris(),
                 secondGraph.getConceptUris());
-        for (URI uri : commonUriSet) {
+        for (IRI uri : commonIRISet) {
             IOntologyConcept first = firstGraph.getUriToConcept().get(uri);
             IOntologyConcept second = secondGraph.getUriToConcept().get(uri);
             bind(first, second, SAME_URI);
@@ -70,7 +70,7 @@ public class OntologyConceptMapper extends Mapper<IOntologyConcept, IOntologyCon
 
         logger.log("binded ontologies");
         Set<IOntologyConcept> roots = SetHelper.INSTANCE.setUnion(firstGraph.getRoots(), SetHelper.INSTANCE.setIntersection(secondGraph.getRoots(), secondConcepts));
-        HashMap<URI, IOntologyConcept> uriToConcept = new HashMap<URI, IOntologyConcept>(firstGraph.getUriToConcept());
+        HashMap<IRI, IOntologyConcept> uriToConcept = new HashMap<IRI, IOntologyConcept>(firstGraph.getUriToConcept());
         for (IOntologyConcept second : secondConcepts) {
             uriToConcept.put(second.getUri(), second);
         }

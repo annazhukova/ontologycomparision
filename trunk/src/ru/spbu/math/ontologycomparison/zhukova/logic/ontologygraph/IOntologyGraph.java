@@ -1,9 +1,9 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph;
 
 import edu.smu.tspell.wordnet.Synset;
+import org.semanticweb.owlapi.model.IRI;
 import ru.spbu.math.ontologycomparison.zhukova.util.IHashTable;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -12,11 +12,11 @@ import java.util.Set;
  * @author Anna Zhukova
  */
 public interface IOntologyGraph {
-    Map<URI, IOntologyConcept> getUriToConcept();
+    Map<IRI, IOntologyConcept> getUriToConcept();
 
-    Set<URI> getConceptUris();
+    Set<IRI> getConceptUris();
 
-    Set<URI> getPropertyUris();
+    Set<IRI> getPropertyUris();
 
     Set<String> getConceptLabels();
 
@@ -32,11 +32,11 @@ public interface IOntologyGraph {
 
     Set<IOntologyConcept> getRoots();
 
-    Map<URI, IOntologyProperty> getUriToProperty();
+    Map<IRI, IOntologyProperty> getUriToProperty();
 
     IHashTable<String, IOntologyProperty, Set<IOntologyProperty>> getLabelToProperty();
 
-    IOntologyConcept getConceptByURI(URI uri);
+    IOntologyConcept getConceptByURI(IRI uri);
 
     Collection<IOntologyConcept> getConcepts();
 

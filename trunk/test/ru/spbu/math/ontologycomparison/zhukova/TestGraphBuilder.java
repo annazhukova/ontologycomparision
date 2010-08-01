@@ -1,8 +1,8 @@
 package ru.spbu.math.ontologycomparison.zhukova;
 
 import junit.framework.TestCase;
-import net.sourceforge.fluxion.utils.OWLTransformationException;
-import org.semanticweb.owl.inference.OWLReasonerException;
+//import net.sourceforge.fluxion.utils.OWLTransformationException;
+import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.OntologyGraphBuilder;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
@@ -14,16 +14,16 @@ import java.io.FileNotFoundException;
  */
 public class TestGraphBuilder extends TestCase {
 
-    public void testItBuildsAnything() throws FileNotFoundException, OWLTransformationException, OWLReasonerException {
+    public void testItBuildsAnything() throws FileNotFoundException, /*OWLTransformationException,*/ OWLReasonerException {
         new OntologyGraphBuilder().build(OntologyTestConstants.ONTOPL_URL);
     }
 
-    public void testConceptsNumber() throws FileNotFoundException, OWLTransformationException, OWLReasonerException {
+    public void testConceptsNumber() throws FileNotFoundException, /*OWLTransformationException,*/ OWLReasonerException {
         IOntologyGraph graph = new OntologyGraphBuilder().build(OntologyTestConstants.ONTOPL_URL);
         assertEquals(OntologyTestConstants.ONTO_PL_CONCEPTS_COUNT, graph.getConcepts().size());
     }
 
-    public void testConceptsContent() throws FileNotFoundException, OWLTransformationException, OWLReasonerException {
+    public void testConceptsContent() throws FileNotFoundException, /*OWLTransformationException,*/ OWLReasonerException {
         IOntologyGraph graph = new OntologyGraphBuilder().build(OntologyTestConstants.ONTOPL_URL);
         for (IOntologyConcept concept : graph.getConcepts()) {
             if (concept.getLabelCollection().contains(OntologyTestConstants.JAVA)) {
@@ -33,7 +33,7 @@ public class TestGraphBuilder extends TestCase {
         fail();
     }
 
-    public void testChildParentRelation() throws FileNotFoundException, OWLTransformationException, OWLReasonerException {
+    public void testChildParentRelation() throws FileNotFoundException, /*OWLTransformationException,*/ OWLReasonerException {
         IOntologyGraph graph = new OntologyGraphBuilder().build(OntologyTestConstants.ONTOPL_URL);
         for (IOntologyConcept concept : graph.getConcepts()) {
             if (concept.getLabelCollection().contains(OntologyTestConstants.JAVA)) {

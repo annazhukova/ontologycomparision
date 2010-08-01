@@ -24,7 +24,6 @@ import java.io.FileNotFoundException;
  * @author Anna R. Zhukova
  */
 public class Main implements ILogger {
-    private boolean isChanged;
     private JFrame frame;
 
     //panels
@@ -138,9 +137,9 @@ public class Main implements ILogger {
         this.graphPane.setPreferredSize(this.frame.getPreferredSize());
         this.graphPane.addMouseWheelListener(new MouseWheelListener() {
             public void mouseWheelMoved(MouseWheelEvent e) {
-                Rectangle rect = graphScrollPane.getVisibleRect();
+                Rectangle rect = graphPane.getVisibleRect();
                 int unitsToScroll = e.getUnitsToScroll() * 10;
-                rect.setLocation((int) rect.getX() + unitsToScroll, (int) rect.getY());
+                rect = new Rectangle(new Point((int) rect.getCenterX(), (int) (e.getWheelRotation() < 0 ? rect.getY() : rect.getMaxY()) + unitsToScroll));
                 graphPane.scrollRectToVisible(rect);
             }
         });
@@ -206,13 +205,12 @@ public class Main implements ILogger {
     }
 
     public void setIsChanged(boolean isChanged) {
-        this.isChanged = isChanged;
     }
 
     private void initCheckBoxPanel() {
         this.checkBoxPanel.setLayout(new GridLayout(3, 1));
         this.showUnmappedConceptsCheckBox = new JCheckBox("Show unmapped concepts");
-        showUnmappedConceptsCheckBox.setSelected(true);
+        showUnmappedConceptsCheckBox.setSelected(false);
         showUnmappedConceptsCheckBox.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -226,7 +224,7 @@ public class Main implements ILogger {
         checkBoxPanel.add(showUnmappedConceptsCheckBox);
 
         this.showSingleSynsetVertexCheckBox = new JCheckBox("Show concepts mapped to WordNet only");
-        showSingleSynsetVertexCheckBox.setSelected(true);
+        showSingleSynsetVertexCheckBox.setSelected(false);
         showSingleSynsetVertexCheckBox.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -238,7 +236,7 @@ public class Main implements ILogger {
             }
         });
         checkBoxPanel.add(showSingleSynsetVertexCheckBox);
-        final JCheckBox onlyOuterNodesSelection = new JCheckBox("Select only outer nodes", false);
+        final JCheckBox onlyOuterNodesSelection = new JCheckBox("Select only outer nodes", true);
         onlyOuterNodesSelection.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -246,6 +244,7 @@ public class Main implements ILogger {
                 graphPane.deselectVertices();
             }
         });
+        SelectingTool.setOnlySuperVerticesSelection(onlyOuterNodesSelection.isSelected());
         checkBoxPanel.add(onlyOuterNodesSelection);
     }
 

@@ -1,6 +1,7 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph;
 
-import java.net.URI;
+import org.semanticweb.owlapi.model.IRI;
+
 import java.util.Collection;
 
 /**
@@ -8,7 +9,7 @@ import java.util.Collection;
  */
 public interface ILabeledOntologyEntity {
 
-    URI getUri();    
+    IRI getUri();    
 
     String[] getLabels();
 

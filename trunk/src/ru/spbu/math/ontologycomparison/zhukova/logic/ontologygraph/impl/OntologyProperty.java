@@ -1,11 +1,11 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl;
 
+import org.semanticweb.owlapi.model.IRI;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyProperty;
-import ru.spbu.math.ontologycomparison.zhukova.util.impl.HashMapTable;
 import ru.spbu.math.ontologycomparison.zhukova.util.IHashMapTable;
+import ru.spbu.math.ontologycomparison.zhukova.util.impl.HashMapTable;
 
-import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -18,7 +18,7 @@ public class OntologyProperty extends LabeledOntologyEntity implements IOntology
     private final boolean isFunctional;
     private IHashMapTable<IOntologyProperty, String> propertyToReason = new HashMapTable<IOntologyProperty, String>();
 
-    public OntologyProperty(URI uri, String label, IOntologyConcept[] domains, IOntologyConcept[] ranges, boolean functional) {
+    public OntologyProperty(IRI uri, String label, IOntologyConcept[] domains, IOntologyConcept[] ranges, boolean functional) {
         super(uri, label);
         isFunctional = functional;
         this.domains = domains;
