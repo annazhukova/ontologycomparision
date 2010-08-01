@@ -2,20 +2,18 @@ package ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding;
 
 
 import edu.smu.tspell.wordnet.Synset;
+import org.semanticweb.owlapi.model.IRI;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ILogger;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyRelation;
-import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.IOntologyComparator;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.SimilarityReason;
-import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.impl.OntologyComparator;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IArcFilter;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.IGraphModel;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.*;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.GraphPane;
 
 import java.awt.*;
-import java.net.URI;
 import java.util.*;
 
 
@@ -32,18 +30,17 @@ public class GraphModelBuilder implements IGraphModelBuilder {
     private static final int FRAME_WIDTH = 800;
     private static final int LABEL_GAP = 3;
 
-    public GraphModelBuilder(IOntologyGraph firstOntologyGraph, IOntologyGraph secondOntologyGraph, ILogger logger) {
+    public GraphModelBuilder(IOntologyGraph firstOntologyGraph, IOntologyGraph secondOntologyGraph, IOntologyGraph merged, int similarity, ILogger logger) {
         this.firstOntologyGraph = firstOntologyGraph;
         this.secondOntologyGraph = secondOntologyGraph;
-        IOntologyComparator ontologyComparator = new OntologyComparator(this.firstOntologyGraph, this.secondOntologyGraph, logger);
-        this.ontologyGraph = ontologyComparator.mapOntologies().getFirst();
-        this.similarity = (int) (ontologyComparator.getSimilarity() * 100);
+        this.ontologyGraph = merged;
+        this.similarity = similarity;
     }
 
     public GraphModel buildGraphModel(GraphPane graphPane, boolean showUnmapped, boolean showUnmappedWithSynsets) {
         GraphModel graphModel = new GraphModel(graphPane);
         Map<Set<IOntologyConcept>, SuperVertex> keyToSuperVertexMap = new HashMap<Set<IOntologyConcept>, SuperVertex>();
-        Map<URI, SimpleVertex> keyToSimpleVertexMap = new HashMap<URI, SimpleVertex>();
+        Map<IRI, SimpleVertex> keyToSimpleVertexMap = new HashMap<IRI, SimpleVertex>();
         Map<IOntologyConcept, SimpleVertex> conceptToVertexMap = new HashMap<IOntologyConcept, SimpleVertex>();
         int height = buildVertices(graphPane, graphModel, keyToSuperVertexMap, keyToSimpleVertexMap, conceptToVertexMap, showUnmapped, showUnmappedWithSynsets);
         buildArcs(keyToSimpleVertexMap, graphModel);
@@ -56,14 +53,14 @@ public class GraphModelBuilder implements IGraphModelBuilder {
     }
 
     private int buildVertices(GraphPane graphPane, IGraphModel graphModel, Map<Set<IOntologyConcept>, SuperVertex> keyToSuperVertexMap,
-                                Map<URI, SimpleVertex> keyToSimpleVertexMap, Map<IOntologyConcept, SimpleVertex> conceptToVertexMap, boolean showUnmapped, boolean showUnmappedWithSynsets) {
+                              Map<IRI, SimpleVertex> keyToSimpleVertexMap, Map<IOntologyConcept, SimpleVertex> conceptToVertexMap, boolean showUnmapped, boolean showUnmappedWithSynsets) {
         Graphics g = graphPane.getGraphics();
         Font font = Vertex.FONT;
         g.setFont(font);
         return buildLayers(this.ontologyGraph.getRoots(), Y_GAP, graphModel, keyToSuperVertexMap, keyToSimpleVertexMap, conceptToVertexMap, showUnmapped, showUnmappedWithSynsets);
     }
 
-    private int buildLayers(Set<IOntologyConcept> concepts, int currentY, IGraphModel graphModel, Map<Set<IOntologyConcept>, SuperVertex> keyToSuperVertexMap, Map<URI, SimpleVertex> keyToSimpleVertexMap, Map<IOntologyConcept, SimpleVertex> conceptToVertexMap, boolean showUnmapped, boolean showUnmappedWithSynsets) {
+    private int buildLayers(Set<IOntologyConcept> concepts, int currentY, IGraphModel graphModel, Map<Set<IOntologyConcept>, SuperVertex> keyToSuperVertexMap, Map<IRI, SimpleVertex> keyToSimpleVertexMap, Map<IOntologyConcept, SimpleVertex> conceptToVertexMap, boolean showUnmapped, boolean showUnmappedWithSynsets) {
         int nextY = buildLayer(concepts, graphModel, keyToSuperVertexMap, keyToSimpleVertexMap, conceptToVertexMap, showUnmapped, showUnmappedWithSynsets, currentY);
         Set<IOntologyConcept> nextLayer = new LinkedHashSet<IOntologyConcept>();
         for (IOntologyConcept current : concepts) {
@@ -73,13 +70,13 @@ public class GraphModelBuilder implements IGraphModelBuilder {
             }
         }
         if (!nextLayer.isEmpty()) {
-            buildLayers(nextLayer, nextY, graphModel, keyToSuperVertexMap, keyToSimpleVertexMap, conceptToVertexMap, showUnmapped, showUnmappedWithSynsets);
+            nextY = buildLayers(nextLayer, nextY, graphModel, keyToSuperVertexMap, keyToSimpleVertexMap, conceptToVertexMap, showUnmapped, showUnmappedWithSynsets);
         }
         return nextY;
     }
 
     private int buildLayer(Collection<IOntologyConcept> layer, IGraphModel graphModel, Map<Set<IOntologyConcept>, SuperVertex> keyToSuperVertexMap,
-                           Map<URI, SimpleVertex> conceptNameToVertexMap, Map<IOntologyConcept, SimpleVertex> conceptToVertexMap, boolean showUnmapped, boolean showUnmappedWithSynsets, int y) {
+                           Map<IRI, SimpleVertex> conceptNameToVertexMap, Map<IOntologyConcept, SimpleVertex> conceptToVertexMap, boolean showUnmapped, boolean showUnmappedWithSynsets, int y) {
         int currentX = 0;
         for (IOntologyConcept mainConcept : layer) {
             if (currentX > FRAME_WIDTH) {
@@ -90,6 +87,9 @@ public class GraphModelBuilder implements IGraphModelBuilder {
             conceptSet.add(mainConcept);
             SuperVertex superVertex = keyToSuperVertexMap.get(conceptSet);
             if (superVertex != null) {
+                if (superVertex.isHidden()) {
+                    continue;
+                }
                 superVertex.setY(y);
                 superVertex.setX(currentX);
                 currentX += superVertex.getWidth() + X_GAP;
@@ -107,6 +107,9 @@ public class GraphModelBuilder implements IGraphModelBuilder {
             }
             superVertexWidth = Math.max(superVertexWidth, superLabel.length() * Vertex.LETTER_WIDTH + 2 * X_GAP);
             boolean hidden = isHidden(showUnmapped, showUnmappedWithSynsets, mainConcept, superLabel);
+            if (hidden) {
+                continue;
+            }
             if (!superLabel.equals(SimilarityReason.NO.name())) {
                 superVertex = createSuperVertex(graphModel, currentX, y, superLabel, superVertexWidth + X_GAP, mainConcept, conceptSet, synset);
                 if (hidden) {
@@ -193,7 +196,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
         return superVertex;
     }
 
-    private void buildArcs(Map<URI, SimpleVertex> nameToVertex, IGraphModel graphModel) {
+    private void buildArcs(Map<IRI, SimpleVertex> nameToVertex, IGraphModel graphModel) {
         IArcFilter filter = Arc.getArcFilter();
         if (filter == null) {
             Arc.setArcFilter(new ArcFilter());

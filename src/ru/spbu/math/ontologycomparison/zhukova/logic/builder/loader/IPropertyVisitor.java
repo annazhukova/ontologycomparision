@@ -1,6 +1,6 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader;
 
-import org.semanticweb.owl.model.OWLPropertyExpression;
+import org.semanticweb.owlapi.model.OWLPropertyExpression;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 
 /**

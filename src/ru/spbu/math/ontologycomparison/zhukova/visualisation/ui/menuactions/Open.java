@@ -3,12 +3,14 @@
  */
 package ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.menuactions;
 
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.OntologyGraphBuilder;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.OntologyManager;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
+import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.IOntologyComparator;
+import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.impl.OntologyComparator;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.GraphModel;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.GraphModelBuilder;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.IGraphModelBuilder;
@@ -60,13 +62,13 @@ public class Open extends AbstractAction {
         main.showProgressBar();
         new Thread(new Runnable() {
             public void run() {
-                try {
-                    buildGraph(firstOwl, secondOwl);
-                    Open.this.main.setIsChanged(true);
-                } catch (Throwable e1) {
-                    handleException(e1);
-                }
-            }
+        try {
+            buildGraph(firstOwl, secondOwl);
+            Open.this.main.setIsChanged(true);
+        } catch (Throwable e1) {
+            handleException(e1);
+        }
+        }
         }).start();
     }
 
@@ -84,12 +86,12 @@ public class Open extends AbstractAction {
             final IOntologyGraph[] firstOntologyGraph = {null};
             Thread firstGraphThread = new Thread(new Runnable() {
                 public void run() {
-                    try {
-                        firstOntologyGraph[0] = firstGraphBuilder.build(firstFile);
-                    } catch (Throwable e1) {
-                        handleException(e1);
-                    }
-                }
+            try {
+                firstOntologyGraph[0] = firstGraphBuilder.build(firstFile);
+            } catch (Throwable e1) {
+                handleException(e1);
+            }
+             }
             });
             firstGraphThread.start();
             final OntologyGraphBuilder secondGraphBuilder = new OntologyGraphBuilder();
@@ -104,8 +106,11 @@ public class Open extends AbstractAction {
                 return;
             }
             this.main.log("Merging ontologies...");
+            IOntologyComparator ontologyComparator = new OntologyComparator(firstOntologyGraph[0], secondOntologyGraph, this.main);
+            IOntologyGraph ontologyGraph = ontologyComparator.mapOntologies().getFirst();
+            int similarity = (int) (ontologyComparator.getSimilarity() * 100);
             final IGraphModelBuilder myGraphModelBuilder =
-                    new GraphModelBuilder(firstOntologyGraph[0], secondOntologyGraph, this.main);
+                    new GraphModelBuilder(firstOntologyGraph[0], secondOntologyGraph, ontologyGraph, similarity, this.main);
             this.main.log("Visualising ontologies...");
             GraphModel graphModel = myGraphModelBuilder.buildGraphModel(main.getGraphPane(), main.areUnmappedConceptsVisible(), main.areUnmappedConceptsWithSynsetsVisible());
             OWLOntologyManager manager = OWLManager.createOWLOntologyManager();

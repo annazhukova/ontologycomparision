@@ -1,7 +1,7 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph;
 
 import edu.smu.tspell.wordnet.Synset;
-import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClass;
 import ru.spbu.math.ontologycomparison.zhukova.util.IHashMapTable;
 
 import java.util.Collection;

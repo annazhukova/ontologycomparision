@@ -1,14 +1,16 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl;
 
-import net.sourceforge.fluxion.utils.OWLTransformationException;
+/*import net.sourceforge.fluxion.utils.OWLTransformationException;
 import net.sourceforge.fluxion.utils.OWLUtils;
-import net.sourceforge.fluxion.utils.ReasonerSession;
-import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.inference.OWLReasoner;
-import org.semanticweb.owl.inference.OWLReasonerException;
-import org.semanticweb.owl.io.DefaultOntologyFormat;
-import org.semanticweb.owl.io.StreamInputSource;
-import org.semanticweb.owl.model.*;
+import net.sourceforge.fluxion.utils.ReasonerSession;*/
+
+import org.semanticweb.HermiT.Reasoner;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.DefaultOntologyFormat;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.reasoner.NodeSet;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.IClassAnnotationVisitor;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.IOntologyManager;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.IPropertyVisitor;
@@ -19,13 +21,11 @@ import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.Ontology
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyProperty;
 import ru.spbu.math.ontologycomparison.zhukova.util.IHashTable;
 import ru.spbu.math.ontologycomparison.zhukova.util.impl.SetHashTable;
-import uk.ac.manchester.cs.owl.OWLDataFactoryImpl;
-import uk.ac.manchester.cs.owl.OWLEquivalentClassesAxiomImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLAnnotationImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLEquivalentClassesAxiomImpl;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.util.*;
 
@@ -40,21 +40,12 @@ public class OntologyManager implements IOntologyManager {
     /**
      * Create an instance with ontology read from the given InputStream.
      *
-     * @param ontologyStream InputStream with ontology
+     * @param ontologyInput InputStream with ontology
      */
-    public OntologyManager(InputStream ontologyStream) {
-        this(new StreamInputSource(ontologyStream));
-    }
-
-    /**
-     * Create an instance with ontology read from the given StreamInputSource.
-     *
-     * @param ontologyInput StreamInputSource with ontology
-     */
-    public OntologyManager(StreamInputSource ontologyInput) {
-        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+    public OntologyManager(InputStream ontologyInput) {
+        OWLOntologyManager manager = OWLManager.createOWLOntologyManager(OWLDataFactoryImpl.getInstance());
         try {
-            this.ontology = manager.loadOntology(ontologyInput);
+            this.ontology = manager.loadOntologyFromOntologyDocument(ontologyInput);
         } catch (OWLOntologyCreationException e) {
             throw new RuntimeException("Can't load ontology", e);
         }
@@ -62,23 +53,23 @@ public class OntologyManager implements IOntologyManager {
     }
 
     public OntologyManager(File ontologyFile) {
-        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+        OWLOntologyManager manager = OWLManager.createOWLOntologyManager(OWLDataFactoryImpl.getInstance());
+        manager.setSilentMissingImportsHandling(true);
         try {
-            this.ontology = manager.loadOntologyFromPhysicalURI(ontologyFile.toURI());
+            this.ontology = manager.loadOntologyFromOntologyDocument(ontologyFile);
         } catch (OWLOntologyCreationException e) {
             throw new RuntimeException("Can't load ontology", e);
         }
-
     }
 
     public static synchronized OWLOntology saveOntologies(OWLOntologyManager manager, OWLOntology... ontologies) throws OWLOntologyChangeException, OWLOntologyCreationException, OWLOntologyStorageException, IOException, URISyntaxException {
         Set<OWLOntology> ontologySet = new HashSet<OWLOntology>((Arrays.asList(ontologies)));
         File temp = File.createTempFile("ontology", ".owl");
-        return manager.createOntology(getURIForFile(temp), ontologySet);
+        return manager.createOntology(getIRIForFile(temp), ontologySet);
     }
 
-    private static URI getURIForFile(File file) throws URISyntaxException {
-        return new URI(String.format("file:///%s", file.getAbsolutePath().replace("\\", "/")));
+    private static IRI getIRIForFile(File file) throws URISyntaxException {
+        return IRI.create(file);
     }
 
 
@@ -89,50 +80,56 @@ public class OntologyManager implements IOntologyManager {
      * @param propertyVisitors  To visit properties.
      * @return Map ontology's been loaded into.
      */
-    public IOntologyGraph load(IClassAnnotationVisitor<IOntologyConcept> annotationVisitor, IPropertyVisitor<IOntologyConcept>... propertyVisitors) throws OWLReasonerException, OWLTransformationException {
-        Map<URI, IOntologyConcept> uriToConcept = new HashMap<URI, IOntologyConcept>();
-        Map<URI, IOntologyProperty> uriToProperty = new HashMap<URI, IOntologyProperty>();
+    public IOntologyGraph load(IClassAnnotationVisitor<IOntologyConcept> annotationVisitor, IPropertyVisitor<IOntologyConcept>... propertyVisitors) throws OWLReasonerException/*, OWLTransformationException*/ {
+        Map<IRI, IOntologyConcept> uriToConcept = new HashMap<IRI, IOntologyConcept>();
+        Map<IRI, IOntologyProperty> uriToProperty = new HashMap<IRI, IOntologyProperty>();
         IHashTable<String, IOntologyConcept, Set<IOntologyConcept>> labelToConcept = new SetHashTable<String, IOntologyConcept>();
         IHashTable<String, IOntologyProperty, Set<IOntologyProperty>> labelToProperty = new SetHashTable<String, IOntologyProperty>();
         Set<IOntologyConcept> roots = new HashSet<IOntologyConcept>();
-        ReasonerSession session = OWLUtils.getReasonerSession(this.getOntology());
+        //ReasonerSession session = OWLUtils.getReasonerSession(this.getOntology());
         try {
-            this.reasoner = session.getReasoner();
-            for (OWLClass cls : this.getOntology().getReferencedClasses()) {
-                loadClass(cls, annotationVisitor, uriToConcept, labelToConcept, roots);
+            this.reasoner = new Reasoner(this.getOntology());
+            reasoner.prepareReasoner();
+            for (OWLClass cls : reasoner.getTopClassNode()) {
+                loadClass(cls, annotationVisitor, uriToConcept, labelToConcept, roots, true);
             }
-            for (OWLProperty property : this.getOntology().getReferencedObjectProperties()) {
+            for (OWLProperty property : reasoner.getTopObjectPropertyNode()) {
                 loadProperty(property, uriToProperty, labelToProperty, uriToConcept);
             }
             for (IPropertyVisitor<IOntologyConcept> visitor : propertyVisitors) {
                 loadProperties(visitor, uriToConcept);
             }
         } finally {
-            session.releaseSession();
+            if (reasoner != null) {
+                reasoner.dispose();
+            }
         }
         return new OntologyGraph(roots, uriToConcept, labelToConcept, uriToProperty, labelToProperty);
     }
 
-    private void loadProperty(OWLProperty property, Map<URI, IOntologyProperty> uriToProperty,
+    private void loadProperty(OWLProperty property, Map<IRI, IOntologyProperty> uriToProperty,
                               IHashTable<String, IOntologyProperty, Set<IOntologyProperty>> labelToProperty,
-                              Map<URI, IOntologyConcept> uriToConcept) {
+                              Map<IRI, IOntologyConcept> uriToConcept) {
         if (property.isAnonymous()) {
             return;
         }
         String label = null;
         for (OWLAnnotation annotation : property.getAnnotations(getOntology())) {
-            if (annotation instanceof OWLConstantAnnotation) {
-                OWLConstantAnnotation mayBeLabel = (OWLConstantAnnotation) annotation;
+            if (annotation instanceof OWLAnnotationImpl) {
+                OWLAnnotationImpl mayBeLabel = (OWLAnnotationImpl) annotation;
                 if (mayBeLabel.isLabel()) {
-                    label = mayBeLabel.getAnnotationValue().getLiteral();
+                    OWLAnnotationValue value = mayBeLabel.getValue();
+                    if (value instanceof OWLLiteral) {
+                        label = ((OWLLiteral) value).getLiteral();
+                    }
                 }
             }
         }
         Set<IOntologyConcept> domains = new HashSet<IOntologyConcept>();
         for (Object domain : property.getDomains(getOntology())) {
-            OWLDescription domainDescription = (OWLDescription) domain;
+            OWLClassExpression domainDescription = (OWLClassExpression) domain;
             for (OWLClass clazz : domainDescription.getClassesInSignature()) {
-                IOntologyConcept concept = uriToConcept.get(clazz.getURI());
+                IOntologyConcept concept = uriToConcept.get(clazz.getIRI());
                 if (concept != null) {
                     domains.add(concept);
                 }
@@ -140,18 +137,18 @@ public class OntologyManager implements IOntologyManager {
         }
         Set<IOntologyConcept> ranges = new HashSet<IOntologyConcept>();
         for (Object domain : property.getRanges(getOntology())) {
-            OWLDescription rangeDescription = (OWLDescription) domain;
+            OWLClassExpression rangeDescription = (OWLClassExpression) domain;
             for (OWLClass clazz : rangeDescription.getClassesInSignature()) {
-                IOntologyConcept concept = uriToConcept.get(clazz.getURI());
+                IOntologyConcept concept = uriToConcept.get(clazz.getIRI());
                 if (concept != null) {
                     ranges.add(concept);
                 }
             }
         }
-        IOntologyProperty ontologyProperty = new OntologyProperty(property.getURI(), label,
+        IOntologyProperty ontologyProperty = new OntologyProperty(property.getIRI(), label,
                 domains.toArray(new IOntologyConcept[domains.size()]), ranges.toArray(new IOntologyConcept[ranges.size()]),
                 property.isFunctional(getOntology()));
-        uriToProperty.put(property.getURI(), ontologyProperty);
+        uriToProperty.put(property.getIRI(), ontologyProperty);
         labelToProperty.insert(ontologyProperty.getNormalizedMainLabel(), ontologyProperty);
     }
 
@@ -160,20 +157,19 @@ public class OntologyManager implements IOntologyManager {
      * and gives them to the visitor
      */
 
-    private void loadProperties(IPropertyVisitor<IOntologyConcept> visitor, Map<URI, IOntologyConcept> concepts) throws OWLTransformationException {
+    private void loadProperties(IPropertyVisitor<IOntologyConcept> visitor, Map<IRI, IOntologyConcept> concepts) /*throws OWLTransformationException*/ {
 
-        for (OWLClass clazz : this.getOntology().getReferencedClasses()) {
-            URI uri = clazz.getURI();
+        for (OWLClass clazz : this.getOntology().getClassesInSignature()) {
+            IRI uri = clazz.getIRI();
             IOntologyConcept concept = concepts.get(uri);
-            Set<OWLRestriction> owlRestrictions;
-            owlRestrictions = OWLUtils.keep(this.getOntology(), clazz);
+            /*Set<OWLRestriction> owlRestrictions = OWLUtils.keep(this.getOntology(), clazz);
             for (OWLRestriction restriction : owlRestrictions) {
                 OWLPropertyExpression property = restriction.getProperty();
                 for (OWLClass friend : restriction.getClassesInSignature()) {
-                    URI friendId = friend.getURI();
+                    IRI friendId = friend.getIRI();
                     visitor.inRelationship(concept, concepts.get(friendId), property);
                 }
-            }
+            }*/
         }
     }
 
@@ -189,49 +185,52 @@ public class OntologyManager implements IOntologyManager {
      */
 
     private IOntologyConcept loadClass(OWLClass clazz, IClassAnnotationVisitor<IOntologyConcept> annotationVisitor,
-                                       Map<URI, IOntologyConcept> concepts, IHashTable<String, IOntologyConcept, Set<IOntologyConcept>> labelToConcept,
-                                       Set<IOntologyConcept> roots)
+                                       Map<IRI, IOntologyConcept> concepts, IHashTable<String, IOntologyConcept, Set<IOntologyConcept>> labelToConcept,
+                                       Set<IOntologyConcept> roots, boolean root)
             throws OWLReasonerException {
-        if (this.reasoner.isSatisfiable(clazz)) {
-            URI uri = clazz.getURI();
-            IOntologyConcept concept = concepts.get(uri);
-            if (concept == null) {
+        if (!this.reasoner.isSatisfiable(clazz) || clazz.equals(OWLDataFactoryImpl.getInstance().getOWLNothing())) {
+            return null;
+        }
+        IRI uri = clazz.getIRI();
+        IOntologyConcept concept = concepts.get(uri);
+        if (concept == null) {
+            if (!clazz.equals(OWLDataFactoryImpl.getInstance().getOWLThing())) {
                 annotationVisitor.start();
                 for (OWLAnnotation annotation : clazz.getAnnotations(this.getOntology())) {
                     annotation.accept(annotationVisitor);
                 }
                 concept = annotationVisitor.getOntologyConcept(uri);
                 concept.setOWLClass(clazz);
-                Set<Set<OWLClass>> children = this.reasoner.getSubClasses(clazz);
-                for (Set<OWLClass> setOfClasses : children) {
-                    for (OWLClass child : setOfClasses) {
-                        if (!child.equals(clazz)) {
-                            IOntologyConcept childConcept = loadClass(child, annotationVisitor, concepts, labelToConcept, roots);
-                            if (childConcept != null) {
-                                childConcept.addParent(concept);
-                                concept.addChild(childConcept);
-                                roots.remove(childConcept);
-                            }
-                        }
-                    }
-                }
                 concepts.put(uri, concept);
-                roots.add(concept);
+                if (root) {
+                    roots.add(concept);
+                }
                 labelToConcept.insert(concept.getNormalizedMainLabel(), concept);
             }
-            return concept;
+            NodeSet<OWLClass> children = this.reasoner.getSubClasses(clazz, true);
+            for (OWLClass child : children.getFlattened()) {
+                if (!child.equals(clazz)) {
+                    IOntologyConcept childConcept = loadClass(child, annotationVisitor, concepts, labelToConcept, roots, root && concept == null);
+                    if (childConcept != null && concept != null) {
+                        childConcept.addParent(concept);
+                        concept.addChild(childConcept);
+                    }
+                }
+            }
         }
-        return null;
+        return concept;
+        /*}
+        return null;*/
     }
 
     public static void addEquivalentClasses(OWLOntologyManager manager, OWLOntology ontology, Set<OWLClass> clazzes) throws OWLOntologyChangeException {
-        manager.addAxiom(ontology, new OWLEquivalentClassesAxiomImpl(new OWLDataFactoryImpl(), clazzes));
+        manager.addAxiom(ontology, new OWLEquivalentClassesAxiomImpl(new OWLDataFactoryImpl(), clazzes, Collections.<OWLAnnotation>emptySet()));
     }
 
     public static void saveResult(OWLOntologyManager manager, OWLOntology ontology, File file) throws OWLOntologyStorageException, URISyntaxException {
-        File temp = new File(ontology.getURI().getPath());
+        File temp = new File(ontology.getOntologyID().getOntologyIRI().toURI().getPath());
         temp.delete();
-        manager.saveOntology(ontology, getOntologyFormatByFile(file), getURIForFile(file));
+        manager.saveOntology(ontology, getOntologyFormatByFile(file), getIRIForFile(file));
     }
 
     private static OWLOntologyFormat getOntologyFormatByFile(File file) {

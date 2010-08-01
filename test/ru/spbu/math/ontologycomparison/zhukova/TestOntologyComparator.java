@@ -1,8 +1,8 @@
 package ru.spbu.math.ontologycomparison.zhukova;
 
 import junit.framework.TestCase;
-import net.sourceforge.fluxion.utils.OWLTransformationException;
-import org.semanticweb.owl.inference.OWLReasonerException;
+//import net.sourceforge.fluxion.utils.OWLTransformationException;
+import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ILogger;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.OntologyGraphBuilder;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
@@ -30,7 +30,7 @@ public class TestOntologyComparator extends TestCase {
     private IOntologyGraph ontoJavaCSharpGraph;
     private IOntologyGraph ontoDrinkGraph;
 
-    public void setUp() throws FileNotFoundException, OWLTransformationException, OWLReasonerException {
+    public void setUp() throws FileNotFoundException, /*OWLTransformationException,*/ OWLReasonerException {
         OntologyGraphBuilder builder = new OntologyGraphBuilder();
         this.ontoPLGraph = builder.build(OntologyTestConstants.ONTOPL_URL);
         this.ontoDrinkGraph = builder.build(OntologyTestConstants.ONTODRINK_URL);

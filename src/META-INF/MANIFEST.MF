@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Class-Path: lib/util-2.2.0.jar lib/rdfxmlparser-2.2.0.jar lib/jaws-bin
+ .jar lib/pellet-core-2.0.0-RC7.jar lib/jaws-src.zip lib/turtlerendere
+ r-2.2.0.jar lib/pellet-modularity-2.0.0-RC7.jar lib/rdfxmlrenderer-2.
+ 2.0.jar lib/utils-1.0-SNAPSHOT.jar lib/pellet-query-2.0.0-RC7.jar lib
+ /owlxmlparser-2.2.0.jar lib/commons-lang-2.2.jar lib/mansyntaxparser-
+ 2.2.0.jar lib/mansyntaxrenderer-2.2.0.jar lib/pellet-pellint-2.0.0-RC
+ 7.jar lib/change-2.2.0.jar lib/pellet-owlapi-2.0.0-RC7.jar lib/pellet
+ -dig-2.0.0-RC7.jar lib/functionalrenderer-2.2.0.jar lib/api-2.2.0.jar
+  lib/pellet-el-2.0.0-RC7.jar lib/pellet-datatypes-2.0.0-RC7.jar lib/o
+ wlxmlrenderer-2.2.0.jar lib/pellet-cli-2.0.0-RC7.jar lib/relaxngDatat
+ ype-2.2.jar lib/commons-logging-1.1.1.jar lib/impl-2.2.0.jar lib/pell
+ et-explanation-2.0.0-RC7.jar lib/rdfapi-2.2.0.jar lib/pellet-jena-2.0
+ .0-RC7.jar lib/owlapi-3.0.0.zip lib/latexrenderer-2.2.0.jar lib/obopa
+ rser-2.2.0.jar lib/krssparser-2.2.0.jar lib/turtleparser-2.2.0.jar li
+ b/pellet-rules-2.0.0-RC7.jar lib/junit.jar lib/owlexpression-2.2.0.ja
+ r lib/xsdlib-2.2.jar lib/apibinding-2.2.0.jar lib/log4j-1.2.9.jar lib
+ /oborenderer-2.2.0.jar lib/krssrenderer-2.2.0.jar lib/aterm-java-1.6.
+ jar lib/functionalparser-2.2.0.jar
+Created-By: IntelliJ IDEA
+Main-Class: ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.M
+ ain
+

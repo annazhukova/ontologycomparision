@@ -15,7 +15,7 @@ import java.util.Set;
  * @author Anna R. Zhukova
  */
 public class SelectingTool extends Tool {
-    private static boolean isOnlySuperVerticesSelection;
+    private static boolean isOnlySuperVerticesSelection = true;
     private static Point left;
     private static int rectangleX;
     private static int rectangleY;

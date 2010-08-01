@@ -1,7 +1,8 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl;
 
 import edu.smu.tspell.wordnet.Synset;
-import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyRelation;
 import ru.spbu.math.ontologycomparison.zhukova.util.IHashMapTable;
@@ -10,7 +11,6 @@ import ru.spbu.math.ontologycomparison.zhukova.util.RecursiveAddHelper;
 import ru.spbu.math.ontologycomparison.zhukova.util.impl.HashMapTable;
 import ru.spbu.math.ontologycomparison.zhukova.util.impl.SetHashTable;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -25,8 +25,6 @@ public class OntologyConcept extends LabeledOntologyEntity implements IOntologyC
     private final Set<IOntologyConcept> parents = new HashSet<IOntologyConcept>();
     private final Set<IOntologyConcept> children = new HashSet<IOntologyConcept>();
     private final IHashTable<String, IOntologyRelation, Set<IOntologyRelation>> labelToSubjectRelation = new SetHashTable<String, IOntologyRelation>();
-    private boolean isRoot = true;
-    private int depth = 0;
     private static final RecursiveAddHelper<IOntologyConcept> RECURSIVE_ADD_HELPER = new RecursiveAddHelper<IOntologyConcept>();
     private static final RecursiveAddHelper.ElementsToAddExtractor<IOntologyConcept> EXTRACTOR = new RecursiveAddHelper.ElementsToAddExtractor<IOntologyConcept>() {
         public Collection<IOntologyConcept> extract(IOntologyConcept element) {
@@ -36,25 +34,20 @@ public class OntologyConcept extends LabeledOntologyEntity implements IOntologyC
     private static final int MAX_RECURSIVE_LEVEL = 5;
     private static final int MAX_RECURSIVE_SIZE = 20;
     private OWLClass clazz;
-    /*private static final URI SUBCLASS_URI;
+    /*private static final IRI SUBCLASS_URI;
 
     static {
-        URI uri = null;
+        IRI uri = null;
         try {
-            uri = new URI("http://www.w3.org/TR/rdf-schema/#ch_subclassof");
+            uri = new IRI("http://www.w3.org/TR/rdf-schema/#ch_subclassof");
         } catch (URISyntaxException e) {
             // never happens
         }
         SUBCLASS_URI = uri;
     }*/
 
-    public OntologyConcept(URI uri, String label, int depth) {
+    public OntologyConcept(IRI uri, String label) {
         super(uri, label);
-        this.depth = depth;
-    }
-
-    public OntologyConcept(URI uri, String label) {
-        this(uri, label, 0);
     }
 
     public Set<IOntologyRelation> getSubjectRelations() {
@@ -76,7 +69,6 @@ public class OntologyConcept extends LabeledOntologyEntity implements IOntologyC
 
     public void addParent(IOntologyConcept parent) {
         parents.add(parent);
-        isRoot = false;
         /*this.labelToSubjectRelation.insert(WordNetRelation.HYPONYM.getRelatedOntologyConcept(), new OntologyRelation(SUBCLASS_URI, WordNetRelation.HYPONYM.getRelatedOntologyConcept(), true, this, parent));*/
     }
 

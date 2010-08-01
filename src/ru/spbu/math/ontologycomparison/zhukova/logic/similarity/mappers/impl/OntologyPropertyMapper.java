@@ -1,5 +1,6 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.similarity.mappers.impl;
 
+import org.semanticweb.owlapi.model.IRI;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ILogger;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
@@ -9,7 +10,6 @@ import ru.spbu.math.ontologycomparison.zhukova.util.ITriple;
 import ru.spbu.math.ontologycomparison.zhukova.util.impl.SetHelper;
 import ru.spbu.math.ontologycomparison.zhukova.util.impl.Triple;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.Set;
 
@@ -38,9 +38,9 @@ public class OntologyPropertyMapper extends Mapper<IOntologyProperty, IOntologyP
     }
 
     public Collection<IOntologyProperty> map() {
-        Set<URI> commonUriSet = SetHelper.INSTANCE.setIntersection(firstGraph.getPropertyUris(),
+        Set<IRI> commonUriSet = SetHelper.INSTANCE.setIntersection(firstGraph.getPropertyUris(),
                 secondGraph.getPropertyUris());
-        for (URI uri : commonUriSet) {
+        for (IRI uri : commonUriSet) {
             IOntologyProperty first = firstGraph.getUriToProperty().get(uri);
             IOntologyProperty second = secondGraph.getUriToProperty().get(uri);
             bind(first, second, SAME_URI);

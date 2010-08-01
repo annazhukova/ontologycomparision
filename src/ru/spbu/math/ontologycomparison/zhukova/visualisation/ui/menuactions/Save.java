@@ -1,6 +1,6 @@
 package ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.menuactions;
 
-import org.semanticweb.owl.model.*;
+import org.semanticweb.owlapi.model.*;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.OntologyManager;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.ConceptVertex;
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.model.impl.SimpleVertex;

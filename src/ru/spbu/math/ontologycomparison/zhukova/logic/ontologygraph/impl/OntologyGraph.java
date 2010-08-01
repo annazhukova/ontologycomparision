@@ -1,12 +1,12 @@
 package ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl;
 
 import edu.smu.tspell.wordnet.Synset;
+import org.semanticweb.owlapi.model.IRI;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConcept;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyProperty;
 import ru.spbu.math.ontologycomparison.zhukova.util.IHashTable;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +15,7 @@ import java.util.Set;
  * @author Anna Zhukova
  */
 public class OntologyGraph implements IOntologyGraph {
-    private final Map<URI, IOntologyConcept> uriToConcept;
+    private final Map<IRI, IOntologyConcept> uriToConcept;
 
     private final IHashTable<String, IOntologyConcept, Set<IOntologyConcept>> labelToConcept;
 
@@ -23,12 +23,12 @@ public class OntologyGraph implements IOntologyGraph {
 
     private final Set<IOntologyConcept> roots;
 
-    private final Map<URI, IOntologyProperty> uriToProperty;
+    private final Map<IRI, IOntologyProperty> uriToProperty;
 
     private final IHashTable<String, IOntologyProperty, Set<IOntologyProperty>> labelToProperty;
 
-    public OntologyGraph(Set<IOntologyConcept> roots, Map<URI, IOntologyConcept> uriToConcept, IHashTable<String, IOntologyConcept, Set<IOntologyConcept>> labelToConcept,
-                    Map<URI, IOntologyProperty> uriToProperty, IHashTable<String, IOntologyProperty, Set<IOntologyProperty>> labelToProperty) {
+    public OntologyGraph(Set<IOntologyConcept> roots, Map<IRI, IOntologyConcept> uriToConcept, IHashTable<String, IOntologyConcept, Set<IOntologyConcept>> labelToConcept,
+                    Map<IRI, IOntologyProperty> uriToProperty, IHashTable<String, IOntologyProperty, Set<IOntologyProperty>> labelToProperty) {
         this.uriToConcept = uriToConcept;
         this.labelToConcept = labelToConcept;
         this.roots = roots;
@@ -36,15 +36,15 @@ public class OntologyGraph implements IOntologyGraph {
         this.labelToProperty = labelToProperty;
     }
 
-    public Map<URI, IOntologyConcept> getUriToConcept() {
+    public Map<IRI, IOntologyConcept> getUriToConcept() {
         return uriToConcept;
     }
 
-    public Set<URI> getConceptUris() {
+    public Set<IRI> getConceptUris() {
         return uriToConcept.keySet();
     }
 
-    public Set<URI> getPropertyUris() {
+    public Set<IRI> getPropertyUris() {
         return uriToProperty.keySet();
     }
 
@@ -76,7 +76,7 @@ public class OntologyGraph implements IOntologyGraph {
         return roots;
     }
 
-    public Map<URI, IOntologyProperty> getUriToProperty() {
+    public Map<IRI, IOntologyProperty> getUriToProperty() {
         return uriToProperty;
     }
 
@@ -84,7 +84,7 @@ public class OntologyGraph implements IOntologyGraph {
         return labelToProperty;
     }
 
-    public IOntologyConcept getConceptByURI(URI uri) {
+    public IOntologyConcept getConceptByURI(IRI uri) {
         return this.uriToConcept != null ? this.uriToConcept.get(uri) : null;
     }
 
