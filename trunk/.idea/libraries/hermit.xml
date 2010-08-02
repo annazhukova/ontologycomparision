@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="hermit">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/hermit/HermiT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
