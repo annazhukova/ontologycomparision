@@ -26,12 +26,13 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="junit" level="project" />
-    <orderEntry type="library" name="common" level="project" />
     <orderEntry type="library" name="jaws" level="project" />
-    <orderEntry type="library" name="owlapi" level="project" />
     <orderEntry type="library" name="hermit" level="project" />
     <orderEntry type="library" name="owlutils" level="project" />
     <orderEntry type="library" name="log4j" level="project" />
+    <orderEntry type="library" name="common-lang" level="project" />
+    <orderEntry type="library" name="common-logging" level="project" />
+    <orderEntry type="library" name="owlapi" level="project" />
   </component>
 </module>
 

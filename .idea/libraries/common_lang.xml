@@ -1,7 +1,7 @@
 <component name="libraryTable">
-  <library name="log4j">
+  <library name="common-lang">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/log4j/log4j-1.2.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-lang/commons-lang-2.2.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
