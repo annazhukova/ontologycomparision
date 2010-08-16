@@ -32,7 +32,7 @@ public class SynsetMapper extends Mapper<IOntologyConcept, Synset, WordNetRelati
 
     public Collection<IOntologyConcept> map() {
         ConceptToSynsetComparator conceptToSynsetComparator = new ConceptToSynsetComparator();
-        /*logger.log("SYNSET HELPER FOR GRAPH: %s\n", graph);*/
+        logger.log("mapping ontology concepts to for WordNet synsets");
         for (IOntologyConcept concept : conceptCollection) {
             Collection<Synset> synsetCollection = getSynsets(concept);
             for (Synset synset : synsetCollection) {
@@ -41,7 +41,7 @@ public class SynsetMapper extends Mapper<IOntologyConcept, Synset, WordNetRelati
                 }
             }
         }
-        logger.log("binded synsets");
+        logger.log("WordNet synsets mapping is done");
         return conceptCollection;
     }
 

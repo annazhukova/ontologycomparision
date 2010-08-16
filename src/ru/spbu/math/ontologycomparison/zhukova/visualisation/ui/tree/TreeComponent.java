@@ -8,11 +8,10 @@ import ru.spbu.math.ontologycomparison.zhukova.visualisation.modelbuilding.tree.
 import ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.graphpane.GraphPane;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeSelectionModel;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -46,6 +45,15 @@ public class TreeComponent extends JSplitPane {
         getLeftComponent().repaint();
         getRightComponent().repaint();
         repaint();
+    }
+
+    public void clear() {
+        if (left != null) {
+            left.clear();
+        }
+        if (right != null) {
+            right.clear();
+        }
     }
 
     private static class TreePane extends JScrollPane {
@@ -125,6 +133,12 @@ public class TreeComponent extends JSplitPane {
 
         public JScrollPane getTreeScrollPane() {
             return scrollPane;
+        }
+
+        public void clear() {
+            this.tree.setVisible(false);
+            panel.repaint();
+            scrollPane.repaint();
         }
     }
 }

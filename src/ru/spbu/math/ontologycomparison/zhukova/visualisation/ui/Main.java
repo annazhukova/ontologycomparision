@@ -44,6 +44,7 @@ public class Main implements ILogger {
     private final JSplitPane visibilitySettingsSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, trees, checkBoxPanel);
     private final JSplitPane componentSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, visibilitySettingsSplitPane, graphScrollPane);
     private final JSplitPane general = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, componentSplitPane, infoScrollPane);
+    private Open open;
 
 
     public void setTrees(IPair<TreeModel, SetHashTable<IOntologyConcept, CheckNode>> firstTree, IPair<TreeModel, SetHashTable<IOntologyConcept, CheckNode>> secondTree) {
@@ -60,7 +61,9 @@ public class Main implements ILogger {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        new Main().getFrame();
+        Main main = new Main();
+        main.getFrame();
+        main.open.actionPerformed(null);
     }
 
     public JFrame getFrame() {
@@ -257,11 +260,19 @@ public class Main implements ILogger {
     }
 
     public AbstractAction[] getActions() {
-        Open open = new Open();
+        open = new Open();
         open.setMain(this);
         Save save = new Save();
         save.setMain(this);
         open.addListener(save);
         return new AbstractAction[]{open, save};
+    }
+
+    public void clear() {
+        if (graphPane != null) {
+            graphPane.clear();
+            trees.clear();
+        }
+        info("Press \"Open\" to select ontologies to compare");
     }
 }
