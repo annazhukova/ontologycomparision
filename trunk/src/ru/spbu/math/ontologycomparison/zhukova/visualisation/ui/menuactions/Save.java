@@ -32,8 +32,10 @@ public class Save extends AbstractAction implements Open.IListener {
     }
 
     public void actionPerformed(ActionEvent e) {
+        setEnabled(false);
         final File file = FileChoosers.getSaveFileChooser();
         if (file == null) {
+            setEnabled(true);
             return;
         }
         this.main.log("Saving ontology");
@@ -67,6 +69,8 @@ public class Save extends AbstractAction implements Open.IListener {
                     JOptionPane.showMessageDialog(Save.this.main.getFrame(), e1.getMessage(),
                             "Cannot save ontology", JOptionPane.ERROR_MESSAGE);
                     e1.printStackTrace();
+                } finally {
+                    setEnabled(true);
                 }
             }
         }).start();
@@ -77,11 +81,19 @@ public class Save extends AbstractAction implements Open.IListener {
     }
 
     public void openCalled() {
+        setEnabled(false);
+    }
+
+    public void openDone() {
+        setEnabled(ontology != null);
+    }
+
+    public void ontologiesChosen() {
         this.manager = null;
         this.ontology = null;
     }
 
-    public void openDone(OWLOntologyManager manager, OWLOntology ontology) {
+    public void graphModelBuilt(OWLOntologyManager manager, OWLOntology ontology) {
         this.manager = manager;
         this.ontology = ontology;
     }

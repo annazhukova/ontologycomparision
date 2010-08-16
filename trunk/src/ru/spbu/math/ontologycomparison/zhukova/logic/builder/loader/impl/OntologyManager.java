@@ -25,7 +25,9 @@ import uk.ac.manchester.cs.owl.owlapi.OWLAnnotationImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLEquivalentClassesAxiomImpl;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.*;
 
@@ -162,12 +164,19 @@ public class OntologyManager implements IOntologyManager {
         for (OWLClass clazz : this.getOntology().getClassesInSignature()) {
             IRI uri = clazz.getIRI();
             IOntologyConcept concept = concepts.get(uri);
+            /*for (OWLClassAxiom classAxiom : ontology.getAxioms(clazz)) {
+                for (OWLClass friend : classAxiom.getClassesInSignature()) {
+                    IRI friendIri = friend.getIRI();
+                    System.out.println(concept + " + " +  concepts.get(friendIri) + " = " + classAxiom);
+                    *//*visitor.inRelationship(concept, concepts.get(friendIri), classAxiom.getNNF());*//*
+                }
+            }*/
             /*Set<OWLRestriction> owlRestrictions = OWLUtils.keep(this.getOntology(), clazz);
             for (OWLRestriction restriction : owlRestrictions) {
                 OWLPropertyExpression property = restriction.getProperty();
                 for (OWLClass friend : restriction.getClassesInSignature()) {
                     IRI friendId = friend.getIRI();
-                    visitor.inRelationship(concept, concepts.get(friendId), property);
+                    visitor.inRe lationship(concept, concepts.get(friendId), property);
                 }
             }*/
         }

@@ -43,33 +43,55 @@ public class Open extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
+        onOpenCalled();
         final File firstOwl = FileChoosers.getOpenFileChooser("Select First Ontology");
         if (firstOwl == null) {
+            onOpenDone();
             return;
         }
-        this.main.getGraphModel().clear();
-        this.main.getGraphModel().update();
         this.main.log("Select second ontology");
         final File secondOwl = FileChoosers.getOpenFileChooser("Select Second Ontology");
         if (secondOwl == null) {
             this.main.log("Press \"Open\" to select ontologies to compare");
+            onOpenDone();
             return;
         }
+        this.main.clear();
         this.main.log("Loading ontologies");
-        for (IListener listener : listeners) {
-            listener.openCalled();
-        }
+        onOntologiesChosen();
         main.showProgressBar();
         new Thread(new Runnable() {
             public void run() {
-        try {
-            buildGraph(firstOwl, secondOwl);
-            Open.this.main.setIsChanged(true);
-        } catch (Throwable e1) {
-            handleException(e1);
-        }
-        }
+                try {
+                    buildGraph(firstOwl, secondOwl);
+                    Open.this.main.setIsChanged(true);
+                } catch (Throwable e1) {
+                    handleException(e1);
+                } finally {
+                    onOpenDone();
+                }
+            }
         }).start();
+    }
+
+    private void onOpenDone() {
+        setEnabled(true);
+        for (IListener listener : listeners) {
+            listener.openDone();
+        }
+    }
+
+    private void onOpenCalled() {
+        setEnabled(false);
+        for (IListener listener : listeners) {
+            listener.openCalled();
+        }
+    }
+
+    private void onOntologiesChosen() {
+        for (IListener listener : listeners) {
+            listener.ontologiesChosen();
+        }
     }
 
     private void handleException(Throwable e1) {
@@ -86,12 +108,12 @@ public class Open extends AbstractAction {
             final IOntologyGraph[] firstOntologyGraph = {null};
             Thread firstGraphThread = new Thread(new Runnable() {
                 public void run() {
-            try {
-                firstOntologyGraph[0] = firstGraphBuilder.build(firstFile);
-            } catch (Throwable e1) {
-                handleException(e1);
-            }
-             }
+                    try {
+                        firstOntologyGraph[0] = firstGraphBuilder.build(firstFile);
+                    } catch (Throwable e1) {
+                        handleException(e1);
+                    }
+                }
             });
             firstGraphThread.start();
             final OntologyGraphBuilder secondGraphBuilder = new OntologyGraphBuilder();
@@ -115,9 +137,7 @@ public class Open extends AbstractAction {
             GraphModel graphModel = myGraphModelBuilder.buildGraphModel(main.getGraphPane(), main.areUnmappedConceptsVisible(), main.areUnmappedConceptsWithSynsetsVisible());
             OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
             OWLOntology result = OntologyManager.saveOntologies(manager, firstGraphBuilder.getOntology(), secondGraphBuilder.getOntology());
-            for (IListener listener : listeners) {
-                listener.openDone(manager, result);
-            }
+            onGraphModelBuilt(manager, result);
             this.main.setGraphModel(graphModel);
             ITreeBuilder firstTreeBuilder = new TreeBuilder(firstFile.getName(), firstOntologyGraph[0].getRoots());
             ITreeBuilder secondTreeBuilder = new TreeBuilder(secondFile.getName(), secondOntologyGraph.getRoots());
@@ -133,6 +153,12 @@ public class Open extends AbstractAction {
         }
     }
 
+    private void onGraphModelBuilt(OWLOntologyManager manager, OWLOntology result) {
+        for (IListener listener : listeners) {
+            listener.graphModelBuilt(manager, result);
+        }
+    }
+
     public void setMain(Main main) {
         this.main = main;
     }
@@ -141,6 +167,10 @@ public class Open extends AbstractAction {
 
         void openCalled();
 
-        void openDone(OWLOntologyManager manager, OWLOntology ontology);
+        void ontologiesChosen();
+
+        void graphModelBuilt(OWLOntologyManager manager, OWLOntology ontology);
+
+        void openDone();
     }
 }

@@ -130,6 +130,13 @@ public class GraphPane extends JPanel implements IGraphPane, IGraphModel.IVertex
         update();
     }
 
+    public void clear() {
+        if (graphModel != null) {
+            this.graphModel.clear();
+            this.graphModel.update();
+        }
+    }
+
     public static interface SuperVertexSelectionListener {
 
         void selectionCleared();
