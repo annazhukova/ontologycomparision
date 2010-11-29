@@ -87,9 +87,9 @@ public class GraphModelBuilder implements IGraphModelBuilder {
             conceptSet.add(mainConcept);
             SuperVertex superVertex = keyToSuperVertexMap.get(conceptSet);
             if (superVertex != null) {
-                if (superVertex.isHidden()) {
-                    continue;
-                }
+                //if (superVertex.isHidden()) {
+                //    continue;
+                //}
                 superVertex.setY(y);
                 superVertex.setX(currentX);
                 currentX += superVertex.getWidth() + X_GAP;
@@ -107,9 +107,9 @@ public class GraphModelBuilder implements IGraphModelBuilder {
             }
             superVertexWidth = Math.max(superVertexWidth, superLabel.length() * Vertex.LETTER_WIDTH + 2 * X_GAP);
             boolean hidden = isHidden(showUnmapped, showUnmappedWithSynsets, mainConcept, superLabel);
-            if (hidden) {
-                continue;
-            }
+            //if (hidden) {
+            //    continue;
+            //}
             if (!superLabel.equals(SimilarityReason.NO.name())) {
                 superVertex = createSuperVertex(graphModel, currentX, y, superLabel, superVertexWidth + X_GAP, mainConcept, conceptSet, synset);
                 if (hidden) {

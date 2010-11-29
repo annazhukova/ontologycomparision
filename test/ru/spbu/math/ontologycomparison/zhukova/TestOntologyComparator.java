@@ -1,14 +1,14 @@
 package ru.spbu.math.ontologycomparison.zhukova;
 
 import junit.framework.TestCase;
-//import net.sourceforge.fluxion.utils.OWLTransformationException;
 import org.semanticweb.owlapi.reasoner.OWLReasonerException;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ILogger;
-import ru.spbu.math.ontologycomparison.zhukova.logic.builder.OntologyGraphBuilder;
+import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.OntologyManager;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.IOntologyComparator;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.impl.OntologyComparator;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 /**
@@ -31,12 +31,11 @@ public class TestOntologyComparator extends TestCase {
     private IOntologyGraph ontoDrinkGraph;
 
     public void setUp() throws FileNotFoundException, /*OWLTransformationException,*/ OWLReasonerException {
-        OntologyGraphBuilder builder = new OntologyGraphBuilder();
-        this.ontoPLGraph = builder.build(OntologyTestConstants.ONTOPL_URL);
-        this.ontoDrinkGraph = builder.build(OntologyTestConstants.ONTODRINK_URL);
-        this.ontoPLFull = builder.build(OntologyTestConstants.ONTOPLFULL_URL);
-        this.ontoJavaCSharpGraph = builder.build(OntologyTestConstants.ONTOJAVASHARP_URL);
-        this.ontoJavaGraph = builder.build(OntologyTestConstants.ONTOJAVA_URL);
+        this.ontoPLGraph = new OntologyManager(new FileInputStream(OntologyTestConstants.ONTOPL_URL)).load();
+        this.ontoDrinkGraph = new OntologyManager(new FileInputStream(OntologyTestConstants.ONTODRINK_URL)).load();
+        this.ontoPLFull = new OntologyManager(new FileInputStream(OntologyTestConstants.ONTOPLFULL_URL)).load();
+        this.ontoJavaCSharpGraph = new OntologyManager(new FileInputStream(OntologyTestConstants.ONTOJAVASHARP_URL)).load();
+        this.ontoJavaGraph = new OntologyManager(new FileInputStream(OntologyTestConstants.ONTOJAVA_URL)).load();
     }
 
     public void testSimilarityOfTotallyDifferentOntologies() {

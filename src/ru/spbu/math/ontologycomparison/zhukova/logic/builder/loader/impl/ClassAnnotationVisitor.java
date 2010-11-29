@@ -6,8 +6,6 @@ import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyConc
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.impl.OntologyConcept;
 import uk.ac.manchester.cs.owl.owlapi.OWLAnnotationImpl;
 
-import java.net.URI;
-
 /**
  * @author Anna Zhukova
  */
