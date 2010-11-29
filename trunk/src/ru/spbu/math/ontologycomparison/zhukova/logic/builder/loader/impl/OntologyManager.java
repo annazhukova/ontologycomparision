@@ -8,9 +8,8 @@ import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.DefaultOntologyFormat;
 import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.reasoner.NodeSet;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerException;
+import org.semanticweb.owlapi.reasoner.*;
+import ru.spbu.math.ontologycomparison.zhukova.logic.ILogger;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.IClassAnnotationVisitor;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.IOntologyManager;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.IPropertyVisitor;
@@ -38,6 +37,16 @@ import java.util.*;
 public class OntologyManager implements IOntologyManager {
     private OWLOntology ontology;
     private OWLReasoner reasoner;
+    private OWLOntologyManager manager;
+    private ILogger logger = new ILogger() {
+        public void log(String log) {
+            // do nothing
+        }
+
+        public void info(String log) {
+            // do nothing
+        }
+    };
 
     /**
      * Create an instance with ontology read from the given InputStream.
@@ -45,13 +54,18 @@ public class OntologyManager implements IOntologyManager {
      * @param ontologyInput InputStream with ontology
      */
     public OntologyManager(InputStream ontologyInput) {
-        OWLOntologyManager manager = OWLManager.createOWLOntologyManager(OWLDataFactoryImpl.getInstance());
+        this.manager = OWLManager.createOWLOntologyManager(OWLDataFactoryImpl.getInstance());
         try {
             this.ontology = manager.loadOntologyFromOntologyDocument(ontologyInput);
         } catch (OWLOntologyCreationException e) {
             throw new RuntimeException("Can't load ontology", e);
         }
 
+    }
+
+    public OntologyManager(File ontologyFile, ILogger logger) {
+        this(ontologyFile);
+        this.logger = logger;
     }
 
     public OntologyManager(File ontologyFile) {
@@ -90,8 +104,41 @@ public class OntologyManager implements IOntologyManager {
         Set<IOntologyConcept> roots = new HashSet<IOntologyConcept>();
         //ReasonerSession session = OWLUtils.getReasonerSession(this.getOntology());
         try {
-            this.reasoner = new Reasoner(this.getOntology());
+            OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
+            // We'll now create an instance of an OWLReasoner (the implementation being provided by HermiT as
+            // we're using the HermiT reasoner factory). The are two categories of reasoner, Buffering and
+            // NonBuffering. In our case, we'll create the buffering reasoner, which is the default kind of reasoner.
+            // We'll also attach a progress monitor to the reasoner. To do this we set up a configuration that
+            // knows about a progress monitor.
+
+            // Create a console progress monitor. This will print the reasoner progress out to the console.
+            ReasonerProgressMonitor progressMonitor = new ReasonerProgressMonitor() {
+                public void reasonerTaskStarted(String s) {
+                    OntologyManager.this.logger.log(s);
+                }
+
+                public void reasonerTaskStopped() {
+                    OntologyManager.this.logger.log("Stopped");
+                }
+
+                public void reasonerTaskProgressChanged(int i, int i1) {
+                    OntologyManager.this.logger.log("Reasoner task progress " + i + " " + i1);
+                }
+
+                public void reasonerTaskBusy() {
+                    OntologyManager.this.logger.log("Busy");
+                }
+            };
+            // Specify the progress monitor via a configuration. We could also specify other setup parameters in
+            // the configuration, and different reasoners may accept their own defined parameters this way.
+            OWLReasonerConfiguration config = new SimpleConfiguration(progressMonitor);
+            // Create a reasoner that will reason over our ontology and its imports closure. Pass in the configuration.
+            this.reasoner = reasonerFactory.createReasoner(this.getOntology(), config);
+
+            // Ask the reasoner to do all the necessary work now
             reasoner.prepareReasoner();
+
+
             for (OWLClass cls : reasoner.getTopClassNode()) {
                 loadClass(cls, annotationVisitor, uriToConcept, labelToConcept, roots, true);
             }
@@ -107,6 +154,15 @@ public class OntologyManager implements IOntologyManager {
             }
         }
         return new OntologyGraph(roots, uriToConcept, labelToConcept, uriToProperty, labelToProperty);
+    }
+
+    /**
+     * Loads ontology into Map id -> internal node implementation.
+     *
+     * @return Map ontology's been loaded into.
+     */
+    public IOntologyGraph load() throws OWLReasonerException {
+        return this.load(new ClassAnnotationVisitor(), new PropertyVisitor());
     }
 
     private void loadProperty(OWLProperty property, Map<IRI, IOntologyProperty> uriToProperty,

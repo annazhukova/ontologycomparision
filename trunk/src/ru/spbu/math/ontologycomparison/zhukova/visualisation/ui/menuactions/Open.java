@@ -6,8 +6,9 @@ package ru.spbu.math.ontologycomparison.zhukova.visualisation.ui.menuactions;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import ru.spbu.math.ontologycomparison.zhukova.logic.builder.OntologyGraphBuilder;
+import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.ClassAnnotationVisitor;
 import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.OntologyManager;
+import ru.spbu.math.ontologycomparison.zhukova.logic.builder.loader.impl.PropertyVisitor;
 import ru.spbu.math.ontologycomparison.zhukova.logic.ontologygraph.IOntologyGraph;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.IOntologyComparator;
 import ru.spbu.math.ontologycomparison.zhukova.logic.similarity.impl.OntologyComparator;
@@ -104,21 +105,21 @@ public class Open extends AbstractAction {
     private void buildGraph(final File firstFile, final File secondFile) throws IOException {
         try {
             this.main.log(String.format("Loading %s...", firstFile.getName()));
-            final OntologyGraphBuilder firstGraphBuilder = new OntologyGraphBuilder();
+            final OntologyManager firstOntologyManager = new OntologyManager(firstFile, this.main);
             final IOntologyGraph[] firstOntologyGraph = {null};
             Thread firstGraphThread = new Thread(new Runnable() {
                 public void run() {
                     try {
-                        firstOntologyGraph[0] = firstGraphBuilder.build(firstFile);
+                        firstOntologyGraph[0] = firstOntologyManager.load(new ClassAnnotationVisitor(), new PropertyVisitor());
                     } catch (Throwable e1) {
                         handleException(e1);
                     }
                 }
             });
             firstGraphThread.start();
-            final OntologyGraphBuilder secondGraphBuilder = new OntologyGraphBuilder();
+            final OntologyManager secondOntologyManager = new OntologyManager(secondFile, this.main);
             Open.this.main.log(String.format("Loading %s...", secondFile.getName()));
-            IOntologyGraph secondOntologyGraph = secondGraphBuilder.build(secondFile);
+            IOntologyGraph secondOntologyGraph = secondOntologyManager.load(new ClassAnnotationVisitor(), new PropertyVisitor());
             try {
                 firstGraphThread.join();
             } catch (InterruptedException e) {
@@ -136,7 +137,7 @@ public class Open extends AbstractAction {
             this.main.log("Visualising ontologies...");
             GraphModel graphModel = myGraphModelBuilder.buildGraphModel(main.getGraphPane(), main.areUnmappedConceptsVisible(), main.areUnmappedConceptsWithSynsetsVisible());
             OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-            OWLOntology result = OntologyManager.saveOntologies(manager, firstGraphBuilder.getOntology(), secondGraphBuilder.getOntology());
+            OWLOntology result = OntologyManager.saveOntologies(manager, firstOntologyManager.getOntology(), secondOntologyManager.getOntology());
             onGraphModelBuilt(manager, result);
             this.main.setGraphModel(graphModel);
             ITreeBuilder firstTreeBuilder = new TreeBuilder(firstFile.getName(), firstOntologyGraph[0].getRoots());

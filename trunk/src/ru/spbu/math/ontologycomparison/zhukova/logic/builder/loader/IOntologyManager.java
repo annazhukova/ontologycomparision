@@ -13,5 +13,7 @@ public interface IOntologyManager {
     
     IOntologyGraph load(IClassAnnotationVisitor<IOntologyConcept> annotationVisitor, IPropertyVisitor<IOntologyConcept>... propertyVisitors) throws /*OWLTransformationException,*/ OWLReasonerException;
 
+    IOntologyGraph load() throws OWLReasonerException;
+
     OWLOntology getOntology();
 }
