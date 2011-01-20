@@ -45,17 +45,28 @@ public class Open extends AbstractAction {
 
     public void actionPerformed(ActionEvent e) {
         onOpenCalled();
-        final File firstOwl = FileChoosers.getOpenFileChooser("Select First Ontology");
-        if (firstOwl == null) {
+        final File firstOwl, secondOwl;
+        File[] files = FileChoosers.getOpenFileChooser("Select First Ontology", true);
+        if (files == null || files.length == 0) {
             onOpenDone();
             return;
-        }
-        this.main.log("Select second ontology");
-        final File secondOwl = FileChoosers.getOpenFileChooser("Select Second Ontology");
-        if (secondOwl == null) {
-            this.main.log("Press \"Open\" to select ontologies to compare");
-            onOpenDone();
-            return;
+        } else {
+            firstOwl = files[0];
+            /* If user has selected more than one file,
+            just suppose the second one is the second ontology */
+            if (files.length > 1) {
+                secondOwl = files[1];
+            } else {
+                this.main.log("Select second ontology");
+                File[] secondFiles = FileChoosers.getOpenFileChooser("Select Second Ontology", false);
+                if (secondFiles == null || secondFiles.length == 0) {
+                    this.main.log("Press \"Open\" to select ontologies to compare");
+                    onOpenDone();
+                    return;
+                } else {
+                    secondOwl = secondFiles[0];
+                }
+            }
         }
         this.main.clear();
         this.main.log("Loading ontologies");

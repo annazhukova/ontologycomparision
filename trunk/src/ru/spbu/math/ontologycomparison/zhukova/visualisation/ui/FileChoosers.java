@@ -40,12 +40,13 @@ public class FileChoosers {
         FileChoosers.main = main;
     }
 
-    public static File getOpenFileChooser(String title) {
+    public static File[] getOpenFileChooser(String title, boolean multiSelectionEnabled) {
         FileChoosers.fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
         FileChoosers.fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        FileChoosers.fileChooser.setMultiSelectionEnabled(multiSelectionEnabled);
         int value = FileChoosers.fileChooser.showDialog(main.getFrame(), title);
         if (value == JFileChooser.APPROVE_OPTION) {
-            return FileChoosers.fileChooser.getSelectedFile();
+            return FileChoosers.fileChooser.getSelectedFiles();
         }
         return null;
     }
