@@ -48,10 +48,11 @@ public class SelectingTool extends Tool {
                 }
             }
             graphPane.deselectVertices();
-            if (!SelectingTool.isOnlySuperVerticesSelection) {
-                Set<SimpleVertex> simpleVertices = graphPane.getGraphModel().getSimpleVertices();
-                for (SimpleVertex v : simpleVertices) {
-                    if (v.hitTest(mouseLocation)) {
+            Set<SimpleVertex> simpleVertices = graphPane.getGraphModel().getSimpleVertices();
+            for (SimpleVertex v : simpleVertices) {
+                if (v.hitTest(mouseLocation)) {
+                    if (!SelectingTool.isOnlySuperVerticesSelection() ||
+                            v.getSuperVertex() == null || v.getSuperVertex().isHidden()) {
                         graphPane.selectVertex(v);
                         moveOn(mouseLocation);
                         return;
@@ -97,7 +98,8 @@ public class SelectingTool extends Tool {
                 showPopUp(mouseLocation, forPopUp.toArray(new SuperVertex[forPopUp.size()]));
                 return;
             }
-            if (!SelectingTool.isOnlySuperVerticesSelection) {
+            /*
+            if (!SelectingTool.isOnlySuperVerticesSelection()) {
                 Set<SimpleVertex> simpleVertices = graphPane.getGraphModel().getSimpleVertices();
                 for (SimpleVertex v : simpleVertices) {
                     if (v.hitTest(mouseLocation) && v.getSuperVertex() != null) {
@@ -105,7 +107,7 @@ public class SelectingTool extends Tool {
                         return;
                     }
                 }
-            }
+            }*/
             Set<SuperVertex> superVertices = graphPane.getGraphModel().getSuperVertices();
             for (SuperVertex v : superVertices) {
                 if (v.hitTest(mouseLocation)) {
