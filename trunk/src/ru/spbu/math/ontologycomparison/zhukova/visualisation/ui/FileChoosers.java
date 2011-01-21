@@ -3,6 +3,7 @@ package ru.spbu.math.ontologycomparison.zhukova.visualisation.ui;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
+import java.util.Arrays;
 
 /**
  * @author Anna R. Zhukova
@@ -46,7 +47,8 @@ public class FileChoosers {
         FileChoosers.fileChooser.setMultiSelectionEnabled(multiSelectionEnabled);
         int value = FileChoosers.fileChooser.showDialog(main.getFrame(), title);
         if (value == JFileChooser.APPROVE_OPTION) {
-            return FileChoosers.fileChooser.getSelectedFiles();
+            return multiSelectionEnabled ? FileChoosers.fileChooser.getSelectedFiles() :
+                    new File[] {FileChoosers.fileChooser.getSelectedFile()};
         }
         return null;
     }
@@ -54,7 +56,7 @@ public class FileChoosers {
     public static File getSaveFileChooser() {
         FileChoosers.fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
         FileChoosers.fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        int value = FileChoosers.fileChooser.showDialog(main.getFrame(), "Select File");
+        int value = FileChoosers.fileChooser.showDialog(main.getFrame(), "Select Existing File Or Type a New File Name");
         if (value == JFileChooser.APPROVE_OPTION) {
             File file = FileChoosers.fileChooser.getSelectedFile();
             if (file != null) {

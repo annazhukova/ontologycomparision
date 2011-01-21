@@ -52,7 +52,7 @@ public class Save extends AbstractAction implements Open.IListener {
                             OntologyManager.addEquivalentClasses(manager, ontology, owlClasses);
                     }
                     OntologyManager.saveResult(manager, ontology, file);
-                    Save.this.main.info("Ontology saved");
+                    Save.this.main.info(String.format("The merged ontology is saved to %s", file.getAbsolutePath()));
                     Save.this.main.hideProgressBar();
                 } catch (OWLOntologyStorageException e1) {
                     Save.this.main.hideProgressBar();

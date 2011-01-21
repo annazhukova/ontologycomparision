@@ -156,7 +156,7 @@ public class Open extends AbstractAction {
             this.main.setTrees(firstTreeBuilder.buildTree(main.areUnmappedConceptsVisible(), main.areUnmappedConceptsWithSynsetsVisible()), secondTreeBuilder.buildTree(main.areUnmappedConceptsVisible(), main.areUnmappedConceptsWithSynsetsVisible()));
             int similarityCount = myGraphModelBuilder.getSimilarity();
             this.main.info(String.format(
-                    "Comparing ontology %s (blue) to %s (green). (Absolutely equal concepts are colored orange) The similarity is %d %%.",
+                    "Comparing ontology %s (blue) to %s (green). (Absolutely equal concepts are colored orange) <br> The similarity is %d %%. <br> To remove a mapping right-click on it",
                     firstFile.getName(), secondFile.getName(), similarityCount)
             );
             this.main.hideProgressBar();
