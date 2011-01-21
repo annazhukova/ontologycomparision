@@ -61,6 +61,7 @@ public class GraphModelBuilder implements IGraphModelBuilder {
     }
 
     private int buildLayers(Set<IOntologyConcept> concepts, int currentY, IGraphModel graphModel, Map<Set<IOntologyConcept>, SuperVertex> keyToSuperVertexMap, Map<IRI, SimpleVertex> keyToSimpleVertexMap, Map<IOntologyConcept, SimpleVertex> conceptToVertexMap, boolean showUnmapped, boolean showUnmappedWithSynsets) {
+        int size = keyToSimpleVertexMap.size();
         int nextY = buildLayer(concepts, graphModel, keyToSuperVertexMap, keyToSimpleVertexMap, conceptToVertexMap, showUnmapped, showUnmappedWithSynsets, currentY);
         Set<IOntologyConcept> nextLayer = new LinkedHashSet<IOntologyConcept>();
         for (IOntologyConcept current : concepts) {
@@ -69,7 +70,8 @@ public class GraphModelBuilder implements IGraphModelBuilder {
                 nextLayer.addAll(Arrays.asList(similar.getChildren()));
             }
         }
-        if (!nextLayer.isEmpty()) {
+        // if there are some new concepts and if we just added some vertices (to avoid cycles)
+        if (!nextLayer.isEmpty() && keyToSimpleVertexMap.size() > size) {
             nextY = buildLayers(nextLayer, nextY, graphModel, keyToSuperVertexMap, keyToSimpleVertexMap, conceptToVertexMap, showUnmapped, showUnmappedWithSynsets);
         }
         return nextY;

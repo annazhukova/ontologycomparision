@@ -26,24 +26,36 @@ import java.io.FileNotFoundException;
 public class Main implements ILogger {
     private JFrame frame;
 
-    //panels
     //graph panel
     private final GraphPane graphPane = new GraphPane();
     private final JScrollPane graphScrollPane = new JScrollPane(this.graphPane,
             ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+    //log
     private final JPanel infoPanel = new JPanel(new BorderLayout());
     private final JScrollPane infoScrollPane = new JScrollPane(this.infoPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     private final JPanel logPanel = new JPanel(new BorderLayout());
     private JLabel logLabel = new JLabel();
+
+    //progress
+    private JProgressBar progressBar = new JProgressBar();
+
+    //check boxes
     private JCheckBox showSingleSynsetVertexCheckBox;
     private JCheckBox showUnmappedConceptsCheckBox;
-    private JProgressBar progressBar = new JProgressBar();
-    private final TreeComponent trees = new TreeComponent();
+    private JCheckBox onlyOuterNodesSelection;
     private final JPanel checkBoxPanel = new JPanel();
+
+    //ontology trees
+    private final TreeComponent trees = new TreeComponent();
+
+    //split panels
     private final JSplitPane visibilitySettingsSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, trees, checkBoxPanel);
     private final JSplitPane componentSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, visibilitySettingsSplitPane, graphScrollPane);
     private final JSplitPane general = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, componentSplitPane, infoScrollPane);
+
+    //actions
     private Open open;
 
 
@@ -93,6 +105,7 @@ public class Main implements ILogger {
             initCheckBoxPanel();
             initSizes();
             general.setDividerLocation(0.7);
+            enableCheckBoxes(false);
             this.frame.setVisible(true);
         }
         return this.frame;
@@ -159,11 +172,18 @@ public class Main implements ILogger {
 
     public void setGraphModel(final GraphModel graphModel) {
         //this.progressFrame.setVisible(false);
+        this.enableCheckBoxes(true);
         graphPane.setGraphModel(graphModel);
         trees.setGraphPane(graphPane);
         componentSplitPane.setDividerLocation(0.7);
         visibilitySettingsSplitPane.setDividerLocation(0.8);
         general.setDividerLocation(0.7);
+    }
+
+    private void enableCheckBoxes(boolean enabled) {
+        showSingleSynsetVertexCheckBox.setEnabled(enabled);
+        showUnmappedConceptsCheckBox.setEnabled(enabled);
+        onlyOuterNodesSelection.setEnabled(enabled);
     }
 
     public void showProgressBar() {
@@ -239,7 +259,7 @@ public class Main implements ILogger {
             }
         });
         checkBoxPanel.add(showSingleSynsetVertexCheckBox);
-        final JCheckBox onlyOuterNodesSelection = new JCheckBox("Select only outer nodes", true);
+        onlyOuterNodesSelection = new JCheckBox("Select only outer nodes", true);
         onlyOuterNodesSelection.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -272,6 +292,7 @@ public class Main implements ILogger {
         if (graphPane != null) {
             graphPane.clear();
             trees.clear();
+            enableCheckBoxes(false);
         }
         info("Press \"Open\" to select ontologies to compare");
     }

@@ -76,7 +76,7 @@ public class TreeComponent extends JSplitPane {
             this.tree.addMouseListener(new MouseAdapter() {
 
                 public void mousePressed(MouseEvent e) {
-                    if (e.getButton() == MouseEvent.BUTTON1) {
+                    //if (e.getButton() == MouseEvent.BUTTON1) {
                         TreePath treePath = tree.getPathForLocation(e.getX(), e.getY());
                         popUpMenu.setRow(tree.getRowForLocation(e.getX(), e.getY()));
                         if (treePath != null) {
@@ -100,7 +100,7 @@ public class TreeComponent extends JSplitPane {
                                 }
                             }
                         }
-                    }
+                    //}
                 }
             });
         }
