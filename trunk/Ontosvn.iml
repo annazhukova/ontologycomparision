@@ -32,11 +32,7 @@
     <orderEntry type="library" name="log4j" level="project" />
     <orderEntry type="library" name="common-lang" level="project" />
     <orderEntry type="library" name="common-logging" level="project" />
-    <orderEntry type="library" name="owlapi" level="project" />
-    <orderEntry type="library" name="factpp" level="project" />
-    <orderEntry type="library" name="pellet" level="project" />
     <orderEntry type="library" name="owlapi3.0" level="project" />
-    <orderEntry type="library" name="pellet2.2" level="project" />
   </component>
 </module>
 
