@@ -54,6 +54,6 @@ public abstract class LabeledOntologyEntity implements ILabeledOntologyEntity {
     }
 
     public String toString() {
-        return getLabelCollection().toString();
+        return String.format("%s(%s)", getMainLabel(), getUri().getFragment());
     }
 }
